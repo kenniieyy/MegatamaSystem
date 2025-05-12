@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login-Yayasan Megatama Kota Jambi</title>
+    <link rel="stylesheet" href="css/final.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+     <!-- Background decorations -->
+    <div class="bg-decoration animate-pulse-slow" style="width: 600px; height: 600px; top: -200px; left: -100px;"></div>
+    <div class="bg-decoration animate-pulse-slow" style="width: 500px; height: 500px; bottom: -100px; right: -100px; animation-delay: 1s;"></div>
+    
+    <!-- Navbar -->
+    <nav class="bg-white text-primary shadow-lg relative z-10">
+        <div class="container mx-auto px-6 py-3 flex items-center justify-between">
+            <div class="flex items-center">
+                <div class="relative mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-primary animate-pulse-slow" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
+                    </svg>
+                    <div class="absolute inset-0 bg-primary opacity-20 rounded-full blur-md animate-pulse-slow"></div>
+                </div>
+                <h1 class="text-lg font-bold gradient-text-primary">Yayasan Megatama Kota Jambi</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="presensi_guru.html" class="text-sm font-medium text-primary hover:text-primary-dark transition-colors flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Kembali ke Presensi
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-10 flex-1 flex flex-col items-center justify-center relative z-10">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-white mb-2">Dashboard Login</h1>
+            <p class="text-blue-100 max-w-xl mx-auto">Silakan pilih jenis akun untuk masuk ke dashboard sistem</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl">
+            <!-- Admin TU Login Card -->
+            <div class="login-card admin-tu glass-effect rounded-2xl shadow-xl p-6">
+                <div class="text-center mb-6">
+                    <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-xl font-bold gradient-text-primary mb-1">Admin TU</h2>
+                    <p class="text-gray-600 text-sm">Akses penuh untuk pengelolaan data guru, siswa, dan peminjaman ruang</p>
+                </div>
+                
+                <form class="space-y-4">
+                    <div>
+                        <label for="username-tu" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </div>
+                            <input type="text" id="username-tu" name="username" required placeholder="Masukkan username" class="input-effect w-full pl-10 pr-3 py-2 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="password-tu" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                            </div>
+                            <input type="password" id="password-tu" name="password" required placeholder="Masukkan password" class="input-effect w-full pl-10 pr-3 py-2 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="btn-login btn-login-tu text-white py-2.5 px-4 w-full text-sm font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                        </svg>
+                        Login sebagai Admin TU
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Admin Perpustakaan Login Card -->
+            <div class="login-card admin-perpus glass-effect rounded-2xl shadow-xl p-6">
+                <div class="text-center mb-6">
+                    <div class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                    </div>
+                    <h2 class="text-xl font-bold gradient-text-secondary mb-1">Admin Perpustakaan</h2>
+                    <p class="text-gray-600 text-sm">Akses untuk pengelolaan peminjaman buku dan alat</p>
+                </div>
+                
+                <form class="space-y-4">
+                    <div>
+                        <label for="username-perpus" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </div>
+                            <input type="text" id="username-perpus" name="username" required placeholder="Masukkan username" class="input-effect w-full pl-10 pr-3 py-2 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="password-perpus" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                            </div>
+                            <input type="password" id="password-perpus" name="password" required placeholder="Masukkan password" class="input-effect w-full pl-10 pr-3 py-2 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all">
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="btn-login btn-login-perpus text-white py-2.5 px-4 w-full text-sm font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                        </svg>
+                        Login sebagai Admin Perpustakaan
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Guru Login Card -->
+            <div class="login-card guru glass-effect rounded-2xl shadow-xl p-6">
+                <div class="text-center mb-6">
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path d="M12 14l9-5-9-5-9 5 9 5z" />
+                            <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
+                        </svg>
+                    </div>
+                    <h2 class="text-xl font-bold gradient-text-green mb-1">Guru</h2>
+                    <p class="text-gray-600 text-sm">Akses untuk melihat riwayat presensi guru dan menginput presensi siswa</p>
+                </div>
+                
+                <form class="space-y-4">
+                    <div>
+                        <label for="identity-guru" class="block text-sm font-medium text-gray-700 mb-1">NIP/Nama</label>
+                        <div class="relative autocomplete-container">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </div>
+                            <input type="text" id="identity-guru" name="identity" required minlength="3" placeholder="Ketik NIP/Nama Guru" class="input-effect w-full pl-10 pr-3 py-2 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all">
+                            <div id="autocomplete-dropdown-guru" class="autocomplete-dropdown hidden"></div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="password-guru" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                            </div>
+                            <input type="password" id="password-guru" name="password" required placeholder="Masukkan password" class="input-effect w-full pl-10 pr-3 py-2 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all">
+                        </div>
+                    </div>
+                    
+                    <!-- <button type="button" class="btn-login btn-login-guru text-white py-2.5 px-4 w-full text-sm font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                        </svg>
+                        Login sebagai Guru
+                    </button> -->
+                    <a href="dashboard_guru.html" class="btn-login btn-login-guru text-white py-2.5 px-4 w-full text-sm font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                        </svg>
+                        Login sebagai Guru
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center py-3 text-white text-sm opacity-80 relative z-10">
+        &copy; 2024 Sistem Presensi Guru - Yayasan Megatama Kota Jambi
+    </div>
+
+    <!-- Modal for messages -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4 transform transition-all duration-500 scale-95 opacity-0" id="modal-content">
+            <div id="modal-icon" class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4"></div>
+            <div id="modal-header" class="text-center mb-4">
+                <h3 id="modal-title" class="text-2xl font-bold"></h3>
+            </div>
+            <div id="modal-body" class="mb-6">
+                <p id="modal-message" class="text-gray-700 text-center text-base"></p>
+                <div id="modal-details" class="mt-5 bg-gray-50 p-4 rounded-xl text-sm border border-gray-100 shadow-inner"></div>
+            </div>
+            <div class="text-center">
+                <button id="modal-close" class="btn-primary w-full text-white py-3 px-6 text-base font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 transition-all duration-300 hover:shadow-lg">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="js/script.js"></script>
+</body>
+</html>
