@@ -1,205 +1,288 @@
- // Toggle sidebar
-        function initializeSidebar() {
-            const toggleButton = document.getElementById('toggle-sidebar');
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('main-content');
-            const overlay = document.getElementById('overlay');
-            
-            toggleButton.addEventListener('click', function() {
-                sidebar.classList.toggle('collapsed');
-                sidebar.classList.toggle('mobile-open');
-                mainContent.classList.toggle('expanded');
-                overlay.classList.toggle('show');
-            });
-            
-            // Close sidebar when clicking on overlay
-            overlay.addEventListener('click', function() {
-                sidebar.classList.remove('mobile-open');
-                overlay.classList.remove('show');
-            });
+// Mengatur sidebar
+function initializeSidebar() {
+    const toggleButton = document.getElementById("toggle-sidebar")
+    const sidebar = document.getElementById("sidebar")
+    const mainContent = document.getElementById("main-content")
+    const overlay = document.getElementById("overlay")
+
+    toggleButton.addEventListener("click", () => {
+        sidebar.classList.toggle("collapsed")
+        sidebar.classList.toggle("mobile-open")
+        mainContent.classList.toggle("expanded")
+        overlay.classList.toggle("show")
+    })
+
+    // Tutup sidebar saat mengklik overlay
+    overlay.addEventListener("click", () => {
+        sidebar.classList.remove("mobile-open")
+        overlay.classList.remove("show")
+    })
+}
+
+// Mengatur tombol jenis absensi (datang/pulang)
+function initializeAttendanceTypeTabs() {
+    const datangButton = document.getElementById("btn-absen-datang")
+    const pulangButton = document.getElementById("btn-absen-pulang")
+
+    datangButton.addEventListener("click", () => {
+        datangButton.classList.add("active")
+        pulangButton.classList.remove("active")
+        currentAttendanceType = "datang"
+        currentPage = 1
+        renderAttendanceData()
+    })
+
+    pulangButton.addEventListener("click", () => {
+        pulangButton.classList.add("active")
+        datangButton.classList.remove("active")
+        currentAttendanceType = "pulang"
+        currentPage = 1
+        renderAttendanceData()
+    })
+}
+
+// Mengatur filter bulan
+function initializeMonthFilter() {
+    const monthFilter = document.getElementById("month-filter")
+
+    monthFilter.addEventListener("change", function () {
+        currentMonth = this.value
+        currentPage = 1
+        renderAttendanceData()
+    })
+}
+
+// Fungsi untuk memeriksa apakah waktu berada dalam rentang tertentu
+function isTimeInRange(timeStr, startHour, endHour) {
+    if (timeStr === "-") return false
+
+    const timeParts = timeStr.split(":")
+    const hour = Number.parseInt(timeParts[0], 10)
+
+    return hour >= startHour && hour < endHour
+}
+
+// Data contoh untuk catatan kehadiran
+const attendanceData = {
+    datang: [
+        { id: 1, date: "01-April-2024", time: "07:15:23", status: "Hadir", note: "Tepat Waktu" },
+        { id: 2, date: "02-April-2024", time: "07:15:23", status: "Hadir", note: "Tepat Waktu" },
+        { id: 3, date: "03-April-2024", time: "07:16:25", status: "Hadir", note: "Tepat Waktu" },
+        { id: 4, date: "04-April-2024", time: "07:16:28", status: "Hadir", note: "Tepat Waktu" },
+        { id: 5, date: "05-April-2024", time: "07:10:15", status: "Hadir", note: "Tepat Waktu" },
+        { id: 6, date: "06-April-2024", time: "07:12:45", status: "Hadir", note: "Tepat Waktu" },
+        { id: 7, date: "07-April-2024", time: "-", status: "Tidak Hadir", note: "Absen Tidak Dilakukan" },
+        { id: 8, date: "08-April-2024", time: "08:53:35", status: "Hadir", note: "Terlambat" },
+        { id: 9, date: "09-April-2024", time: "07:05:11", status: "Hadir", note: "Tepat Waktu" },
+        { id: 10, date: "10-April-2024", time: "07:03:04", status: "Hadir", note: "Tepat Waktu" },
+        { id: 11, date: "11-April-2024", time: "07:08:12", status: "Hadir", note: "Tepat Waktu" },
+        { id: 12, date: "12-April-2024", time: "07:14:55", status: "Hadir", note: "Tepat Waktu" },
+        { id: 13, date: "13-April-2024", time: "08:22:30", status: "Hadir", note: "Terlambat" },
+        { id: 14, date: "14-April-2024", time: "-", status: "Tidak Hadir", note: "Absen Tidak Dilakukan" },
+        { id: 15, date: "15-April-2024", time: "07:05:45", status: "Hadir", note: "Tepat Waktu" },
+        { id: 16, date: "16-April-2024", time: "07:10:18", status: "Hadir", note: "Tepat Waktu" },
+        { id: 17, date: "17-April-2024", time: "07:12:33", status: "Hadir", note: "Tepat Waktu" },
+        { id: 18, date: "18-April-2024", time: "07:08:59", status: "Hadir", note: "Tepat Waktu" },
+        { id: 19, date: "19-April-2024", time: "07:15:02", status: "Hadir", note: "Tepat Waktu" },
+        { id: 20, date: "20-April-2024", time: "08:18:47", status: "Hadir", note: "Terlambat" },
+        { id: 21, date: "21-April-2024", time: "-", status: "Tidak Hadir", note: "Absen Tidak Dilakukan" },
+        { id: 22, date: "22-April-2024", time: "07:09:22", status: "Hadir", note: "Tepat Waktu" },
+        { id: 23, date: "23-April-2024", time: "07:11:15", status: "Hadir", note: "Tepat Waktu" },
+        { id: 24, date: "24-April-2024", time: "07:14:30", status: "Hadir", note: "Tepat Waktu" },
+    ],
+    pulang: [
+        { id: 1, date: "01-April-2024", time: "15:05:23", status: "Hadir", note: "Tepat Waktu" },
+        { id: 2, date: "02-April-2024", time: "15:10:45", status: "Hadir", note: "Tepat Waktu" },
+        { id: 3, date: "03-April-2024", time: "15:02:18", status: "Hadir", note: "Tepat Waktu" },
+        { id: 4, date: "04-April-2024", time: "15:00:05", status: "Hadir", note: "Tepat Waktu" },
+        { id: 5, date: "05-April-2024", time: "15:30:15", status: "Hadir", note: "Tepat Waktu" },
+        { id: 6, date: "06-April-2024", time: "15:05:22", status: "Hadir", note: "Tepat Waktu" },
+        { id: 7, date: "07-April-2024", time: "-", status: "Tidak Hadir", note: "Absen Tidak Dilakukan" },
+        { id: 8, date: "08-April-2024", time: "16:45:35", status: "Hadir", note: "Terlambat" },
+        { id: 9, date: "09-April-2024", time: "15:08:11", status: "Hadir", note: "Tepat Waktu" },
+        { id: 10, date: "10-April-2024", time: "15:03:04", status: "Hadir", note: "Tepat Waktu" },
+        { id: 11, date: "11-April-2024", time: "15:12:12", status: "Hadir", note: "Tepat Waktu" },
+        { id: 12, date: "12-April-2024", time: "15:04:55", status: "Hadir", note: "Tepat Waktu" },
+        { id: 13, date: "13-April-2024", time: "15:02:30", status: "Hadir", note: "Tepat Waktu" },
+        { id: 14, date: "14-April-2024", time: "-", status: "Tidak Hadir", note: "Absen Tidak Dilakukan" },
+        { id: 15, date: "15-April-2024", time: "15:05:45", status: "Hadir", note: "Tepat Waktu" },
+        { id: 16, date: "16-April-2024", time: "16:40:18", status: "Hadir", note: "Terlambat" },
+        { id: 17, date: "17-April-2024", time: "15:02:33", status: "Hadir", note: "Tepat Waktu" },
+        { id: 18, date: "18-April-2024", time: "15:08:59", status: "Hadir", note: "Tepat Waktu" },
+        { id: 19, date: "19-April-2024", time: "15:05:02", status: "Hadir", note: "Tepat Waktu" },
+        { id: 20, date: "20-April-2024", time: "15:08:47", status: "Hadir", note: "Tepat Waktu" },
+        { id: 21, date: "21-April-2024", time: "-", status: "Tidak Hadir", note: "Absen Tidak Dilakukan" },
+        { id: 22, date: "22-April-2024", time: "15:09:22", status: "Hadir", note: "Tepat Waktu" },
+        { id: 23, date: "23-April-2024", time: "15:01:15", status: "Hadir", note: "Tepat Waktu" },
+        { id: 24, date: "24-April-2024", time: "15:04:30", status: "Hadir", note: "Tepat Waktu" },
+    ],
+}
+
+// Memperbarui data kehadiran berdasarkan aturan waktu
+function updateAttendanceData() {
+    // Memperbarui data absen datang
+    attendanceData.datang.forEach((item) => {
+        if (item.time === "-") {
+            item.status = "Tidak Hadir"
+            item.note = "Absen Tidak Dilakukan"
+        } else {
+            const timeParts = item.time.split(":")
+            const hour = Number.parseInt(timeParts[0], 10)
+
+            if (hour >= 7 && hour < 8) {
+                item.status = "Hadir"
+                item.note = "Tepat Waktu"
+            } else {
+                item.status = "Hadir"
+                item.note = "Terlambat"
+            }
         }
-        
-        // Initialize filter buttons
-        function initializeFilterButtons() {
-            const btnAbsenDatang = document.getElementById('btn-absen-datang');
-            const btnAbsenPulang = document.getElementById('btn-absen-pulang');
-            
-            btnAbsenDatang.addEventListener('click', function() {
-                btnAbsenDatang.classList.add('active');
-                btnAbsenPulang.classList.remove('active');
-                
-                // Update tabel untuk Absen Datang
-                updateTableForAbsenDatang();
-                console.log('Filtering for Absen Datang');
-            });
-            
-            btnAbsenPulang.addEventListener('click', function() {
-                btnAbsenPulang.classList.add('active');
-                btnAbsenDatang.classList.remove('active');
-                
-                // Update tabel untuk Absen Pulang
-                updateTableForAbsenPulang();
-                console.log('Filtering for Absen Pulang');
-            });
+    })
+
+    // Memperbarui data absen pulang
+    attendanceData.pulang.forEach((item) => {
+        if (item.time === "-") {
+            item.status = "Tidak Hadir"
+            item.note = "Absen Tidak Dilakukan"
+        } else {
+            const timeParts = item.time.split(":")
+            const hour = Number.parseInt(timeParts[0], 10)
+
+            if (hour >= 15 && hour < 16) {
+                item.status = "Hadir"
+                item.note = "Tepat Waktu"
+            } else {
+                item.status = "Hadir"
+                item.note = "Terlambat"
+            }
+        }
+    })
+}
+
+// Variabel untuk paginasi
+let currentPage = 1
+const itemsPerPage = 9
+let currentAttendanceType = "datang"
+let currentMonth = "april"
+
+// Menampilkan data kehadiran berdasarkan halaman dan filter saat ini
+function renderAttendanceData() {
+    const tableBody = document.getElementById("attendance-data")
+    const data = attendanceData[currentAttendanceType]
+
+    // Menghapus data yang ada
+    tableBody.innerHTML = ""
+
+    // Menghitung paginasi
+    const startIndex = (currentPage - 1) * itemsPerPage
+    const endIndex = Math.min(startIndex + itemsPerPage, data.length)
+    const paginatedData = data.slice(startIndex, endIndex)
+
+    // Memperbarui informasi paginasi
+    document.getElementById("pagination-info").textContent =
+        `Menampilkan ${startIndex + 1}-${endIndex} dari ${data.length} data`
+
+    // Menampilkan baris data
+    paginatedData.forEach((item) => {
+        const row = document.createElement("tr")
+        row.className = "table-row"
+
+        // Menentukan kelas badge berdasarkan catatan
+        let badgeClass = "success"
+        if (item.note === "Terlambat") {
+            badgeClass = "danger"
+        } else if (item.note === "Absen Tidak Dilakukan") {
+            badgeClass = "warning"
         }
 
-        // Fungsi untuk mengupdate tabel untuk Absen Datang
-        function updateTableForAbsenDatang() {
-            // Ubah keterangan di tabel tanpa mengubah posisi
-            const rows = document.querySelectorAll('.table-row');
-            
-            rows.forEach((row, index) => {
-                const statusCell = row.querySelector('td:nth-child(4) span');
-                const keteranganCell = row.querySelector('td:nth-child(5)');
-                
-                // Reset status dan keterangan
-                if (index % 5 === 0) {
-                    // Tepat Waktu
-                    statusCell.className = 'badge success';
-                    statusCell.textContent = 'Sudah Absen';
-                    keteranganCell.textContent = 'Tepat Waktu';
-                } else if (index % 5 === 1) {
-                    // Terlambat
-                    statusCell.className = 'badge warning';
-                    statusCell.textContent = 'Terlambat';
-                    keteranganCell.textContent = 'Terlambat 15 menit';
-                } else if (index % 5 === 2) {
-                    // Tepat Waktu
-                    statusCell.className = 'badge success';
-                    statusCell.textContent = 'Sudah Absen';
-                    keteranganCell.textContent = 'Tepat Waktu';
-                } else if (index % 5 === 3) {
-                    // Tepat Waktu
-                    statusCell.className = 'badge success';
-                    statusCell.textContent = 'Sudah Absen';
-                    keteranganCell.textContent = 'Tepat Waktu';
-                } else {
-                    // Absen Tidak Dilakukan
-                    statusCell.className = 'badge danger';
-                    statusCell.textContent = 'Absen Tidak Dilakukan';
-                    keteranganCell.textContent = '-';
-                }
-            });
-        }
+        row.innerHTML = `
+            <td class="px-4 py-3 whitespace-nowrap">
+                <img class="h-8 w-8 rounded-full object-cover" src="https://randomuser.me/api/portraits/women/44.jpg" alt="User avatar">
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap text-gray-500">${item.date}</td>
+            <td class="px-4 py-3 whitespace-nowrap text-gray-500">${item.time}</td>
+            <td class="px-4 py-3 whitespace-nowrap text-gray-500">${item.status}</td>
+            <td class="px-4 py-3 whitespace-nowrap">
+                <span class="badge ${badgeClass}">${item.note}</span>
+            </td>
+        `
 
-        // Fungsi untuk mengupdate tabel untuk Absen Pulang
-        function updateTableForAbsenPulang() {
-            // Ubah keterangan di tabel tanpa mengubah posisi
-            const rows = document.querySelectorAll('.table-row');
-            
-            rows.forEach((row, index) => {
-                const statusCell = row.querySelector('td:nth-child(4) span');
-                const keteranganCell = row.querySelector('td:nth-child(5)');
-                
-                // Reset status dan keterangan
-                if (index % 5 === 0) {
-                    // Tepat Waktu
-                    statusCell.className = 'badge success';
-                    statusCell.textContent = 'Sudah Absen';
-                    keteranganCell.textContent = 'Tepat Waktu';
-                } else if (index % 5 === 1) {
-                    // Pulang Cepat
-                    statusCell.className = 'badge warning';
-                    statusCell.textContent = 'Pulang Cepat';
-                    keteranganCell.textContent = 'Pulang Cepat 30 menit';
-                } else if (index % 5 === 2) {
-                    // Tepat Waktu
-                    statusCell.className = 'badge success';
-                    statusCell.textContent = 'Sudah Absen';
-                    keteranganCell.textContent = 'Tepat Waktu';
-                } else if (index % 5 === 3) {
-                    // Pulang Cepat
-                    statusCell.className = 'badge warning';
-                    statusCell.textContent = 'Pulang Cepat';
-                    keteranganCell.textContent = 'Pulang Cepat 15 menit';
-                } else {
-                    // Absen Tidak Dilakukan
-                    statusCell.className = 'badge danger';
-                    statusCell.textContent = 'Absen Tidak Dilakukan';
-                    keteranganCell.textContent = '-';
-                }
-            });
-        }
-        
-        // Initialize pagination
-        function initializePagination() {
-            const paginationItems = document.querySelectorAll('.pagination-item');
-            
-            paginationItems.forEach(item => {
-                if (!item.classList.contains('active') && !item.disabled) {
-                    item.addEventListener('click', function() {
-                        // Remove active class from all pagination items
-                        paginationItems.forEach(i => i.classList.remove('active'));
-                        
-                        // Add active class to clicked item (if it's a number)
-                        if (!isNaN(this.textContent)) {
-                            this.classList.add('active');
-                        }
-                        
-                        // Here you would typically fetch data for the selected page
-                        console.log('Navigating to page:', this.textContent);
-                    });
-                }
-            });
-        }
-        
-        // Initialize export button
-        function initializeExportButton() {
-            const btnExport = document.getElementById('btn-export');
-            
-            btnExport.addEventListener('click', function() {
-                // Tampilkan pop-up
-                showExportPopup();
-            });
-        }
+        tableBody.appendChild(row)
+    })
 
-        // Fungsi untuk menampilkan pop-up export
-        function showExportPopup() {
-            // Buat elemen pop-up
-            const popup = document.createElement('div');
-            popup.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-            popup.innerHTML = `
-                <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full transform transition-all scale-100 opacity-100">
-                    <div class="flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mx-auto mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-center text-gray-800 mb-2">Export Berhasil</h3>
-                    <p class="text-gray-600 text-center mb-6">Data riwayat presensi berhasil diekspor ke Excel.</p>
-                    <div class="flex justify-center">
-                        <button class="btn-gradient py-2 px-4 rounded-lg" id="close-popup">Tutup</button>
-                    </div>
-                </div>
-            `;
-            
-            // Tambahkan pop-up ke body
-            document.body.appendChild(popup);
-            
-            // Tambahkan event listener untuk tombol tutup
-            document.getElementById('close-popup').addEventListener('click', function() {
-                document.body.removeChild(popup);
-            });
+    // Memperbarui kontrol paginasi
+    renderPagination()
+}
+
+// Menampilkan kontrol paginasi
+function renderPagination() {
+    const paginationContainer = document.getElementById("pagination-numbers")
+    const data = attendanceData[currentAttendanceType]
+    const totalPages = Math.ceil(data.length / itemsPerPage)
+
+    // Menghapus paginasi yang ada
+    paginationContainer.innerHTML = ""
+
+    // Menentukan nomor halaman yang akan ditampilkan
+    let startPage = Math.max(1, currentPage - 1)
+    const endPage = Math.min(totalPages, startPage + 2)
+
+    // Menyesuaikan jika kita berada di akhir
+    if (endPage - startPage < 2) {
+        startPage = Math.max(1, endPage - 2)
+    }
+
+    // Membuat tombol nomor halaman
+    for (let i = startPage; i <= endPage; i++) {
+        const pageButton = document.createElement("button")
+        pageButton.className = `pagination-item ${i === currentPage ? "active" : "text-gray-700"}`
+        pageButton.textContent = i
+        pageButton.addEventListener("click", () => {
+            currentPage = i
+            renderAttendanceData()
+        })
+        paginationContainer.appendChild(pageButton)
+    }
+
+    // Memperbarui tombol sebelumnya/selanjutnya
+    const prevButton = document.getElementById("prev-page")
+    const nextButton = document.getElementById("next-page")
+
+    prevButton.disabled = currentPage === 1
+    nextButton.disabled = currentPage === totalPages
+
+    prevButton.addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--
+            renderAttendanceData()
         }
-        
-        // Initialize month filter
-        function initializeMonthFilter() {
-            const monthFilter = document.getElementById('month-filter');
-            
-            monthFilter.addEventListener('change', function() {
-                // Here you would typically filter the table data by month
-                console.log('Filtering for month:', this.value);
-            });
+    })
+
+    nextButton.addEventListener("click", () => {
+        if (currentPage < totalPages) {
+            currentPage++
+            renderAttendanceData()
         }
-        
-        // Run on page load
-        window.addEventListener('load', () => {
-            initializeSidebar();
-            initializeFilterButtons();
-            initializePagination();
-            initializeExportButton();
-            initializeMonthFilter();
-            
-            // Tampilkan data Absen Datang saat halaman pertama kali dimuat
-            updateTableForAbsenDatang();
-        });
+    })
+}
+
+// Mengatur tombol ekspor PDF
+function initializeExportPDF() {
+    const exportPdfBtn = document.getElementById("btn-export-pdf")
+
+    // Ekspor langsung saat tombol diklik
+    exportPdfBtn.addEventListener("click", () => {
+        // Untuk saat ini, hanya menampilkan pesan sederhana
+        alert("PDF berhasil diunduh!")
+    })
+}
+
+// Menjalankan saat halaman dimuat
+window.addEventListener("load", () => {
+    updateAttendanceData() // Memperbarui data berdasarkan aturan waktu
+    initializeSidebar()
+    initializeAttendanceTypeTabs()
+    initializeMonthFilter()
+    initializeExportPDF()
+    renderAttendanceData()
+})
