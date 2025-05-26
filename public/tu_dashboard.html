@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin TU - Yayasan Megatama</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#3B82F6',
+                        'sidebar-blue': '#1E40AF',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="/public/js/tu_dashboard.js" defer></script>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Overlay untuk tampilan mobile -->
+    <div id="overlay" class="overlay"></div>
+    
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-sidebar-blue text-white flex flex-col">
+            <!-- Logo -->
+            <div class="p-6 border-b border-blue-600">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-sidebar-blue text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-lg">Yayasan</h2>
+                        <p class="text-sm text-blue-200">Megatama</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menu -->
+            <div class="flex-1 py-6">
+                <p class="px-6 text-sm text-blue-200 mb-4">Menu</p>
+                <nav class="space-y-1">
+                    <a href="tu_dashboard.html" class="bg-white bg-opacity-20 text-white border-r-4 border-white flex items-center px-6 py-3 text-sm font-medium">
+                        <i class="fas fa-home w-5 mr-3"></i>
+                        Dashboard
+                    </a>
+                    <a href="tu_data_guru.html" class="text-blue-200 hover:bg-white hover:bg-opacity-10 hover:text-white flex items-center px-6 py-3 text-sm font-medium transition-colors">
+                        <i class="fas fa-chalkboard-teacher w-5 mr-3"></i>
+                        Data Guru
+                    </a>
+                    <a href="tu_data_siswa.html" class="text-blue-200 hover:bg-white hover:bg-opacity-10 hover:text-white flex items-center px-6 py-3 text-sm font-medium transition-colors">
+                        <i class="fas fa-user-graduate w-5 mr-3"></i>
+                        Data Siswa
+                    </a>
+                    <a href="#" class="text-blue-200 hover:bg-white hover:bg-opacity-10 hover:text-white flex items-center px-6 py-3 text-sm font-medium transition-colors">
+                        <i class="fas fa-door-open w-5 mr-3"></i>
+                        Data Ruangan
+                    </a>
+                    <a href="#" class="text-blue-200 hover:bg-white hover:bg-opacity-10 hover:text-white flex items-center px-6 py-3 text-sm font-medium transition-colors">
+                        <i class="fas fa-calendar-check w-5 mr-3"></i>
+                        Peminjaman Ruangan
+                    </a>
+                    <a href="#" class="text-blue-200 hover:bg-white hover:bg-opacity-10 hover:text-white flex items-center px-6 py-3 text-sm font-medium transition-colors">
+                        <i class="fas fa-clipboard-list w-5 mr-3"></i>
+                        Rekap Absensi
+                    </a>
+                    <a href="#" class="text-blue-200 hover:bg-white hover:bg-opacity-10 hover:text-white flex items-center px-6 py-3 text-sm font-medium transition-colors">
+                        <i class="fas fa-cog w-5 mr-3"></i>
+                        Settings
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Logout -->
+            <div class="p-6 border-t border-blue-600">
+                <a href="#" class="text-blue-200 hover:text-white flex items-center text-sm font-medium transition-colors">
+                    <i class="fas fa-sign-out-alt w-5 mr-3"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Header -->
+            <div class="bg-white shadow-sm border-b p-6">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-2xl font-semibold text-gray-800">Dashboard</h1>
+                    <div class="flex items-center space-x-3">
+                        <span class="text-sm text-gray-600">Budi Santoso</span>
+                        <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-gray-600"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="p-6 space-y-6">
+                <!-- Welcome Card -->
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-6 text-white">
+                    <h2 class="text-2xl font-bold flex items-center">
+                        Welcome Back, Budi 
+                        <span class="ml-2">👋</span>
+                    </h2>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Absen Datang -->
+                    <div class="bg-white rounded-xl p-6 shadow-sm border border-blue-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600 mb-1">Absen Datang Hari Ini</p>
+                                <p class="text-2xl font-bold text-gray-800">25<span class="text-sm text-gray-500 font-normal">/55 Total Guru</span></p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-user-clock text-blue-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Absen Pulang -->
+                    <div class="bg-white rounded-xl p-6 shadow-sm border border-green-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600 mb-1">Absen Pulang Hari Ini</p>
+                                <p class="text-2xl font-bold text-gray-800">Belum Absen Pulang</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-user-check text-green-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Siswa -->
+                    <div class="bg-white rounded-xl p-6 shadow-sm border border-orange-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600 mb-1">Total Siswa</p>
+                                <p class="text-2xl font-bold text-gray-800">225<span class="text-sm text-gray-500 font-normal"> Siswa</span></p>
+                            </div>
+                            <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-users text-orange-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ruang Dipinjam -->
+                    <div class="bg-white rounded-xl p-6 shadow-sm border border-red-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600 mb-1">Ruang Dipinjam Hari Ini</p>
+                                <p class="text-2xl font-bold text-gray-800">1<span class="text-sm text-gray-500 font-normal"> ruangan</span></p>
+                            </div>
+                            <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-door-open text-red-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Peminjaman Ruangan Chart -->
+                    <div class="lg:col-span-2 bg-white rounded-xl p-6 shadow-sm">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-semibold text-gray-800">Peminjaman Ruangan</h3>
+                            <select class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option>April</option>
+                                <option>Maret</option>
+                                <option>Februari</option>
+                            </select>
+                        </div>
+                        <div class="h-64">
+                            <canvas id="roomChart" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Aktivitas Terbaru -->
+                    <div class="bg-white rounded-xl p-6 shadow-sm">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-6">Aktivitas Terbaru</h3>
+                        <div class="space-y-4 max-h-80 overflow-y-auto">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-user text-orange-600 text-xs"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm text-gray-800 font-medium">Siti Nurhaliza Input Presensi Kelas 7</p>
+                                    <p class="text-xs text-gray-500">Hari ini, 08:30:18 WIB</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-user text-orange-600 text-xs"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm text-gray-800 font-medium">Ahmad Fauzan Input Presensi Kelas 10</p>
+                                    <p class="text-xs text-gray-500">Hari ini, 08:30:15 WIB</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-user text-orange-600 text-xs"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm text-gray-800 font-medium">Olivia Putri Input Presensi Kelas 8</p>
+                                    <p class="text-xs text-gray-500">Hari ini, 08:30:10 WIB</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-user text-orange-600 text-xs"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm text-gray-800 font-medium">Ahmad Fauzan Input Presensi Kelas 9</p>
+                                    <p class="text-xs text-gray-500">Hari ini, 11:30:20 WIB</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-user text-orange-600 text-xs"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm text-gray-800 font-medium">Siti Nurhaliza Input Presensi Kelas 12</p>
+                                    <p class="text-xs text-gray-500">Hari ini, 10:30:20 WIB</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-user text-orange-600 text-xs"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm text-gray-800 font-medium">Ahmad Fauzan Input Presensi Kelas 10</p>
+                                    <p class="text-xs text-gray-500">Hari ini, 11:30:20 WIB</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Charts -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Kehadiran Guru Chart -->
+                    <div class="bg-white rounded-xl p-6 shadow-sm">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-semibold text-gray-800">Kehadiran Guru</h3>
+                            <div class="flex space-x-2">
+                                <select class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option>April</option>
+                                    <option>Maret</option>
+                                    <option>Februari</option>
+                                </select>
+                                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">Absen Datang</button>
+                                <button class="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-50 transition-colors">Absen Pulang</button>
+                            </div>
+                        </div>
+                        <div class="flex justify-center">
+                            <canvas id="attendanceChart" width="300" height="300"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Jumlah Siswa Chart -->
+                    <div class="bg-white rounded-xl p-6 shadow-sm">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-semibold text-gray-800">Jumlah Siswa</h3>
+                            <select class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option>Kelas 7</option>
+                                <option>Kelas 8</option>
+                                <option>Kelas 9</option>
+                                <option>Kelas 10</option>
+                                <option>Kelas 11</option>
+                                <option>Kelas 12</option>
+                            </select>
+                        </div>
+                        <div class="flex justify-center">
+                            <canvas id="studentChart" width="300" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
