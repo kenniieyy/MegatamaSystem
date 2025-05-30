@@ -12,7 +12,6 @@ function initializeSidebar() {
         overlay.classList.toggle("show")
     })
 
-    // Tutup sidebar saat mengklik overlay
     overlay.addEventListener("click", () => {
         sidebar.classList.remove("mobile-open")
         overlay.classList.remove("show")
@@ -41,11 +40,38 @@ function initializeAttendanceTypeTabs() {
     })
 }
 
+// Data bulan
+const months = [
+    { value: "januari", label: "Januari" },
+    { value: "februari", label: "Februari" },
+    { value: "maret", label: "Maret" },
+    { value: "april", label: "April" },
+    { value: "mei", label: "Mei" },
+    { value: "juni", label: "Juni" },
+    { value: "juli", label: "Juli" },
+    { value: "agustus", label: "Agustus" },
+    { value: "september", label: "September" },
+    { value: "oktober", label: "Oktober" },
+    { value: "november", label: "November" },
+    { value: "desember", label: "Desember" }
+]
+
 // Mengatur filter bulan
 function initializeMonthFilter() {
     const monthFilter = document.getElementById("month-filter")
+    monthFilter.innerHTML = "" // Clear existing options
+    
+    months.forEach(month => {
+        const option = document.createElement("option")
+        option.value = month.value
+        option.textContent = month.label
+        if (month.value === currentMonth) {
+            option.selected = true
+        }
+        monthFilter.appendChild(option)
+    })
 
-    monthFilter.addEventListener("change", function () {
+    monthFilter.addEventListener("change", function() {
         currentMonth = this.value
         currentPage = 1
         renderAttendanceData()
@@ -62,66 +88,63 @@ function isTimeInRange(timeStr, startHour, endHour) {
     return hour >= startHour && hour < endHour
 }
 
-// Data contoh untuk catatan kehadiran
-const attendanceData = {
-    datang: [
-        { id: 1, date: "01-April-2024", time: "07:15:23", status: "Hadir", note: "Tepat Waktu" },
-        { id: 2, date: "02-April-2024", time: "07:15:23", status: "Hadir", note: "Tepat Waktu" },
-        { id: 3, date: "03-April-2024", time: "07:16:25", status: "Hadir", note: "Tepat Waktu" },
-        { id: 4, date: "04-April-2024", time: "07:16:28", status: "Hadir", note: "Tepat Waktu" },
-        { id: 5, date: "05-April-2024", time: "07:10:15", status: "Hadir", note: "Tepat Waktu" },
-        { id: 6, date: "06-April-2024", time: "07:12:45", status: "Hadir", note: "Tepat Waktu" },
-        { id: 7, date: "07-April-2024", time: "-", status: "Tidak Hadir", note: "Absen Tidak Dilakukan" },
-        { id: 8, date: "08-April-2024", time: "08:53:35", status: "Hadir", note: "Terlambat" },
-        { id: 9, date: "09-April-2024", time: "07:05:11", status: "Hadir", note: "Tepat Waktu" },
-        { id: 10, date: "10-April-2024", time: "07:03:04", status: "Hadir", note: "Tepat Waktu" },
-        { id: 11, date: "11-April-2024", time: "07:08:12", status: "Hadir", note: "Tepat Waktu" },
-        { id: 12, date: "12-April-2024", time: "07:14:55", status: "Hadir", note: "Tepat Waktu" },
-        { id: 13, date: "13-April-2024", time: "08:22:30", status: "Hadir", note: "Terlambat" },
-        { id: 14, date: "14-April-2024", time: "-", status: "Tidak Hadir", note: "Absen Tidak Dilakukan" },
-        { id: 15, date: "15-April-2024", time: "07:05:45", status: "Hadir", note: "Tepat Waktu" },
-        { id: 16, date: "16-April-2024", time: "07:10:18", status: "Hadir", note: "Tepat Waktu" },
-        { id: 17, date: "17-April-2024", time: "07:12:33", status: "Hadir", note: "Tepat Waktu" },
-        { id: 18, date: "18-April-2024", time: "07:08:59", status: "Hadir", note: "Tepat Waktu" },
-        { id: 19, date: "19-April-2024", time: "07:15:02", status: "Hadir", note: "Tepat Waktu" },
-        { id: 20, date: "20-April-2024", time: "08:18:47", status: "Hadir", note: "Terlambat" },
-        { id: 21, date: "21-April-2024", time: "-", status: "Tidak Hadir", note: "Absen Tidak Dilakukan" },
-        { id: 22, date: "22-April-2024", time: "07:09:22", status: "Hadir", note: "Tepat Waktu" },
-        { id: 23, date: "23-April-2024", time: "07:11:15", status: "Hadir", note: "Tepat Waktu" },
-        { id: 24, date: "24-April-2024", time: "07:14:30", status: "Hadir", note: "Tepat Waktu" },
-    ],
-    pulang: [
-        { id: 1, date: "01-April-2024", time: "15:05:23", status: "Hadir", note: "Tepat Waktu" },
-        { id: 2, date: "02-April-2024", time: "15:10:45", status: "Hadir", note: "Tepat Waktu" },
-        { id: 3, date: "03-April-2024", time: "15:02:18", status: "Hadir", note: "Tepat Waktu" },
-        { id: 4, date: "04-April-2024", time: "15:00:05", status: "Hadir", note: "Tepat Waktu" },
-        { id: 5, date: "05-April-2024", time: "15:30:15", status: "Hadir", note: "Tepat Waktu" },
-        { id: 6, date: "06-April-2024", time: "15:05:22", status: "Hadir", note: "Tepat Waktu" },
-        { id: 7, date: "07-April-2024", time: "-", status: "Tidak Hadir", note: "Absen Tidak Dilakukan" },
-        { id: 8, date: "08-April-2024", time: "16:45:35", status: "Hadir", note: "Terlambat" },
-        { id: 9, date: "09-April-2024", time: "15:08:11", status: "Hadir", note: "Tepat Waktu" },
-        { id: 10, date: "10-April-2024", time: "15:03:04", status: "Hadir", note: "Tepat Waktu" },
-        { id: 11, date: "11-April-2024", time: "15:12:12", status: "Hadir", note: "Tepat Waktu" },
-        { id: 12, date: "12-April-2024", time: "15:04:55", status: "Hadir", note: "Tepat Waktu" },
-        { id: 13, date: "13-April-2024", time: "15:02:30", status: "Hadir", note: "Tepat Waktu" },
-        { id: 14, date: "14-April-2024", time: "-", status: "Tidak Hadir", note: "Absen Tidak Dilakukan" },
-        { id: 15, date: "15-April-2024", time: "15:05:45", status: "Hadir", note: "Tepat Waktu" },
-        { id: 16, date: "16-April-2024", time: "16:40:18", status: "Hadir", note: "Terlambat" },
-        { id: 17, date: "17-April-2024", time: "15:02:33", status: "Hadir", note: "Tepat Waktu" },
-        { id: 18, date: "18-April-2024", time: "15:08:59", status: "Hadir", note: "Tepat Waktu" },
-        { id: 19, date: "19-April-2024", time: "15:05:02", status: "Hadir", note: "Tepat Waktu" },
-        { id: 20, date: "20-April-2024", time: "15:08:47", status: "Hadir", note: "Tepat Waktu" },
-        { id: 21, date: "21-April-2024", time: "-", status: "Tidak Hadir", note: "Absen Tidak Dilakukan" },
-        { id: 22, date: "22-April-2024", time: "15:09:22", status: "Hadir", note: "Tepat Waktu" },
-        { id: 23, date: "23-April-2024", time: "15:01:15", status: "Hadir", note: "Tepat Waktu" },
-        { id: 24, date: "24-April-2024", time: "15:04:30", status: "Hadir", note: "Tepat Waktu" },
-    ],
+// Generator data untuk bulan tertentu
+function generateMonthData(month) {
+    const currentDate = new Date()
+    const currentYear = currentDate.getFullYear()
+    const monthIndex = months.findIndex(m => m.value === month)
+    
+    // Hanya generate data sampai bulan mei
+    if (!["januari", "februari", "maret", "april", "mei"].includes(month)) {
+        return []
+    }
+
+    const daysInMonth = new Date(currentYear, monthIndex + 1, 0).getDate()
+    const data = []
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        const date = `${day.toString().padStart(2, '0')}-${month.charAt(0).toUpperCase() + month.slice(1)}-${currentYear}`
+        
+        const generateTime = () => {
+            const rand = Math.random()
+            if (rand < 0.15) return "-"
+            
+            const hour = Math.floor(Math.random() * 3) + (currentAttendanceType === "datang" ? 7 : 15)
+            const minute = Math.floor(Math.random() * 60)
+            const second = Math.floor(Math.random() * 60)
+            return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:${second.toString().padStart(2, '0')}`
+        }
+
+        const time = generateTime()
+        const isAbsent = time === "-"
+        
+        data.push({
+            id: day,
+            date,
+            time,
+            status: isAbsent ? "Tidak Hadir" : "Hadir",
+            note: isAbsent ? "Absen Tidak Dilakukan" : 
+                  (currentAttendanceType === "datang" ? 
+                    (parseInt(time.split(":")[0]) < 8 ? "Tepat Waktu" : "Terlambat") :
+                    (parseInt(time.split(":")[0]) < 16 ? "Tepat Waktu" : "Terlambat"))
+        })
+    }
+
+    return data
+}
+
+// Data kehadiran dinamis
+function getAttendanceData() {
+    return {
+        datang: generateMonthData(currentMonth),
+        pulang: generateMonthData(currentMonth)
+    }
 }
 
 // Memperbarui data kehadiran berdasarkan aturan waktu
-function updateAttendanceData() {
+function updateAttendanceData(data) {
     // Memperbarui data absen datang
-    attendanceData.datang.forEach((item) => {
+    data.datang.forEach((item) => {
         if (item.time === "-") {
             item.status = "Tidak Hadir"
             item.note = "Absen Tidak Dilakukan"
@@ -140,7 +163,7 @@ function updateAttendanceData() {
     })
 
     // Memperbarui data absen pulang
-    attendanceData.pulang.forEach((item) => {
+    data.pulang.forEach((item) => {
         if (item.time === "-") {
             item.status = "Tidak Hadir"
             item.note = "Absen Tidak Dilakukan"
@@ -157,6 +180,8 @@ function updateAttendanceData() {
             }
         }
     })
+
+    return data
 }
 
 // Variabel untuk paginasi
@@ -168,10 +193,30 @@ let currentMonth = "april"
 // Menampilkan data kehadiran berdasarkan halaman dan filter saat ini
 function renderAttendanceData() {
     const tableBody = document.getElementById("attendance-data")
-    const data = attendanceData[currentAttendanceType]
+    const data = updateAttendanceData(getAttendanceData())[currentAttendanceType]
 
     // Menghapus data yang ada
     tableBody.innerHTML = ""
+
+    // Jika tidak ada data, tampilkan pesan
+    if (data.length === 0) {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td colspan="6" class="text-center py-4 text-gray-500">Tidak ada data yang ditemukan</td>
+        `;
+        tableBody.appendChild(row)
+        
+        // Ganti teks pagination dengan "Tidak ada data"
+        document.getElementById("pagination-info").textContent = "Tidak ada data"
+        document.getElementById("pagination-numbers").innerHTML = ""
+        document.getElementById("prev-page").style.display = "none"
+        document.getElementById("next-page").style.display = "none"
+        return
+    }
+
+    // Tampilkan pagination controls
+    document.getElementById("prev-page").style.display = "block"
+    document.getElementById("next-page").style.display = "block"
 
     // Menghitung paginasi
     const startIndex = (currentPage - 1) * itemsPerPage
@@ -217,11 +262,14 @@ function renderAttendanceData() {
 // Menampilkan kontrol paginasi
 function renderPagination() {
     const paginationContainer = document.getElementById("pagination-numbers")
-    const data = attendanceData[currentAttendanceType]
+    const data = updateAttendanceData(getAttendanceData())[currentAttendanceType]
     const totalPages = Math.ceil(data.length / itemsPerPage)
 
     // Menghapus paginasi yang ada
     paginationContainer.innerHTML = ""
+
+    // Jika tidak ada data, return
+    if (data.length === 0) return
 
     // Menentukan nomor halaman yang akan ditampilkan
     let startPage = Math.max(1, currentPage - 1)
@@ -270,16 +318,13 @@ function renderPagination() {
 function initializeExportPDF() {
     const exportPdfBtn = document.getElementById("btn-export-pdf")
 
-    // Ekspor langsung saat tombol diklik
     exportPdfBtn.addEventListener("click", () => {
-        // Untuk saat ini, hanya menampilkan pesan sederhana
-        alert("PDF berhasil diunduh!")
+        alert("Data berhasil diekspor!")
     })
 }
 
 // Menjalankan saat halaman dimuat
 window.addEventListener("load", () => {
-    updateAttendanceData() // Memperbarui data berdasarkan aturan waktu
     initializeSidebar()
     initializeAttendanceTypeTabs()
     initializeMonthFilter()
