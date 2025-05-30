@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Guru - Yayasan Megatama</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#3B82F6',
+                        'sidebar-blue': '#1E40AF',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="/public/js/tu_data_guru.js"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-sidebar-blue text-white flex flex-col">
+            <!-- Logo -->
+            <div class="p-6 border-b border-blue-600">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-sidebar-blue text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-lg">Yayasan</h2>
+                        <p class="text-sm text-blue-200">Megatama</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menu -->
+            <div class="flex-1 py-6">
+                <p class="px-6 text-sm text-blue-200 mb-4">Menu</p>
+                <nav class="space-y-1">
+                    <a href="tu_dashboard.html" class="text-blue-200 hover:bg-white hover:bg-opacity-10 hover:text-white flex items-center px-6 py-3 text-sm font-medium transition-colors">
+                        <i class="fas fa-home w-5 mr-3"></i>
+                        Dashboard
+                    </a>
+                    <a href="#" class="bg-white bg-opacity-20 text-white border-r-4 border-white flex items-center px-6 py-3 text-sm font-medium">
+                        <i class="fas fa-chalkboard-teacher w-5 mr-3"></i>
+                        Data Guru
+                    </a>
+                    <a href="#" class="text-blue-200 hover:bg-white hover:bg-opacity-10 hover:text-white flex items-center px-6 py-3 text-sm font-medium transition-colors">
+                        <i class="fas fa-user-graduate w-5 mr-3"></i>
+                        Data Siswa
+                    </a>
+                    <a href="#" class="text-blue-200 hover:bg-white hover:bg-opacity-10 hover:text-white flex items-center px-6 py-3 text-sm font-medium transition-colors">
+                        <i class="fas fa-door-open w-5 mr-3"></i>
+                        Data Ruangan
+                    </a>
+                    <a href="#" class="text-blue-200 hover:bg-white hover:bg-opacity-10 hover:text-white flex items-center px-6 py-3 text-sm font-medium transition-colors">
+                        <i class="fas fa-calendar-check w-5 mr-3"></i>
+                        Peminjaman Ruangan
+                    </a>
+                    <a href="#" class="text-blue-200 hover:bg-white hover:bg-opacity-10 hover:text-white flex items-center px-6 py-3 text-sm font-medium transition-colors">
+                        <i class="fas fa-clipboard-list w-5 mr-3"></i>
+                        Rekap Absensi
+                    </a>
+                    <a href="#" class="text-blue-200 hover:bg-white hover:bg-opacity-10 hover:text-white flex items-center px-6 py-3 text-sm font-medium transition-colors">
+                        <i class="fas fa-cog w-5 mr-3"></i>
+                        Settings
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Logout -->
+            <div class="p-6 border-t border-blue-600">
+                <a href="#" class="text-blue-200 hover:text-white flex items-center text-sm font-medium transition-colors">
+                    <i class="fas fa-sign-out-alt w-5 mr-3"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Header -->
+            <div class="bg-white shadow-sm border-b p-6">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-2xl font-semibold text-gray-800">Data Guru</h1>
+                    <div class="flex items-center space-x-3">
+                        <span class="text-sm text-gray-600">Budi Santoso</span>
+                        <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-gray-600"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="p-6">
+                <div class="bg-white rounded-xl shadow-sm">
+                    <!-- Table Header -->
+                    <div class="p-6 border-b border-gray-200">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-lg font-semibold text-gray-800">Tabel Data Guru</h2>
+                            <div class="flex items-center space-x-4">
+                                <!-- Search Input -->
+                                <div class="relative">
+                                    <input type="text" 
+                                           id="searchInput"
+                                           placeholder="search" 
+                                           class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64">
+                                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                                </div>
+                                <!-- Add Button -->
+                                <button onclick="openAddModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center">
+                                    <i class="fas fa-plus mr-2"></i>
+                                    Tambah
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Foto Wajah</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Lengkap</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis Kelamin</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NIP</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mata Pelajaran</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teacherTableBody" class="bg-white divide-y divide-gray-200">
+                                <!-- Data will be inserted here by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="px-6 py-4 border-t border-gray-200">
+                        <div class="flex justify-between items-center">
+                            <p class="text-sm text-gray-600" id="paginationInfo">Menampilkan 1-9 dari 24 guru</p>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="previousPage()" class="p-2 text-gray-400 hover:text-gray-600">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <div id="pageNumbers" class="flex space-x-1">
+                                    <!-- Page numbers will be inserted here -->
+                                </div>
+                                <button onclick="nextPage()" class="p-2 text-gray-400 hover:text-gray-600">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div id="teacherModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl max-w-md w-full p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 id="modalTitle" class="text-lg font-semibold text-gray-800">Tambah Data Guru</h3>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <form id="teacherForm">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
+                            <input type="text" id="teacherName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Kelamin</label>
+                            <select id="teacherGender" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <option value="">Pilih Jenis Kelamin</option>
+                                <option value="Laki - Laki">Laki-Laki</option>
+                                <option value="Perempuan">Perempuan</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">NIP</label>
+                            <input type="text" id="teacherNIP" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Mata Pelajaran</label>
+                            <select id="teacherSubject" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <option value="">Pilih Mata Pelajaran</option>
+                                <option value="Agama Islam">Agama Islam</option>
+                                <option value="Matematika">Matematika</option>
+                                <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+                                <option value="Bahasa Inggris">Bahasa Inggris</option>
+                                <option value="IPA">IPA</option>
+                                <option value="IPS">IPS</option>
+                                <option value="Biologi">Biologi</option>
+                                <option value="Fisika">Fisika</option>
+                                <option value="Kimia">Kimia</option>
+                                <option value="Sejarah">Sejarah</option>
+                                <option value="Seni Budaya">Seni Budaya</option>
+                            </select>
+                        </div>
+
+                        
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nomor HP <span class="text-gray-400 text-xs">(opsional)</span></label>
+                            <input type="text" id="teacherPhone" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                            <select id="teacherStatus" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <option value="">Pilih Status</option>
+                                <option value="Aktif">Aktif</option>
+                                <option value="Non-Aktif">Non-Aktif</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Upload Foto Wajah <span class="text-gray-400 text-xs">(opsional)</span></label>
+                            <input type="file" accept="image/png, image/jpeg" id="teacherPhoto" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <p class="text-xs text-gray-400 mt-1">format: JPG, JPEG, PNG. Maksimal 5 MB</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                            <input type="text" id="teacherUsername" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                            <input type="password" id="teacherPassword" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-3 mt-6">
+                        <button type="button" onclick="closeModal()" class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                            Batal
+                        </button>
+                        <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            Simpan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl max-w-sm w-full p-6">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-trash text-red-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Hapus Data Guru</h3>
+                    <p class="text-gray-600 mb-6">Apakah Anda yakin ingin menghapus data guru ini? Tindakan ini tidak dapat dibatalkan.</p>
+                    
+                    <div class="flex space-x-3">
+                        <button onclick="closeDeleteModal()" class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                            Batal
+                        </button>
+                        <button onclick="confirmDelete()" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                            Hapus
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>
