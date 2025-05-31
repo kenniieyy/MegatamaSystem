@@ -138,6 +138,15 @@
                 <div class="card-header flex flex-col md:flex-row md:items-center justify-between gap-3">
                     <h3 class="text-base font-medium text-gray-700">Tabel Data Kenaikan Kelas</h3>
                     <div class="flex flex-wrap gap-2">
+                        <!-- Promote All Button -->
+                        <button id="btn-promote-all" class="btn-success flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                            </svg>
+                            Naikkan Semua Siswa
+                        </button>
                         <!-- Export Button -->
                         <button id="btn-export-data" class="btn-gradient flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
@@ -213,7 +222,8 @@
                 </button>
             </div>
             <div class="modal-body-naik-kelas">
-                <p id="modal-message-naik-kelas" class="text-gray-600 text-center"></p>
+                <p id="modal-message-naik-kelas" class="text-gray-600 text-center mb-2"></p>
+                <p id="modal-submessage-naik-kelas" class="text-sm text-gray-500 text-center"></p>
             </div>
             <div class="modal-footer-naik-kelas">
                 <button onclick="closeModal()"
