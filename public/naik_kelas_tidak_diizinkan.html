@@ -132,13 +132,40 @@
         </header>
 
         <!-- Page Content -->
-        <main class="p-0 bg-pattern" style="height: calc(100vh - 60px);">
-            <!-- Konten akan ditampilkan berdasarkan peran pengguna -->
-            <div id="content-container" class="h-full">
-                <!-- Konten diisi oleh JavaScript -->
-            </div>
-        </main>
+        <div id="content-container">
+            <!-- Content will be dynamically loaded here -->
+        </div>
     </div>
+
+    <!-- Modal Konfirmasi -->
+    <div id="confirmation-modal" class="modal-overlay-naik-kelas">
+        <div class="modal-container-naik-kelas">
+            <div class="modal-header-naik-kelas">
+                <h3 class="modal-title-naik-kelas">Konfirmasi Kenaikan Kelas</h3>
+                <button class="modal-close-naik-kelas" onclick="closeModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body-naik-kelas">
+                <p id="modal-message-naik-kelas" class="text-gray-600 text-center mb-2"></p>
+                <p id="modal-submessage-naik-kelas" class="text-sm text-gray-500 text-center"></p>
+            </div>
+            <div class="modal-footer-naik-kelas">
+                <button onclick="closeModal()"
+                    class="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50">
+                    Batal
+                </button>
+                <button id="confirm-action" class="btn-gradient">
+                    Konfirmasi
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="js/naik_kelas_tidak_diizinkan.js"></script>
 </body>
 
