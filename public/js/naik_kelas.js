@@ -173,7 +173,7 @@ function showBulkPromotionModal() {
 
   message.textContent = `Tindakan ini akan menetapkan status "Naik Kelas" untuk ${pendingStudents.length} siswa yang belum diproses.`
 
-  // Remove any existing event listeners and add new one
+  // "Hapus event listener lama (jika ada), lalu tambahkan event listener yang baru."
   const newConfirmButton = confirmButton.cloneNode(true)
   confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton)
 
@@ -192,7 +192,7 @@ function closeModal() {
   currentAction = null
   isBulkPromotion = false
 
-  // Clear submessage
+  // Hapus subpesan
   const subMessage = document.getElementById("modal-submessage-naik-kelas")
   if (subMessage) {
     subMessage.textContent = ""
