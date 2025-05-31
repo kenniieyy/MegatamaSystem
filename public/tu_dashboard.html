@@ -1,112 +1,172 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin TU - Yayasan Megatama</title>
+    <title>Dashboard - Yayasan Megatama Jambi</title>
+    <link rel="stylesheet" href="css/final.css">
     <script src="https://cdn.tailwindcss.com"></script>
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'primary-blue': '#3B82F6',
-                        'sidebar-blue': '#1E40AF',
-                    }
-                }
-            }
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="/public/js/tu_dashboard.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-50">
 
+<body class="font-poppins mode-2">
     <!-- Overlay untuk tampilan mobile -->
     <div id="overlay" class="overlay"></div>
-    
-    <div class="flex h-screen">
-        <!-- Sidebar -->
-        <div class="w-64 bg-sidebar-blue text-white flex flex-col">
-            <!-- Logo -->
-            <div class="p-6 border-b border-blue-600">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-                        <i class="fas fa-graduation-cap text-sidebar-blue text-xl"></i>
-                    </div>
-                    <div>
-                        <h2 class="font-bold text-lg">Yayasan</h2>
-                        <p class="text-sm text-blue-200">Megatama</p>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Menu -->
-            <div class="flex-1 py-6">
-                <p class="px-6 text-sm text-blue-200 mb-4">Menu</p>
-                <nav class="space-y-1">
-                    <a href="tu_dashboard.html" class="bg-white bg-opacity-20 text-white border-r-4 border-white flex items-center px-6 py-3 text-sm font-medium">
-                        <i class="fas fa-home w-5 mr-3"></i>
-                        Dashboard
-                    </a>
-                    <a href="tu_data_guru.html" class="text-blue-200 hover:bg-white hover:bg-opacity-10 hover:text-white flex items-center px-6 py-3 text-sm font-medium transition-colors">
-                        <i class="fas fa-chalkboard-teacher w-5 mr-3"></i>
-                        Data Guru
-                    </a>
-                    <a href="tu_data_siswa.html" class="text-blue-200 hover:bg-white hover:bg-opacity-10 hover:text-white flex items-center px-6 py-3 text-sm font-medium transition-colors">
-                        <i class="fas fa-user-graduate w-5 mr-3"></i>
-                        Data Siswa
-                    </a>
-                    <a href="#" class="text-blue-200 hover:bg-white hover:bg-opacity-10 hover:text-white flex items-center px-6 py-3 text-sm font-medium transition-colors">
-                        <i class="fas fa-door-open w-5 mr-3"></i>
-                        Data Ruangan
-                    </a>
-                    <a href="#" class="text-blue-200 hover:bg-white hover:bg-opacity-10 hover:text-white flex items-center px-6 py-3 text-sm font-medium transition-colors">
-                        <i class="fas fa-calendar-check w-5 mr-3"></i>
-                        Peminjaman Ruangan
-                    </a>
-                    <a href="#" class="text-blue-200 hover:bg-white hover:bg-opacity-10 hover:text-white flex items-center px-6 py-3 text-sm font-medium transition-colors">
-                        <i class="fas fa-clipboard-list w-5 mr-3"></i>
-                        Rekap Absensi
-                    </a>
-                    <a href="#" class="text-blue-200 hover:bg-white hover:bg-opacity-10 hover:text-white flex items-center px-6 py-3 text-sm font-medium transition-colors">
-                        <i class="fas fa-cog w-5 mr-3"></i>
-                        Settings
-                    </a>
-                </nav>
-            </div>
-
-            <!-- Logout -->
-            <div class="p-6 border-t border-blue-600">
-                <a href="#" class="text-blue-200 hover:text-white flex items-center text-sm font-medium transition-colors">
-                    <i class="fas fa-sign-out-alt w-5 mr-3"></i>
-                    Logout
-                </a>
+    <!-- Sidebar navigasi -->
+    <div id="sidebar" class="sidebar text-white flex flex-col">
+        <!-- Logo aplikasi -->
+        <div class="flex items-center p-3 border-b border-blue-800">
+            <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path
+                        d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
+                </svg>
+                <h1 class="text-base font-bold ml-3 logo-text">Yayasan Megatama</h1>
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="flex-1 overflow-auto">
-            <!-- Header -->
-            <div class="bg-white shadow-sm border-b p-6">
-                <div class="flex justify-between items-center">
-                    <h1 class="text-2xl font-semibold text-gray-800">Dashboard</h1>
-                    <div class="flex items-center space-x-3">
-                        <span class="text-sm text-gray-600">Budi Santoso</span>
-                        <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                            <i class="fas fa-user text-gray-600"></i>
+        <!-- Menu navigasi -->
+        <div class="p-3">
+            <p class="text-xs text-blue-300 mb-2 logo-text">Menu</p>
+            <nav class="space-y-1">
+                <a href="tu_dashboard.html"
+                    class="menu-item active px-3 py-2 text-sm font-medium bg-blue-800 text-white rounded-md">
+                    <div class="menu-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                    </div>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+                <a href="tu_data_guru.html" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
+                    <div class="menu-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 14l9-5-9-5-9 5 9 5z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                        </svg>
+                    </div>
+                    <span class="menu-text">Data Guru</span>
+                </a>
+                <a href="tu_data_siswa.html" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
+                    <div class="menu-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                    </div>
+                    <span class="menu-text">Data Siswa</span>
+                </a>
+                <a href="tu_data_ruangan.html" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
+                    <div class="menu-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                    </div>
+                    <span class="menu-text">Data Ruangan</span>
+                </a>
+                <a href="tu_peminjaman_ruangan.html"
+                    class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
+                    <div class="menu-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                        </svg>
+                    </div>
+                    <span class="menu-text">Peminjaman Ruangan</span>
+                </a>
+                <a href="tu_rekap_absensi.html"
+                    class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
+                    <div class="menu-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <span class="menu-text">Rekap Absensi</span>
+                </a>
+                <a href="tu_settings.html" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
+                    <div class="menu-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </div>
+                    <span class="menu-text">Settings</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Tombol logout di bagian bawah sidebar -->
+        <div class="mt-auto p-3 border-t border-blue-800">
+            <a href="login.html" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
+                <div class="menu-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                </div>
+                <span class="menu-text">Logout</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Konten Utama -->
+    <div id="main-content" class="main-content">
+        <!-- Navigasi Atas dengan Toggle Button -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="px-5 py-2 flex items-center justify-between">
+                <div class="flex items-center">
+                    <!-- Toggle Sidebar Button -->
+                    <button id="toggle-sidebar"
+                        class="p-1 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h7" />
+                        </svg>
+                    </button>
+                    <h1 class="ml-3 text-lg font-semibold text-gray-800">Dashboard</h1>
+                </div>
+                <div class="flex items-center">
+                    <div class="flex items-center">
+                        <div class="avatar-ring">
+                            <img class="h-8 w-8 rounded-full object-cover"
+                                src="https://randomuser.me/api/portraits/men/32.jpg" alt="User avatar">
                         </div>
+                        <span class="ml-2 text-sm font-medium text-gray-700">Admin TU</span>
                     </div>
                 </div>
             </div>
+        </header>
 
-            <!-- Content -->
-            <div class="p-6 space-y-6">
+        <!-- Konten Dashboard -->
+        <main class="p-4 bg-pattern">
+            <div class="space-y-6">
                 <!-- Welcome Card -->
                 <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-6 text-white">
                     <h2 class="text-2xl font-bold flex items-center">
-                        Welcome Back, Budi 
+                        Welcome Back, Admin TU
                         <span class="ml-2">👋</span>
                     </h2>
                 </div>
@@ -118,7 +178,8 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm text-gray-600 mb-1">Absen Datang Hari Ini</p>
-                                <p class="text-2xl font-bold text-gray-800">25<span class="text-sm text-gray-500 font-normal">/55 Total Guru</span></p>
+                                <p class="text-2xl font-bold text-gray-800">25<span
+                                        class="text-sm text-gray-500 font-normal">/55 Total Guru</span></p>
                             </div>
                             <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                                 <i class="fas fa-user-clock text-blue-600 text-xl"></i>
@@ -144,7 +205,8 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm text-gray-600 mb-1">Total Siswa</p>
-                                <p class="text-2xl font-bold text-gray-800">225<span class="text-sm text-gray-500 font-normal"> Siswa</span></p>
+                                <p class="text-2xl font-bold text-gray-800">225<span
+                                        class="text-sm text-gray-500 font-normal"> Siswa</span></p>
                             </div>
                             <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
                                 <i class="fas fa-users text-orange-600 text-xl"></i>
@@ -157,7 +219,8 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm text-gray-600 mb-1">Ruang Dipinjam Hari Ini</p>
-                                <p class="text-2xl font-bold text-gray-800">1<span class="text-sm text-gray-500 font-normal"> ruangan</span></p>
+                                <p class="text-2xl font-bold text-gray-800">1<span
+                                        class="text-sm text-gray-500 font-normal"> ruangan</span></p>
                             </div>
                             <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
                                 <i class="fas fa-door-open text-red-600 text-xl"></i>
@@ -172,7 +235,8 @@
                     <div class="lg:col-span-2 bg-white rounded-xl p-6 shadow-sm">
                         <div class="flex justify-between items-center mb-6">
                             <h3 class="text-lg font-semibold text-gray-800">Peminjaman Ruangan</h3>
-                            <select class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <select
+                                class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <option>April</option>
                                 <option>Maret</option>
                                 <option>Februari</option>
@@ -188,25 +252,30 @@
                         <h3 class="text-lg font-semibold text-gray-800 mb-6">Aktivitas Terbaru</h3>
                         <div class="space-y-4 max-h-80 overflow-y-auto">
                             <div class="flex items-start space-x-3">
-                                <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                <div
+                                    class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
                                     <i class="fas fa-user text-orange-600 text-xs"></i>
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm text-gray-800 font-medium">Siti Nurhaliza Input Presensi Kelas 7</p>
+                                    <p class="text-sm text-gray-800 font-medium">Siti Nurhaliza Input Presensi Kelas 7
+                                    </p>
                                     <p class="text-xs text-gray-500">Hari ini, 08:30:18 WIB</p>
                                 </div>
                             </div>
                             <div class="flex items-start space-x-3">
-                                <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                <div
+                                    class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
                                     <i class="fas fa-user text-orange-600 text-xs"></i>
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm text-gray-800 font-medium">Ahmad Fauzan Input Presensi Kelas 10</p>
+                                    <p class="text-sm text-gray-800 font-medium">Ahmad Fauzan Input Presensi Kelas 10
+                                    </p>
                                     <p class="text-xs text-gray-500">Hari ini, 08:30:15 WIB</p>
                                 </div>
                             </div>
                             <div class="flex items-start space-x-3">
-                                <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                <div
+                                    class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
                                     <i class="fas fa-user text-orange-600 text-xs"></i>
                                 </div>
                                 <div class="flex-1 min-w-0">
@@ -215,7 +284,8 @@
                                 </div>
                             </div>
                             <div class="flex items-start space-x-3">
-                                <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                <div
+                                    class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
                                     <i class="fas fa-user text-orange-600 text-xs"></i>
                                 </div>
                                 <div class="flex-1 min-w-0">
@@ -224,20 +294,24 @@
                                 </div>
                             </div>
                             <div class="flex items-start space-x-3">
-                                <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                <div
+                                    class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
                                     <i class="fas fa-user text-orange-600 text-xs"></i>
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm text-gray-800 font-medium">Siti Nurhaliza Input Presensi Kelas 12</p>
+                                    <p class="text-sm text-gray-800 font-medium">Siti Nurhaliza Input Presensi Kelas 12
+                                    </p>
                                     <p class="text-xs text-gray-500">Hari ini, 10:30:20 WIB</p>
                                 </div>
                             </div>
                             <div class="flex items-start space-x-3">
-                                <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                <div
+                                    class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
                                     <i class="fas fa-user text-orange-600 text-xs"></i>
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm text-gray-800 font-medium">Ahmad Fauzan Input Presensi Kelas 10</p>
+                                    <p class="text-sm text-gray-800 font-medium">Ahmad Fauzan Input Presensi Kelas 10
+                                    </p>
                                     <p class="text-xs text-gray-500">Hari ini, 11:30:20 WIB</p>
                                 </div>
                             </div>
@@ -252,13 +326,18 @@
                         <div class="flex justify-between items-center mb-6">
                             <h3 class="text-lg font-semibold text-gray-800">Kehadiran Guru</h3>
                             <div class="flex space-x-2">
-                                <select class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <select
+                                    class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     <option>April</option>
                                     <option>Maret</option>
                                     <option>Februari</option>
                                 </select>
-                                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">Absen Datang</button>
-                                <button class="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-50 transition-colors">Absen Pulang</button>
+                                <button
+                                    class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">Absen
+                                    Datang</button>
+                                <button
+                                    class="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-50 transition-colors">Absen
+                                    Pulang</button>
                             </div>
                         </div>
                         <div class="flex justify-center">
@@ -270,7 +349,8 @@
                     <div class="bg-white rounded-xl p-6 shadow-sm">
                         <div class="flex justify-between items-center mb-6">
                             <h3 class="text-lg font-semibold text-gray-800">Jumlah Siswa</h3>
-                            <select class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <select
+                                class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <option>Kelas 7</option>
                                 <option>Kelas 8</option>
                                 <option>Kelas 9</option>
@@ -285,8 +365,8 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
-
 </body>
+
 </html>
