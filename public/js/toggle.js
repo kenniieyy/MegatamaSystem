@@ -31,47 +31,5 @@
                     }
                 });
     
-                // Initialize Charts
-                // initializeCharts();
             });
     
-            // Initialize all charts
-            
-        // Room Borrowing Chart
-        // const roomCtx = document.getElementById('roomChart').getContext('2d');
-        // new Chart(roomCtx, {
-        //     type: 'bar',
-        //     data: {
-        //         labels: ['Lab Komputer', 'Lab Fisika', 'Lab Kimia', 'Lab Biologi', 'Aula'],
-        //         datasets: [{
-        //             label: 'Jumlah Peminjaman',
-        //             data: [4, 6, 8, 6, 4],
-        //             backgroundColor: '#3B82F6',
-        //             borderRadius: 8,
-        //             barThickness: 40
-        //         }]
-        //     },
-        //     options: {
-        //         responsive: true,
-        //         maintainAspectRatio: false,
-        //         plugins: {
-        //             legend: {
-        //                 display: false
-        //             }
-        //         },
-        //         scales: {
-        //             y: {
-        //                 beginAtZero: true,
-        //                 max: 10,
-        //                 ticks: {
-        //                     stepSize: 2
-        //                 }
-        //             },
-        //             x: {
-        //                 grid: {
-        //                     display: false
-        //                 }
-        //             }
-        //         }
-        //     }
-        // });
