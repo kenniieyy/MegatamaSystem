@@ -78,6 +78,8 @@ function initializeCharts() {
             legend: {
                 position: 'bottom',
                 labels: {
+                    usePointStyle: true,
+                    pointStyle: 'circle',
                     font: {
                         family: 'Poppins',
                         size: 12
@@ -94,6 +96,7 @@ function initializeCharts() {
             }
         }
     };
+
 
     // Buat grafik Absen Datang
     const datangChart = new Chart(
