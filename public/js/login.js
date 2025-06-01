@@ -187,45 +187,48 @@ const modalClose = document.getElementById('modal-close');
 
 function showModal(type, title, message) {
     modalTitle.textContent = title;
-    modalMessage.textContent = message;
+    modalMessage.innerHTML = message; // Gunakan innerHTML agar <br> bisa muncul
     modalDetails.innerHTML = '';
 
-    // Atur ikon, warna, dan gaya tombol tutup berdasarkan tipe
+    // Atur ikon, warna, dan header berdasarkan tipe
     if (type === 'error') {
         modalIcon.className = 'mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 bg-red-100';
         modalIcon.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                `;
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        `;
         modalHeader.className = 'text-center mb-4 text-red-600';
-        modalClose.className = 'w-full py-3 px-6 text-base font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-300 hover:shadow-lg text-white bg-red-600 hover:bg-red-700';
     } else if (type === 'success') {
         modalIcon.className = 'mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 bg-green-100';
         modalIcon.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                `;
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+        `;
         modalHeader.className = 'text-center mb-4 text-green-600';
-        modalClose.className = 'w-full py-3 px-6 text-base font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-300 hover:shadow-lg text-white bg-green-600 hover:bg-green-700';
     } else {
         modalIcon.className = 'mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 bg-primary bg-opacity-10';
         modalIcon.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                `;
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        `;
         modalHeader.className = 'text-center mb-4 text-primary';
-        modalClose.className = 'w-full py-3 px-6 text-base font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-300 hover:shadow-lg text-white bg-primary hover:bg-primary-dark';
     }
 
+    // Terapkan warna oranye ke tombol tutup (sekunder)
+    modalClose.className = 'w-full py-3 px-6 text-base font-medium rounded-xl focus:outline-none transition-all duration-300 hover:shadow-lg text-white';
+    modalClose.style.backgroundColor = '#FFA725';
+
+    // Tampilkan modal dengan animasi
     modal.classList.remove('hidden');
     setTimeout(() => {
         modalContent.classList.remove('scale-95', 'opacity-0');
         modalContent.classList.add('scale-100', 'opacity-100');
     }, 10);
 }
+
 
 if (modalClose) {
     modalClose.addEventListener('click', () => {
