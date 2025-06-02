@@ -30,7 +30,7 @@ $password = $data['password'];
 
 // Koneksi ke database
 $host = 'localhost';
-$dbname = 'proyek ppsi';
+$dbname = 'proyek_ppsi';
 $dbuser = 'root';
 $dbpass = ''; 
 

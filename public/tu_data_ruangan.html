@@ -4,12 +4,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Guru - Yayasan Megatama</title>
+    <title>Data Ruangan - Yayasan Megatama</title>
     <link rel="stylesheet" href="css/final.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
+    <style>
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .modal-backdrop {
+            backdrop-filter: blur(4px);
+        }
+
+        /* Animasi untuk toast */
+        .toast-enter {
+            transform: translateX(100%) translateY(-100%);
+            opacity: 0;
+        }
+
+        .toast-show {
+            transform: translateX(0) translateY(0);
+            opacity: 1;
+        }
+
+        .toast-exit {
+            transform: translateX(100%) translateY(-100%);
+            opacity: 0;
+        }
+
+        .toast-transition {
+            transition: all 0.3s ease-out;
+        }
+    </style>
     <script>
         tailwind.config = {
             theme: {
@@ -22,8 +51,8 @@
             }
         }
     </script>
-    <script src="/public/js/tu_data_guru.js"></script>
-    <script src="/public/js/toggle.js"></script>
+    <script src="js/tu_data_ruangan.js"></script>
+    <script src="js/toggle.js"></script>
 </head>
 
 <body class="font-poppins mode-2">
@@ -58,8 +87,7 @@
                     </div>
                     <span class="menu-text">Dashboard</span>
                 </a>
-                <a href="tu_data_guru.html"
-                    class="menu-item active px-3 py-2 text-sm font-medium text-white rounded-md">
+                <a href="tu_data_guru.html" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
                     <div class="menu-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
@@ -81,7 +109,8 @@
                     </div>
                     <span class="menu-text">Data Siswa</span>
                 </a>
-                <a href="tu_data_ruangan.html" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
+                <a href="tu_data_ruangan.html"
+                    class="menu-item active px-3 py-2 text-sm font-medium text-white rounded-md">
                     <div class="menu-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
@@ -145,7 +174,7 @@
 
     <!-- Konten Utama -->
     <div id="main-content" class="main-content">
-        <!-- Navigasi Atas -->
+        <!-- Top Header -->
         <header class="bg-white shadow-sm border-b border-gray-200">
             <div class="px-5 py-2 flex items-center justify-between">
                 <div class="flex items-center">
@@ -157,7 +186,7 @@
                                 d="M4 6h16M4 12h16M4 18h7" />
                         </svg>
                     </button>
-                    <h1 class="ml-3 text-lg font-semibold text-gray-800">Data Guru</h1>
+                    <h1 class="ml-3 text-lg font-semibold text-gray-800">Data Ruangan</h1>
                 </div>
                 <div class="flex items-center">
                     <div class="flex items-center">
@@ -171,25 +200,26 @@
             </div>
         </header>
 
-        <!-- Content -->
-        <div class="p-6">
-            <div class="bg-white rounded-xl shadow-lg">
+        <!-- Content Area -->
+        <main class="p-6">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                 <!-- Table Header -->
-                <div class="p-6 border-b border-gray-200">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-lg font-semibold text-gray-800">Tabel Data Guru</h2>
-                        <div class="flex items-center space-x-4">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                        <h2 class="text-lg font-semibold text-gray-800">Tabel Data Ruangan</h2>
+                        <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
                             <!-- Search Input -->
                             <div class="relative">
-                                <input type="text" id="searchInput" placeholder="search"
-                                    class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64">
-                                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                                <i
+                                    class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" id="searchInput" placeholder="Cari ruangan"
+                                    class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
                             </div>
+
                             <!-- Add Button -->
-                            <button onclick="openAddModal()"
-                                class="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center">
-                                <i class="fas fa-plus mr-2"></i>
-                                Tambah
+                            <button id="tambahRuanganBtn"
+                                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
+                                <i class="fas fa-plus mr-2"></i>Tambah
                             </button>
                         </div>
                     </div>
@@ -201,197 +231,104 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th
-                                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Foto Wajah</th>
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    No</th>
                                 <th
-                                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Nama Lengkap</th>
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Nama Ruangan</th>
                                 <th
-                                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Jenis Kelamin</th>
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Lokasi</th>
                                 <th
-                                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    NIP/UID</th>
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Keterangan</th>
                                 <th
-                                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Mata Pelajaran</th>
-                                <th
-                                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Wali Kelas</th>
-                                <th
-                                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status</th>
-                                <th
-                                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="teacherTableBody" class="bg-white divide-y divide-gray-200">
-                            <!-- Data will be inserted here by JavaScript -->
+                        <tbody id="ruanganTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Data akan diisi oleh JavaScript -->
                         </tbody>
                     </table>
                 </div>
 
                 <!-- Pagination -->
-                <div class="px-6 py-4 border-t border-gray-200">
-                    <div class="flex justify-between items-center">
-                        <p class="text-sm text-gray-600" id="paginationInfo">Menampilkan 1-9 dari 24 guru</p>
-                        <div class="flex items-center space-x-2">
-                            <button onclick="previousPage()" class="p-2 text-gray-400 hover:text-gray-600">
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                            <div id="pageNumbers" class="flex space-x-1">
-                                <!-- Page numbers will be inserted here -->
-                            </div>
-                            <button onclick="nextPage()" class="p-2 text-gray-400 hover:text-gray-600">
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
+                <div class="px-6 py-4 flex items-center justify-between border-t border-gray-200">
+                    <div class="text-sm text-gray-500">
+                        Menampilkan <span id="currentRange">1-9</span> dari <span id="totalData">12</span> ruangan
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button id="prevPage"
+                            class="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50" disabled>
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div id="pageNumbers" class="flex space-x-1">
+                            <!-- Page numbers akan diisi JavaScript -->
                         </div>
+                        <button id="nextPage" class="px-3 py-2 text-sm text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </main>
     </div>
 
     <!-- Add/Edit Modal -->
-            <!-- SCRIPT UNTUK KONEKSI -->
-        <script src="js/tu_data_guru.js"></script>
-    <div id="teacherModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto hidden">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-xl max-w-md w-full p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 id="modalTitle" class="text-lg font-semibold text-gray-800">Tambah Data Guru</h3>
-                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times"></i>
-                    </button>
+    <div id="tambahRuanganModal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 id="modalTitle" class="text-lg font-semibold text-gray-900">Tambah Ruangan Baru</h3>
+                        <button id="closeTambahModal" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <form id="tambahRuanganForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Ruangan</label>
+                            <input type="text" name="namaRuangan" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Lokasi</label>
+                            <input type="text" name="lokasi" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
+                            <textarea name="keterangan" rows="3"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"></textarea>
+                        </div>
+                        <div class="flex space-x-3 pt-4">
+                            <button type="button" id="cancelTambahRuangan"
+                                class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                                Batal
+                            </button>
+                            <button type="submit"
+                                class="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors">
+                                Simpan
+                            </button>
+                        </div>
+                    </form>
                 </div>
-
-                <form id="teacherForm">
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
-                            <input type="text" id="teacherName"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                required>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Kelamin</label>
-                            <select id="teacherGender"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                required>
-                                <option value="">Pilih Jenis Kelamin</option>
-                                <option value="Laki - Laki">Laki-Laki</option>
-                                <option value="Perempuan">Perempuan</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">NIP/UID</label>
-                            <input type="text" id="teacherNIP"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                required>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Mata Pelajaran</label>
-                            <select id="teacherSubject"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                required>
-                                <option value="">Pilih Mata Pelajaran</option>
-                                <option value="Agama Islam">Agama Islam</option>
-                                <option value="Matematika">Matematika</option>
-                                <option value="Bahasa Indonesia">Bahasa Indonesia</option>
-                                <option value="Bahasa Inggris">Bahasa Inggris</option>
-                                <option value="IPA">IPA</option>
-                                <option value="IPS">IPS</option>
-                                <option value="Biologi">Biologi</option>
-                                <option value="Fisika">Fisika</option>
-                                <option value="Kimia">Kimia</option>
-                                <option value="Sejarah">Sejarah</option>
-                                <option value="Seni Budaya">Seni Budaya</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Wali Kelas</label>
-                            <select id="teacherWaliKelas"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">Bukan Wali Kelas</option>
-                                <option value="Wali Kelas 7">Wali Kelas 7</option>
-                                <option value="Wali Kelas 8">Wali Kelas 8</option>
-                                <option value="Wali Kelas 9">Wali Kelas 9</option>
-                                <option value="Wali Kelas 10">Wali Kelas 10</option>
-                                <option value="Wali Kelas 11">Wali Kelas 11</option>
-                                <option value="Wali Kelas 12">Wali Kelas 12</option>
-                            </select>
-                        </div>
-                        <!-- <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Nomor HP <span class="text-gray-400 text-xs">(opsional)</span></label>
-                                <input type="text" id="teacherPhone" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div> -->
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                            <select id="teacherStatus"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                required>
-                                <option value="">Pilih Status</option>
-                                <option value="Aktif">Aktif</option>
-                                <option value="Non-Aktif">Non-Aktif</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Upload Foto Wajah <span
-                                    class="text-gray-400 text-xs">(opsional)</span></label>
-                            <input type="file" accept="image/png, image/jpeg" id="teacherPhoto"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <p class="text-xs text-gray-400 mt-1">format: JPG, JPEG, PNG. Maksimal 5 MB</p>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
-                            <input type="text" id="teacherUsername"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                required>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                            <input type="password" id="teacherPassword"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                required>
-                        </div>
-                    </div>
-
-                    <div class="flex space-x-3 mt-6">
-                        <button type="button" onclick="closeModal()"
-                            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                            Batal
-                        </button>
-                        <button type="submit"
-                            class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                            Simpan
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
 
-
     <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <div id="deleteRuangan" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="bg-white rounded-xl max-w-sm w-full p-6">
                 <div class="text-center">
                     <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                         <i class="fas fa-trash text-red-600 text-2xl"></i>
                     </div>
-                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Hapus Data Guru</h3>
-                    <p class="text-gray-600 mb-6">Apakah Anda yakin ingin menghapus data guru ini? Tindakan ini tidak
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Hapus Data Ruangan</h3>
+                    <p class="text-gray-600 mb-6">Apakah Anda yakin ingin menghapus ruangan ini? Tindakan ini tidak
                         dapat dibatalkan.</p>
 
                     <div class="flex space-x-3">
@@ -405,6 +342,22 @@
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-notification" class="fixed top-4 right-4 z-50 toast-enter transition-all duration-300 ease-out">
+        <div class="bg-white rounded-lg shadow-lg border-l-4 p-4 max-w-sm">
+            <div class="flex items-center">
+                <div id="toast-icon" class="mr-3"></div>
+                <div class="flex-1">
+                    <h4 id="toast-title" class="font-semibold text-gray-800"></h4>
+                    <p id="toast-message" class="text-sm text-gray-600"></p>
+                </div>
+                <button id="toast-close" class="ml-2 text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
         </div>
     </div>
