@@ -4,14 +4,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("teacherForm");
     form.addEventListener("submit", function (e) {
         e.preventDefault();
-
         const formData = new FormData(form);
 
         fetch("api/guru.php", {
             method: "POST",
             body: formData
         })
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return res.json();
+        })
         .then(data => {
             alert("Data guru berhasil ditambahkan!");
             form.reset();
@@ -22,31 +26,48 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("Gagal menyimpan data.");
         });
     });
+
+    const searchInput = document.getElementById("searchInput");
+    searchInput.addEventListener("input", function () {
+        loadTeachers(searchInput.value);
+    });
 });
 
-function loadTeachers() {
-    fetch("api/guru.php")
-        .then(res => res.json())
+function loadTeachers(searchTerm = "") {
+    fetch(`api/guru.php?search=${encodeURIComponent(searchTerm)}`)
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return res.json();
+        })
         .then(data => {
             const tbody = document.getElementById("teacherTableBody");
             tbody.innerHTML = "";
             data.forEach(guru => {
                 const row = document.createElement("tr");
                 row.innerHTML = `
+                    <td><img src="${guru.foto_url}" width="50"></td>
                     <td>${guru.nama_lengkap}</td>
                     <td>${guru.jenis_kelamin}</td>
                     <td>${guru.nip}</td>
                     <td>${guru.mata_pelajaran}</td>
                     <td>${guru.wali_kelas}</td>
                     <td>${guru.status_guru}</td>
-                    <td><img src="${guru.foto_url}" width="50"></td>
-                    <td>${guru.username}</td>
-                    <td>********</td>
+                    <td>
+                        <button onclick="openEditModal(${guru.id})">Edit</button>
+                        <button onclick="openDeleteModal(${guru.id})">Delete</button>
+                    </td>
                 `;
                 tbody.appendChild(row);
             });
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Gagal memuat data.");
         });
 }
+
 
 // let teachersData = [
 //     { id: 1, name: "Siti Nurhaliza, S.Pd", gender: "Perempuan", nip: "19800412 200903 2 001", subject: "Agama Islam", waliKelas: "Wali Kelas 7", status: "Aktif", photo: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=150&h=150&fit=crop&crop=face" },
