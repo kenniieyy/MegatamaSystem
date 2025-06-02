@@ -1,4 +1,5 @@
-async function login(username, password) {
+// login oprator ini ges
+async function loginOprator(username, password) {
     try {
         const response = await fetch('http://localhost/MegatamaSystem/src/API/operator.php', {
             method: 'POST',
@@ -25,12 +26,48 @@ async function login(username, password) {
         alert("Terjadi kesalahan saat menghubungi server.");
     }
 }
-// // default
+
+// login staf ini ges
+// Fungsi login staf/operator
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const idInput = document.getElementById('id_guru').value.trim();
+  const passwordInput = document.getElementById('password').value.trim();
+  const message = document.getElementById('message');
+
+  try {
+    // Ambil data guru dari API
+    const response = await fetch('api/guru.php');
+    if (!response.ok) throw new Error('Gagal mengambil data guru');
+    const teachers = await response.json();
+
+    // Cari guru berdasarkan id dan password
+    const user = teachers.find(t => t.id === idInput && t.password === passwordInput);
+
+    if (user) {
+      message.style.color = 'green';
+      message.textContent = `Login berhasil! Selamat datang, ${user.name}`;
+      // Lanjutkan ke dashboard / simpan session, dll.
+    } else {
+      message.style.color = 'red';
+      message.textContent = 'ID atau Password salah!';
+    }
+
+  } catch (error) {
+    message.style.color = 'red';
+    message.textContent = 'Terjadi kesalahan: ' + error.message;
+  }
+});
+
+
+
+// default
 // const defaultCredentials = {
-//     adminTU: {
-//         username: 'admin.tu',
-//         password: 'admin123'
-//     },
+//     // adminTU: {
+//     //     username: 'admin.tu',
+//     //     password: 'admin123'
+//     // },
 //     teachers: [
 //         { id: '1987120101', name: 'Efrizal, S.P., M.Si.', password: 'guru123' },
 //         { id: '1987120102', name: 'Syamsul Rizal, S.H., M.H.', password: 'guru123' },

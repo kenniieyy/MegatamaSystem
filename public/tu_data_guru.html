@@ -10,6 +10,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+
     <script>
         tailwind.config = {
             theme: {
@@ -22,8 +25,8 @@
             }
         }
     </script>
-    <script src="/public/js/tu_data_guru.js"></script>
-    <script src="/public/js/toggle.js"></script>
+    <script src="../public/js/tu_data_guru.js"></script>
+    <script src="../public/js/toggle.js"></script>
 </head>
 
 <body class="font-poppins mode-2">
@@ -173,21 +176,21 @@
 
         <!-- Content -->
         <div class="p-6">
-            <div class="bg-white rounded-xl shadow-lg">
+            <div class="bg-white rounded-lg shadow-lg border border-gray-200">
                 <!-- Table Header -->
-                <div class="p-6 border-b border-gray-200">
-                    <div class="flex justify-between items-center">
+                <div class="p-6 py-4 border-b border-gray-200">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
                         <h2 class="text-lg font-semibold text-gray-800">Tabel Data Guru</h2>
                         <div class="flex items-center space-x-4">
                             <!-- Search Input -->
                             <div class="relative">
                                 <input type="text" id="searchInput" placeholder="search"
-                                    class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64">
+                                    class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64 text-sm">
                                 <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                             </div>
                             <!-- Add Button -->
                             <button onclick="openAddModal()"
-                                class="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center">
+                                class="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center text-sm">
                                 <i class="fas fa-plus mr-2"></i>
                                 Tambah
                             </button>
@@ -257,6 +260,7 @@
     <!-- Add/Edit Modal -->
     <div id="teacherModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto hidden">
         <div class="flex items-center justify-center min-h-screen p-4">
+            <!-- Tambah Data Guru -->
             <div class="bg-white rounded-xl max-w-md w-full p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 id="modalTitle" class="text-lg font-semibold text-gray-800">Tambah Data Guru</h3>
@@ -287,28 +291,79 @@
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">NIP/UID</label>
-                            <input type="text" id="teacherNIP"
+                            <input type="text" id="ID"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Mata Pelajaran</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Tugas Staf</label>
                             <select id="teacherSubject"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required>
-                                <option value="">Pilih Mata Pelajaran</option>
-                                <option value="Agama Islam">Agama Islam</option>
-                                <option value="Matematika">Matematika</option>
-                                <option value="Bahasa Indonesia">Bahasa Indonesia</option>
-                                <option value="Bahasa Inggris">Bahasa Inggris</option>
-                                <option value="IPA">IPA</option>
-                                <option value="IPS">IPS</option>
-                                <option value="Biologi">Biologi</option>
-                                <option value="Fisika">Fisika</option>
-                                <option value="Kimia">Kimia</option>
-                                <option value="Sejarah">Sejarah</option>
-                                <option value="Seni Budaya">Seni Budaya</option>
+                                <option value="">Pilih Tugas Staf</option>
+                                <option value="Agama Islam">Agama Islam 7</option>
+                                <option value="Agama Islam">Agama Islam 8</option>
+                                <option value="Agama Islam">Agama Islam 9</option>
+                                <option value="Agama Islam">Agama Islam 10</option>
+                                <option value="Agama Islam">Agama Islam 11</option>
+                                <option value="Agama Islam">Agama Islam 12</option>
+                                <option value="Matematika">Matematika 7</option>
+                                <option value="Matematika">Matematika 8</option>
+                                <option value="Matematika">Matematika 9</option>
+                                <option value="Matematika">Matematika 10</option>
+                                <option value="Matematika">Matematika 11</option>
+                                <option value="Matematika">Matematika 12</option>
+                                <option value="Bahasa Indonesia">Bahasa Indonesia 7</option>
+                                <option value="Bahasa Indonesia">Bahasa Indonesia 8</option>
+                                <option value="Bahasa Indonesia">Bahasa Indonesia 9</option>
+                                <option value="Bahasa Indonesia">Bahasa Indonesia 10</option>
+                                <option value="Bahasa Indonesia">Bahasa Indonesia 11</option>
+                                <option value="Bahasa Indonesia">Bahasa Indonesia 12</option>
+                                <option value="Bahasa Inggris">Bahasa Inggris 7</option>
+                                <option value="Bahasa Inggris">Bahasa Inggris 8</option>
+                                <option value="Bahasa Inggris">Bahasa Inggris 9</option>
+                                <option value="Bahasa Inggris">Bahasa Inggris 10</option>
+                                <option value="Bahasa Inggris">Bahasa Inggris 11</option>
+                                <option value="Bahasa Inggris">Bahasa Inggris 12</option>
+                                <option value="Seni Budaya">Seni Budaya 7</option>
+                                <option value="Seni Budaya">Seni Budaya 8</option>
+                                <option value="Seni Budaya">Seni Budaya 9</option>
+                                <option value="Seni Budaya">Seni Budaya 10</option>
+                                <option value="Seni Budaya">Seni Budaya 11</option>
+                                <option value="Seni Budaya">Seni Budaya 12</option>
+                                <option value="PRAKARYA">PRAKARYA 7</option>
+                                <option value="PRAKARYA">PRAKARYA 8</option>
+                                <option value="PRAKARYA">PRAKARYA 9</option>
+                                <option value="PRAKARYA">PRAKARYA 10</option>
+                                <option value="PRAKARYA">PRAKARYA 11</option>
+                                <option value="PRAKARYA">PRAKARYA 12</option>
+                                <option value="IPA">IPA 7</option>
+                                <option value="IPA">IPA 8</option>
+                                <option value="IPA">IPA 9</option>
+                                <option value="IPS">IPS 7</option>
+                                <option value="IPS">IPS 8</option>
+                                <option value="IPS">IPS 9</option>
+                                <option value="Biologi">Biologi 10</option>
+                                <option value="Biologi">Biologi 11</option>
+                                <option value="Biologi">Biologi 12</option>
+                                <option value="Fisika">Fisika 10</option>
+                                <option value="Fisika">Fisika 11</option>
+                                <option value="Fisika">Fisika 12</option>
+                                <option value="Kimia">Kimia 10</option>
+                                <option value="Kimia">Kimia 11</option>
+                                <option value="Kimia">Kimia 12</option>
+                                <option value="Sejarah">Sejarah 10</option>
+                                <option value="Sejarah">Sejarah 11</option>
+                                <option value="Sejarah">Sejarah 12</option>
+                                <option value="Sejarah INDONESIA">Sejarah INDONESIA 10</option>
+                                <option value="Sejarah INDONESIA">Sejarah INDONESIA 11</option>
+                                <option value="Sejarah INDONESIA">Sejarah INDONESIA 12</option>
+                                <option value="Kepala Sekolah SMP">Kepala Sekolah SMP</option>
+                                <option value="Kepala Sekolah SMA">Kepala Sekolah SMA</option>
+                                <option value="Kepala Perpustakaan">Kepala PERPUSTAKAAN</option>
+                                <option value="Kepala Labor">Kepala LABOR</option>
+                                <option value="Staf TU">Staf TU</option>
                             </select>
                         </div>
 
@@ -332,7 +387,7 @@
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                            <select id="teacherStatus"
+                            <select id="status"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required>
                                 <option value="">Pilih Status</option>
@@ -378,7 +433,6 @@
             </div>
         </div>
     </div>
-
 
     <!-- Delete Confirmation Modal -->
     <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
