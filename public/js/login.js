@@ -25,11 +25,6 @@ async function login(username, password) {
         alert("Terjadi kesalahan saat menghubungi server.");
     }
 }
-
-
-
-
-
 // // default
 // const defaultCredentials = {
 //     adminTU: {
