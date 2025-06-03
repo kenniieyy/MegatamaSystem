@@ -1,0 +1,61 @@
+<?php
+include '../config/config.php'; // Pastikan path ke file config.php benar
+
+header('Content-Type: application/json'); // Memberi tahu browser bahwa respons adalah JSON
+
+$response = []; // Array untuk menyimpan semua data riwayat presensi
+
+// Query untuk mengambil semua entri dari tabel absen
+$query_absen = "SELECT id_absen, kelas, tanggal, jam_mulai, jam_selesai, dibuat_pada FROM absen ORDER BY tanggal DESC, dibuat_pada DESC";
+$result_absen = mysqli_query($conn, $query_absen);
+
+if ($result_absen) {
+    while ($row_absen = mysqli_fetch_assoc($result_absen)) {
+        $id_presensi = $row_absen['id_absen'];
+
+        // Untuk setiap presensi, ambil detail siswa yang absen
+        $query_siswa_absen = "SELECT id_siswa, status FROM absen_siswa WHERE id_presensi = '$id_presensi'";
+        $result_siswa_absen = mysqli_query($conn, $query_siswa_absen);
+
+        $students_status = [];
+        if ($result_siswa_absen) {
+            while ($row_siswa = mysqli_fetch_assoc($result_siswa_absen)) {
+                // Untuk menampilkan nama siswa, kita perlu query tabel 'siswa'
+                // Diasumsikan Anda memiliki tabel 'siswa' dengan kolom 'id' dan 'name' serta 'gender'
+                $id_siswa = $row_siswa['id_siswa'];
+                $query_get_student_info = "SELECT nama_siswa, jenis_kelamin FROM siswa WHERE id_siswa = '$id_siswa'";
+                $result_student_info = mysqli_query($conn, $query_get_student_info);
+                $student_info = mysqli_fetch_assoc($result_student_info);
+
+                $students_status[] = [
+                    'id_siswa' => $id_siswa,
+                    'nama_siswa' => $student_info ? $student_info['nama_siswa'] : 'Nama tidak ditemukan', // Fallback jika siswa tidak ditemukan
+                    'jenis_kelamin' => $student_info ? $student_info['jenis_kelamin'] : '',
+                    'status' => $row_siswa['status']
+                ];
+            }
+        } else {
+            error_log("Error fetching absen_siswa: " . mysqli_error($conn));
+        }
+
+        $response[] = [
+            'id' => $row_absen['id_absen'],
+            'class' => $row_absen['kelas'],
+            'date' => $row_absen['tanggal'],
+            'startTime' => $row_absen['jam_mulai'],
+            'endTime' => $row_absen['jam_selesai'],
+            'createdAt' => $row_absen['dibuat_pada'], // Tambahkan ini agar bisa dicek untuk edit
+            'students' => $students_status
+        ];
+    }
+} else {
+    error_log("Error fetching absen: " . mysqli_error($conn));
+    // Jika ada error pada query absen, kembalikan array kosong atau pesan error yang sesuai
+    echo json_encode(["error" => "Gagal mengambil data absen: " . mysqli_error($conn)]);
+    exit(); // Hentikan eksekusi script
+}
+
+echo json_encode($response);
+
+mysqli_close($conn);
+?>

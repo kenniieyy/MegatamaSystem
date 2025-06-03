@@ -46,26 +46,19 @@ function initializeCharts() {
     const datangData = {
         labels: ['Tepat Waktu', 'Terlambat', 'Absen Tidak Dilakukan'],
         datasets: [{
-            data: [60, 15, 25],
-            backgroundColor: [
-                '#10B981', // Hijau untuk Tepat Waktu
-                '#EF4444', // Merah untuk Terlambat
-                '#F59E0B'  // Kuning untuk Absen Tidak Dilakukan
-            ],
+            data: datangDataFromPHP, // ← ini dari PHP
+            backgroundColor: ['#10B981', '#EF4444', '#F59E0B'],
             borderWidth: 0
         }]
     };
+
 
     // Data untuk Absen Pulang
     const pulangData = {
         labels: ['Tepat Waktu', 'Terlambat', 'Absen Tidak Dilakukan'],
         datasets: [{
-            data: [55, 20, 25],
-            backgroundColor: [
-                '#10B981', // Hijau untuk Tepat Waktu
-                '#EF4444', // Merah untuk Pulang Cepat
-                '#F59E0B'  // Kuning untuk Absen Tidak Dilakukan
-            ],
+            data: pulangDataFromPHP, // ← ini dari PHP
+            backgroundColor: ['#10B981', '#EF4444', '#F59E0B'],
             borderWidth: 0
         }]
     };
@@ -78,8 +71,6 @@ function initializeCharts() {
             legend: {
                 position: 'bottom',
                 labels: {
-                    usePointStyle: true,
-                    pointStyle: 'circle',
                     font: {
                         family: 'Poppins',
                         size: 12
@@ -96,7 +87,6 @@ function initializeCharts() {
             }
         }
     };
-
 
     // Buat grafik Absen Datang
     const datangChart = new Chart(

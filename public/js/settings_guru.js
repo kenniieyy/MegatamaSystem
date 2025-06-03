@@ -167,7 +167,6 @@ function initializeCombobox() {
     });
 }
 
-// Proses pengiriman formulir
 function initializeForm() {
     const profileForm = document.getElementById('profile-form');
 
@@ -184,18 +183,40 @@ function initializeForm() {
             console.log(`${key}: ${value}`);
         }
 
-        updateProfileDisplay(formData.get('fullname'), selectedSubject, selectedStatus);
-        showNotification('Profil berhasil diperbarui!');
+        // Kirim data ke server (update_guru.php)
+        fetch('proses/update_guru.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(result => {
+            console.log('Server response:', result);
+            if (result.includes('Berhasil')) {
+                updateProfileDisplay(formData.get('fullname'), selectedSubject, selectedStatus);
+                showNotification('Profil berhasil diperbarui!');
+            } else {
+                showNotification('Gagal memperbarui profil: ' + result);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Terjadi kesalahan saat mengirim data.');
+        });
     });
 }
 
+
 // Perbarui tampilan profil setelah disimpan
 function updateProfileDisplay(fullname, subject, status) {
+    // Update nama dan mata pelajaran
     document.querySelector('.text-center h4').textContent = fullname;
     document.querySelector('.text-center p').textContent = `Guru ${subject}`;
     document.querySelector('.avatar-ring + span').textContent = fullname;
 
+    // Update status
+    const statusBadge = document.querySelector('.badge-status'); // Pastikan class ini sesuai
     let statusClass = '';
+
     if (status === 'Aktif') {
         statusClass = 'status-active';
     } else if (status === 'Non Aktif') {
@@ -204,7 +225,15 @@ function updateProfileDisplay(fullname, subject, status) {
         statusClass = 'status-leave';
     }
 
+    if (statusBadge) {
+        statusBadge.textContent = status;
+        // Reset semua status class yang mungkin sebelumnya ada
+        statusBadge.classList.remove('status-active', 'status-inactive', 'status-leave');
+        // Tambahkan class sesuai status baru
+        statusBadge.classList.add(statusClass);
+    }
 }
+
 
 // Tampilkan notifikasi sukses
 function showNotification(message) {

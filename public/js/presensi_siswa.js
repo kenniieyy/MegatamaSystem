@@ -1,78 +1,83 @@
 // Data siswa untuk setiap kelas
-const classData = {
-    '7': [
-        { id: 1, name: 'Ahmad Fauzi', gender: 'L' },
-        { id: 2, name: 'Anisa Putri', gender: 'P' },
-        { id: 3, name: 'Budi Santoso', gender: 'L' },
-        { id: 4, name: 'Citra Dewi', gender: 'P' },
-        { id: 5, name: 'Deni Kurniawan', gender: 'L' },
-        { id: 6, name: 'Eka Fitriani', gender: 'P' },
-        { id: 7, name: 'Fajar Ramadhan', gender: 'L' },
-        { id: 8, name: 'Gita Nuraini', gender: 'P' },
-        { id: 9, name: 'Hadi Prasetyo', gender: 'L' },
-        { id: 10, name: 'Indah Permata', gender: 'P' }
-    ],
-    '8': [
-        { id: 1, name: 'Joko Widodo', gender: 'L' },
-        { id: 2, name: 'Kartika Sari', gender: 'P' },
-        { id: 3, name: 'Lukman Hakim', gender: 'L' },
-        { id: 4, name: 'Mira Lestari', gender: 'P' },
-        { id: 5, name: 'Nanda Pratama', gender: 'L' },
-        { id: 6, name: 'Olivia Putri', gender: 'P' },
-        { id: 7, name: 'Putra Wijaya', gender: 'L' },
-        { id: 8, name: 'Qori Amalia', gender: 'P' },
-        { id: 9, name: 'Rendi Saputra', gender: 'L' },
-        { id: 10, name: 'Sinta Dewi', gender: 'P' }
-    ],
-    '9': [
-        { id: 1, name: 'Tono Sucipto', gender: 'L' },
-        { id: 2, name: 'Umi Kalsum', gender: 'P' },
-        { id: 3, name: 'Vino Bastian', gender: 'L' },
-        { id: 4, name: 'Wati Susilawati', gender: 'P' },
-        { id: 5, name: 'Xaverius Andi', gender: 'L' },
-        { id: 6, name: 'Yanti Komalasari', gender: 'P' },
-        { id: 7, name: 'Zaki Firmansyah', gender: 'L' },
-        { id: 8, name: 'Amelia Zahra', gender: 'P' },
-        { id: 9, name: 'Bayu Segara', gender: 'L' },
-        { id: 10, name: 'Cinta Laura', gender: 'P' }
-    ],
-    '10': [
-        { id: 1, name: 'Dimas Anggara', gender: 'L' },
-        { id: 2, name: 'Erni Wijayanti', gender: 'P' },
-        { id: 3, name: 'Faisal Rahman', gender: 'L' },
-        { id: 4, name: 'Gina Salsabila', gender: 'P' },
-        { id: 5, name: 'Hendra Gunawan', gender: 'L' },
-        { id: 6, name: 'Intan Permatasari', gender: 'P' },
-        { id: 7, name: 'Joni Iskandar', gender: 'L' },
-        { id: 8, name: 'Kirana Dewi', gender: 'P' },
-        { id: 9, name: 'Lutfi Halimawan', gender: 'L' },
-        { id: 10, name: 'Mawar Melati', gender: 'P' }
-    ],
-    '11': [
-        { id: 1, name: 'Naufal Hidayat', gender: 'L' },
-        { id: 2, name: 'Oktavia Ramadhani', gender: 'P' },
-        { id: 3, name: 'Pandu Wibowo', gender: 'L' },
-        { id: 4, name: 'Qonita Alya', gender: 'P' },
-        { id: 5, name: 'Rizki Ramadhan', gender: 'L' },
-        { id: 6, name: 'Sari Indah', gender: 'P' },
-        { id: 7, name: 'Tegar Perkasa', gender: 'L' },
-        { id: 8, name: 'Umi Fadilah', gender: 'P' },
-        { id: 9, name: 'Vino Bastian', gender: 'L' },
-        { id: 10, name: 'Wulan Guritno', gender: 'P' }
-    ],
-    '12': [
-        { id: 1, name: 'Xaverius Andi', gender: 'L' },
-        { id: 2, name: 'Yuliana Sari', gender: 'P' },
-        { id: 3, name: 'Zaki Ahmad', gender: 'L' },
-        { id: 4, name: 'Anita Permata', gender: 'P' },
-        { id: 5, name: 'Bima Sakti', gender: 'L' },
-        { id: 6, name: 'Citra Kirana', gender: 'P' },
-        { id: 7, name: 'Dodi Sudrajat', gender: 'L' },
-        { id: 8, name: 'Eka Putri', gender: 'P' },
-        { id: 9, name: 'Farhan Syahputra', gender: 'L' },
-        { id: 10, name: 'Gita Gutawa', gender: 'P' }
-    ]
-};
+let classData = {};
+fetch('proses/get_siswa.php')
+    .then(response => response.json())
+    .then(data => {
+        console.log('Data dari database:', data);
+
+        // Simpan ke variabel global
+        classData = data;
+
+
+        // Contoh akses data kelas 7
+        const siswaKelas7 = data['7'];
+        siswaKelas7.forEach(siswa => {
+            console.log(`${siswa.name} (${siswa.gender})`);
+        });
+
+        // Sekarang kamu bisa pakai data ini seperti classData sebelumnya
+    })
+    .catch(error => {
+        console.error('Gagal mengambil data siswa:', error);
+    });
+
+function loadStudentList(kelas) {
+    const siswaKelas = classData[kelas];
+    const studentList = document.getElementById('student-list');
+    studentList.innerHTML = '';
+
+    if (!siswaKelas || siswaKelas.length === 0) {
+        studentList.innerHTML = '<tr><td colspan="4" class="text-center text-gray-500">Tidak ada data siswa</td></tr>';
+        console.error('Kelas belum dipilih atau data kelas tidak ditemukan:', kelas);
+        return;
+    }
+
+    siswaKelas.forEach((siswa, index) => {
+        const row = document.createElement('tr');
+        row.setAttribute('data-id', siswa.id);
+        row.className = 'table-row'; // Tambahkan class ini jika diperlukan untuk styling
+        row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${siswa.name}</td>
+            <td>${siswa.gender}</td>
+            <td>
+                <div class="flex flex-wrap">
+                    <div class="radio-container hadir mr-4">
+                        <input type="radio" id="hadir-${siswa.id}" name="attendance-${siswa.id}" value="hadir">
+                        <label for="hadir-${siswa.id}">
+                            <div class="radio-circle"></div>
+                            <span>Hadir</span>
+                        </label>
+                    </div>
+                    <div class="radio-container sakit mr-4">
+                        <input type="radio" id="sakit-${siswa.id}" name="attendance-${siswa.id}" value="sakit">
+                        <label for="sakit-${siswa.id}">
+                            <div class="radio-circle"></div>
+                            <span>Sakit</span>
+                        </label>
+                    </div>
+                    <div class="radio-container izin mr-4">
+                        <input type="radio" id="izin-${siswa.id}" name="attendance-${siswa.id}" value="izin">
+                        <label for="izin-${siswa.id}">
+                            <div class="radio-circle"></div>
+                            <span>Izin</span>
+                        </label>
+                    </div>
+                    <div class="radio-container alpa">
+                        <input type="radio" id="alpa-${siswa.id}" name="attendance-${siswa.id}" value="alpa">
+                        <label for="alpa-${siswa.id}">
+                            <div class="radio-circle"></div>
+                            <span>Alpa</span>
+                        </label>
+                    </div>
+                </div>
+            </td>
+        `;
+        studentList.appendChild(row);
+    });
+}
+
+// Hapus fungsi renderStudentList yang sebelumnya ada
 
 // Variabel untuk menyimpan kelas yang dipilih
 let selectedClass = '7'; // Default to class 7
@@ -127,7 +132,7 @@ function initializeTabs() {
     });
 
     // Tab Riwayat Presensi
-    tabHistory.addEventListener('click', function () {
+    tabHistory.addEventListener('click', async function () {
         tabHistory.classList.add('active');
         tabClasses.classList.remove('active');
         contentHistory.classList.add('active');
@@ -137,39 +142,46 @@ function initializeTabs() {
         contentSuccess.classList.remove('active');
 
         // Load riwayat presensi
-        loadAttendanceHistory();
+        await loadAttendanceHistory();
     });
+
 }
 
-// Fungsi untuk mengatur pemilihan kelas
 function initializeClassSelection() {
     const classCards = document.querySelectorAll('.class-card');
 
-    // Set class 7 as active and go to form directly on page load
-    // setTimeout(() => {
-    //     document.getElementById('content-classes').classList.remove('active');
-    //     document.getElementById('content-form-presensi').classList.add('active');
-    //     document.getElementById('class-name-display').textContent = `Kelas ${selectedClass}`;
-    //     setCurrentDate();
-    // }, 500);
+    classCards.forEach(card => {
+        const kelas = card.dataset.class;
 
-    // Only allow Class 7 to be clickable
-    const class7Card = document.querySelector('.class-card[data-class="7"]');
-    class7Card.addEventListener('click', function () {
-        // Set the selected class
-        selectedClass = '7';
+        card.addEventListener('click', function () {
+            // Hapus class 'selected' dari semua class-card yang aktif sebelumnya
+            document.querySelectorAll('.class-card').forEach(c => {
+                c.classList.remove('selected');
+            });
+            // Tambahkan class 'selected' ke class-card yang diklik
+            this.classList.add('selected');
 
-        // Show the attendance form
-        document.getElementById('content-classes').classList.remove('active');
-        document.getElementById('content-form-presensi').classList.add('active');
+            selectedClass = kelas;
 
-        // Display the selected class name
-        document.getElementById('class-name-display').textContent = `Kelas ${selectedClass}`;
+            // Tampilkan form presensi
+            document.getElementById('content-classes').classList.remove('active');
+            document.getElementById('content-form-presensi').classList.add('active');
 
-        // Set current date
-        setCurrentDate();
+            // Update tampilan nama kelas
+            document.getElementById('class-name-display').textContent = `Kelas ${selectedClass}`;
+            document.getElementById('class-name-display-2').textContent = `Kelas ${selectedClass}`;
+
+            // Tampilkan tanggal
+            setCurrentDate();
+
+            // Load daftar siswa sesuai kelas (ini akan membuat radio button sekarang)
+            loadStudentList(selectedClass);
+        });
     });
 }
+
+
+
 
 // Fungsi untuk mengatur tanggal saat ini
 function setCurrentDate() {
@@ -219,32 +231,89 @@ function initializeNavigation() {
 
         document.getElementById('attendance-info-display').textContent = `${date} (${startTime} - ${endTime})`;
 
-        // Tampilkan daftar siswa
-        renderStudentList();
+        // renderStudentList() tidak perlu dipanggil lagi di sini,
+        // karena loadStudentList sudah dipanggil saat kelas dipilih.
     });
-
     // Navigasi dari daftar siswa ke form presensi
     backToForm.addEventListener('click', function () {
         document.getElementById('content-attendance').classList.remove('active');
         document.getElementById('content-form-presensi').classList.add('active');
     });
 
-    // Simpan presensi
-    saveAttendance.addEventListener('click', function () {
-        // Validasi presensi
+    // Pastikan hanya ada satu event listener untuk saveAttendance
+    document.getElementById("save-attendance").addEventListener("click", function () {
+        // Validasi presensi sebelum menyimpan
         const allStudentsChecked = validateAttendance();
         if (!allStudentsChecked) {
             alert('Silakan isi keterangan untuk semua siswa.');
             return;
         }
 
-        // Simpan data presensi
-        saveAttendanceData();
-
-        // Tampilkan pesan sukses
-        document.getElementById('content-attendance').classList.remove('active');
-        document.getElementById('content-success').classList.add('active');
+        // Panggil fungsi untuk menyimpan data (yang juga akan mengirim ke PHP)
+        saveAttendanceDataAndToServer(); // Nama fungsi baru
     });
+
+    // Fungsi untuk menyimpan data presensi dan mengirim ke server
+    async function saveAttendanceDataAndToServer() {
+        const attendanceData = {
+            id: Date.now(), // Gunakan timestamp sebagai ID unik
+            class: selectedClass,
+            date: document.getElementById('date').value,
+            startTime: document.getElementById('start-time').value,
+            endTime: document.getElementById('end-time').value,
+            createdAt: new Date(),
+            students: []
+        };
+
+        // Ambil data kehadiran siswa dari radio button
+        const students = classData[selectedClass];
+        students.forEach(student => {
+            const radioName = `attendance-${student.id}`;
+            const checkedRadio = document.querySelector(`input[name="${radioName}"]:checked`);
+
+            if (checkedRadio) {
+                attendanceData.students.push({
+                    id: student.id,
+                    name: student.name,
+                    gender: student.gender,
+                    status: checkedRadio.value
+                });
+            }
+        });
+
+        // Kirim data ke server (proses/presensi_siswa.php)
+        try {
+            const response = await fetch("proses/presensi_siswa.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    kelas: attendanceData.class,
+                    tanggal: attendanceData.date,
+                    jam_mulai: attendanceData.startTime,
+                    jam_selesai: attendanceData.endTime,
+                    kehadiran: attendanceData.students.reduce((acc, student) => {
+                        acc[student.id] = student.status;
+                        return acc;
+                    }, {}) // Ubah array students menjadi objek sesuai format PHP
+                })
+            });
+            // Jika berhasil disimpan ke server, baru simpan ke riwayat lokal dan tampilkan pesan sukses
+            attendanceHistory.unshift(attendanceData);
+            localStorage.setItem('attendanceHistory', JSON.stringify(attendanceHistory));
+
+            console.log('Data presensi yang disimpan:', attendanceData);
+
+            // Tampilkan pesan sukses dan alihkan tampilan
+            document.getElementById('content-attendance').classList.remove('active');
+            document.getElementById('content-success').classList.add('active');
+
+        } catch (error) {
+            console.error("Error saat menyimpan presensi:", error);
+            alert("Gagal menyimpan presensi. Silakan coba lagi.");
+        }
+    }
 
     // Presensi baru
     newAttendance.addEventListener('click', function () {
@@ -270,60 +339,6 @@ function initializeNavigation() {
     });
 }
 
-// Fungsi untuk menampilkan daftar siswa
-function renderStudentList() {
-    const studentList = document.getElementById('student-list');
-    studentList.innerHTML = '';
-
-    // Ambil data siswa berdasarkan kelas yang dipilih
-    const students = classData[selectedClass];
-
-    // Tampilkan daftar siswa
-    students.forEach((student, index) => {
-        const row = document.createElement('tr');
-        row.className = 'table-row';
-
-        row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${student.name}</td>
-                    <td>${student.gender}</td>
-                    <td>
-                        <div class="flex flex-wrap">
-                            <div class="radio-container hadir mr-4">
-                                <input type="radio" id="hadir-${student.id}" name="attendance-${student.id}" value="hadir">
-                                <label for="hadir-${student.id}">
-                                    <div class="radio-circle"></div>
-                                    <span>Hadir</span>
-                                </label>
-                            </div>
-                            <div class="radio-container sakit mr-4">
-                                <input type="radio" id="sakit-${student.id}" name="attendance-${student.id}" value="sakit">
-                                <label for="sakit-${student.id}">
-                                    <div class="radio-circle"></div>
-                                    <span>Sakit</span>
-                                </label>
-                            </div>
-                            <div class="radio-container izin mr-4">
-                                <input type="radio" id="izin-${student.id}" name="attendance-${student.id}" value="izin">
-                                <label for="izin-${student.id}">
-                                    <div class="radio-circle"></div>
-                                    <span>Izin</span>
-                                </label>
-                            </div>
-                            <div class="radio-container alpa">
-                                <input type="radio" id="alpa-${student.id}" name="attendance-${student.id}" value="alpa">
-                                <label for="alpa-${student.id}">
-                                    <div class="radio-circle"></div>
-                                    <span>Alpa</span>
-                                </label>
-                            </div>
-                        </div>
-                    </td>
-                `;
-
-        studentList.appendChild(row);
-    });
-}
 
 // Fungsi untuk validasi presensi
 function validateAttendance() {
@@ -379,42 +394,66 @@ function saveAttendanceData() {
     console.log('Data presensi yang disimpan:', attendanceData);
 }
 
-// Fungsi untuk memuat data riwayat presensi
-function loadAttendanceHistory() {
-    // Dalam aplikasi nyata, ini akan mengambil data dari server
-    // Untuk demo, kita akan mengambil dari localStorage atau menggunakan data dummy
-    const savedHistory = localStorage.getItem('attendanceHistory');
+// Fungsi untuk memuat data riwayat presensi langsung dari database
+async function loadAttendanceHistory() {
+    try {
+        // Lakukan fetch ke endpoint PHP yang mengambil data riwayat presensi dari database
+        // Anda perlu memastikan 'proses/get_attendance_history.php' mengembalikan array data presensi lengkap.
+        // Jika Anda memodifikasi 'proses/get_absen_siswa.php' untuk tujuan ini, ganti URL di bawah.
+        const response = await fetch('proses/get_riwayat_siswa.php'); // <-- Ganti dengan endpoint PHP Anda untuk riwayat presensi
 
-    if (savedHistory) {
-        attendanceHistory = JSON.parse(savedHistory);
-    } else if (attendanceHistory.length === 0) {
-        // Jika tidak ada data di localStorage dan array kosong, gunakan data dummy
-        attendanceHistory = generateDummyHistory();
+        if (!response.ok) {
+            throw new Error(`Gagal mengambil data riwayat presensi. Status: ${response.status}`);
+        }
+
+        const historyData = await response.json(); // Asumsikan endpoint mengembalikan JSON
+
+        // Tetapkan data yang diambil dari database ke variabel global attendanceHistory
+        attendanceHistory = historyData;
+
+        // Panggil fungsi untuk memfilter dan menampilkan riwayat presensi
+        filterAttendanceHistory();
+
+    } catch (error) {
+        console.error('Error saat memuat riwayat presensi dari database:', error);
+        // Opsional: Tampilkan pesan error di UI atau sebagai console.error
+        // alert('Gagal memuat riwayat presensi dari database. Memuat dari penyimpanan lokal jika tersedia.');
+
+        // Fallback ke localStorage jika terjadi error saat fetch dari database
+        const savedHistory = localStorage.getItem('attendanceHistory');
+        if (savedHistory) {
+            attendanceHistory = JSON.parse(savedHistory);
+            console.log('Memuat riwayat dari localStorage sebagai fallback.');
+            filterAttendanceHistory();
+        } else {
+            attendanceHistory = []; // Pastikan array kosong jika tidak ada data dari DB atau localStorage
+            console.log('Tidak ada riwayat presensi yang ditemukan di database atau localStorage.');
+            filterAttendanceHistory(); // Render tampilan kosong
+        }
     }
-
-    // Filter data berdasarkan filter yang dipilih
-    filterAttendanceHistory();
 }
 
-// Fungsi untuk menghasilkan data dummy riwayat presensi
-function generateDummyHistory() {
-    const dummyHistory = [];
 
-    // Tanggal untuk 10 hari terakhir
+
+async function generateDummyHistoryFromDatabase() {
+    const response = await fetch('proses/get_absen_siswa.php');
+    const students = await response.json();
+
+    const dummyHistory = [];
     const dates = [];
+
     for (let i = 0; i < 10; i++) {
         const date = new Date();
         date.setDate(date.getDate() - i);
         dates.push(date);
     }
 
-    // Buat 10 data dummy
     for (let i = 0; i < 10; i++) {
         const date = dates[i];
 
         const attendanceData = {
-            id: Date.now() - i * 86400000, // Timestamp unik untuk setiap data
-            class: '7', // Always class 7
+            id: Date.now() - i * 86400000,
+            class: '7',
             date: date.toISOString().split('T')[0],
             startTime: '07:30',
             endTime: '09:00',
@@ -422,22 +461,18 @@ function generateDummyHistory() {
             students: []
         };
 
-        // Tambahkan data siswa
-        const students = classData['7'];
         students.forEach(student => {
-            // Acak status kehadiran
-            const statuses = ['hadir', 'sakit', 'izin', 'alpa'];
             const randomIndex = Math.floor(Math.random() * 10);
             let status;
 
             if (randomIndex < 7) {
-                status = 'hadir'; // 70% hadir
+                status = 'hadir';
             } else if (randomIndex < 8) {
-                status = 'sakit'; // 10% sakit
+                status = 'sakit';
             } else if (randomIndex < 9) {
-                status = 'izin'; // 10% izin
+                status = 'izin';
             } else {
-                status = 'alpa'; // 10% alpa
+                status = 'alpa';
             }
 
             attendanceData.students.push({
@@ -453,6 +488,12 @@ function generateDummyHistory() {
 
     return dummyHistory;
 }
+
+// Contoh pemakaian:
+generateDummyHistoryFromDatabase().then(data => {
+    console.log(data); // Lihat hasil dummy yang dibuat dari data database
+});
+
 
 // Fungsi untuk mengatur filter riwayat presensi
 function initializeHistoryFilter() {
@@ -664,61 +705,42 @@ function openViewModal(id) {
     const closeBtn = document.getElementById('close-view-modal');
     const closeViewBtn = document.getElementById('close-view-btn');
 
-    // Cari data presensi berdasarkan ID
     const attendanceData = attendanceHistory.find(item => item.id.toString() === id);
-
     if (!attendanceData) {
         alert('Data presensi tidak ditemukan.');
         return;
     }
 
-    // Tampilkan informasi presensi
     document.getElementById('view-class-name').textContent = `Kelas ${attendanceData.class}`;
 
-    // Format tanggal
     const itemDate = new Date(attendanceData.date);
     const formattedDate = itemDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-
     document.getElementById('view-info-display').textContent = `${formattedDate} (${attendanceData.startTime} - ${attendanceData.endTime})`;
 
-    // Tampilkan daftar siswa
     const studentList = document.getElementById('view-student-list');
     studentList.innerHTML = '';
 
     attendanceData.students.forEach((student, index) => {
         const row = document.createElement('tr');
-
         row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${student.name}</td>
-                    <td>${student.gender}</td>
-                    <td>
-                        <span class="status-badge ${student.status}">${capitalizeFirstLetter(student.status)}</span>
-                    </td>
-                `;
-
+            <td>${index + 1}</td>
+            <td>${student.nama_siswa || '-'}</td>
+            <td>${student.jenis_kelamin || '-'}</td>
+            <td><span class="status-badge ${student.status}">${capitalizeFirstLetter(student.status)}</span></td>
+        `;
         studentList.appendChild(row);
     });
 
-    // Tampilkan modal
     modal.style.display = 'block';
 
-    // Tutup modal saat mengklik tombol close
-    closeBtn.onclick = function () {
-        modal.style.display = 'none';
-    };
+    closeBtn.onclick = () => modal.style.display = 'none';
+    closeViewBtn.onclick = () => modal.style.display = 'none';
 
-    closeViewBtn.onclick = function () {
-        modal.style.display = 'none';
-    };
-
-    // Tutup modal saat mengklik di luar modal
-    window.onclick = function (event) {
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        }
+    window.onclick = (event) => {
+        if (event.target === modal) modal.style.display = 'none';
     };
 }
+
 
 // Fungsi untuk membuka modal edit presensi
 function openEditModal(id) {
@@ -756,34 +778,34 @@ function openEditModal(id) {
 
         row.innerHTML = `
                     <td>${index + 1}</td>
-                    <td>${student.name}</td>
-                    <td>${student.gender}</td>
+                    <td>${student.nama_siswa}</td>
+                    <td>${student.jenis_kelamin}</td>
                     <td>
                         <div class="flex flex-wrap">
                             <div class="radio-container hadir mr-4">
-                                <input type="radio" id="edit-hadir-${student.id}" name="edit-attendance-${student.id}" value="hadir" ${student.status === 'hadir' ? 'checked' : ''}>
-                                <label for="edit-hadir-${student.id}">
+                                <input type="radio" id="edit-hadir-${student.id_siswa}" name="edit-attendance-${student.id_siswa}" value="hadir" ${student.status === 'hadir' ? 'checked' : ''}>
+                                <label for="edit-hadir-${student.id_siswa}">
                                     <div class="radio-circle"></div>
                                     <span>Hadir</span>
                                 </label>
                             </div>
                             <div class="radio-container sakit mr-4">
-                                <input type="radio" id="edit-sakit-${student.id}" name="edit-attendance-${student.id}" value="sakit" ${student.status === 'sakit' ? 'checked' : ''}>
-                                <label for="edit-sakit-${student.id}">
+                                <input type="radio" id="edit-sakit-${student.id_siswa}" name="edit-attendance-${student.id_siswa}" value="sakit" ${student.status === 'sakit' ? 'checked' : ''}>
+                                <label for="edit-sakit-${student.id_siswa}">
                                     <div class="radio-circle"></div>
                                     <span>Sakit</span>
                                 </label>
                             </div>
                             <div class="radio-container izin mr-4">
-                                <input type="radio" id="edit-izin-${student.id}" name="edit-attendance-${student.id}" value="izin" ${student.status === 'izin' ? 'checked' : ''}>
-                                <label for="edit-izin-${student.id}">
+                                <input type="radio" id="edit-izin-${student.id_siswa}" name="edit-attendance-${student.id_siswa}" value="izin" ${student.status === 'izin' ? 'checked' : ''}>
+                                <label for="edit-izin-${student.id_siswa}">
                                     <div class="radio-circle"></div>
                                     <span>Izin</span>
                                 </label>
                             </div>
                             <div class="radio-container alpa">
-                                <input type="radio" id="edit-alpa-${student.id}" name="edit-attendance-${student.id}" value="alpa" ${student.status === 'alpa' ? 'checked' : ''}>
-                                <label for="edit-alpa-${student.id}">
+                                <input type="radio" id="edit-alpa-${student.id_siswa}" name="edit-attendance-${student.id_siswa}" value="alpa" ${student.status === 'alpa' ? 'checked' : ''}>
+                                <label for="edit-alpa-${student.id_siswa}">
                                     <div class="radio-circle"></div>
                                     <span>Alpa</span>
                                 </label>
@@ -821,7 +843,6 @@ function openEditModal(id) {
     };
 }
 
-// Fungsi untuk menyimpan perubahan presensi
 function saveEditedAttendance(id) {
     // Cari data presensi berdasarkan ID
     const index = attendanceHistory.findIndex(item => item.id.toString() === id);
@@ -831,31 +852,54 @@ function saveEditedAttendance(id) {
         return;
     }
 
-    // Ambil data presensi
     const attendanceData = attendanceHistory[index];
 
-    // Update status kehadiran siswa
-    attendanceData.students.forEach(student => {
-        const radioName = `edit-attendance-${student.id}`;
-        const checkedRadio = document.querySelector(`input[name="${radioName}"]:checked`);
-
-        if (checkedRadio) {
-            student.status = checkedRadio.value;
-        }
+    // Ambil status terbaru dari form edit
+    const updatedStudents = attendanceData.students.map(student => {
+        const studentId = student.id_siswa;
+        const selectedStatus = document.querySelector(`input[name="edit-attendance-${studentId}"]:checked`);
+        return {
+            id_siswa: studentId,
+            status: selectedStatus ? selectedStatus.value : student.status
+        };
     });
 
-    // Update data di array
-    attendanceHistory[index] = attendanceData;
+    // Kirim ke server pakai fetch POST
+    fetch('proses/update_absen_siswa.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id_presensi: attendanceData.id,
+            students: updatedStudents
+        })
+    })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                alert('Data presensi berhasil diperbarui.');
 
-    // Simpan ke localStorage
-    localStorage.setItem('attendanceHistory', JSON.stringify(attendanceHistory));
+                // Update lokal
+                attendanceData.students.forEach(student => {
+                    const updated = updatedStudents.find(s => s.id_siswa === student.id_siswa);
+                    if (updated) student.status = updated.status;
+                });
 
-    // Refresh tampilan
-    filterAttendanceHistory();
+                attendanceHistory[index] = attendanceData;
+                localStorage.setItem('attendanceHistory', JSON.stringify(attendanceHistory));
+                filterAttendanceHistory(); // Refresh tampilan
 
-    // Tampilkan pesan sukses
-    alert('Data presensi berhasil diperbarui.');
+            } else {
+                alert('Gagal memperbarui presensi di server.');
+            }
+        })
+        .catch(error => {
+            console.error('Gagal mengirim data ke server:', error);
+            alert('Terjadi kesalahan saat mengirim data.');
+        });
 }
+
 
 // Fungsi untuk mengkapitalisasi huruf pertama
 function capitalizeFirstLetter(string) {

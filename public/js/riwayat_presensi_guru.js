@@ -12,6 +12,7 @@ function initializeSidebar() {
         overlay.classList.toggle("show")
     })
 
+    // Tutup sidebar saat mengklik overlay
     overlay.addEventListener("click", () => {
         sidebar.classList.remove("mobile-open")
         overlay.classList.remove("show")
@@ -40,38 +41,11 @@ function initializeAttendanceTypeTabs() {
     })
 }
 
-// Data bulan
-const months = [
-    { value: "januari", label: "Januari" },
-    { value: "februari", label: "Februari" },
-    { value: "maret", label: "Maret" },
-    { value: "april", label: "April" },
-    { value: "mei", label: "Mei" },
-    { value: "juni", label: "Juni" },
-    { value: "juli", label: "Juli" },
-    { value: "agustus", label: "Agustus" },
-    { value: "september", label: "September" },
-    { value: "oktober", label: "Oktober" },
-    { value: "november", label: "November" },
-    { value: "desember", label: "Desember" }
-]
-
 // Mengatur filter bulan
 function initializeMonthFilter() {
     const monthFilter = document.getElementById("month-filter")
-    monthFilter.innerHTML = "" // Clear existing options
-    
-    months.forEach(month => {
-        const option = document.createElement("option")
-        option.value = month.value
-        option.textContent = month.label
-        if (month.value === currentMonth) {
-            option.selected = true
-        }
-        monthFilter.appendChild(option)
-    })
 
-    monthFilter.addEventListener("change", function() {
+    monthFilter.addEventListener("change", function () {
         currentMonth = this.value
         currentPage = 1
         renderAttendanceData()
@@ -88,63 +62,42 @@ function isTimeInRange(timeStr, startHour, endHour) {
     return hour >= startHour && hour < endHour
 }
 
-// Generator data untuk bulan tertentu
-function generateMonthData(month) {
-    const currentDate = new Date()
-    const currentYear = currentDate.getFullYear()
-    const monthIndex = months.findIndex(m => m.value === month)
-    
-    // Hanya generate data sampai bulan mei
-    if (!["januari", "februari", "maret", "april", "mei"].includes(month)) {
-        return []
-    }
-
-    const daysInMonth = new Date(currentYear, monthIndex + 1, 0).getDate()
-    const data = []
-
-    for (let day = 1; day <= daysInMonth; day++) {
-        const date = `${day.toString().padStart(2, '0')}-${month.charAt(0).toUpperCase() + month.slice(1)}-${currentYear}`
-        
-        const generateTime = () => {
-            const rand = Math.random()
-            if (rand < 0.15) return "-"
-            
-            const hour = Math.floor(Math.random() * 3) + (currentAttendanceType === "datang" ? 7 : 15)
-            const minute = Math.floor(Math.random() * 60)
-            const second = Math.floor(Math.random() * 60)
-            return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:${second.toString().padStart(2, '0')}`
-        }
-
-        const time = generateTime()
-        const isAbsent = time === "-"
-        
-        data.push({
-            id: day,
-            date,
-            time,
-            status: isAbsent ? "Tidak Hadir" : "Hadir",
-            note: isAbsent ? "Absen Tidak Dilakukan" : 
-                  (currentAttendanceType === "datang" ? 
-                    (parseInt(time.split(":")[0]) < 8 ? "Tepat Waktu" : "Terlambat") :
-                    (parseInt(time.split(":")[0]) < 16 ? "Tepat Waktu" : "Terlambat"))
-        })
-    }
-
-    return data
+// Data contoh untuk catatan kehadiran
+let attendanceData = {
+    datang: [],
+    pulang: []
 }
 
-// Data kehadiran dinamis
-function getAttendanceData() {
-    return {
-        datang: generateMonthData(currentMonth),
-        pulang: generateMonthData(currentMonth)
-    }
+function loadAttendanceFromServer() {
+    fetch('http://localhost/proyek/public/proses/get_riwayat_guru.php')
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'success') {
+                attendanceData.datang = result.data.map(item => ({
+                    id: Math.random(),
+                    date: item.date,
+                    time: item.datang,
+                    status: item.datang !== '-' ? 'Hadir' : 'Tidak Hadir',
+                    note: item.datang !== '-' ? (isTimeInRange(item.datang, 7, 8) ? 'Tepat Waktu' : 'Terlambat') : 'Absen Tidak Dilakukan'
+                }))
+                attendanceData.pulang = result.data.map(item => ({
+                    id: Math.random(),
+                    date: item.date,
+                    time: item.pulang,
+                    status: item.pulang !== '-' ? 'Hadir' : 'Tidak Hadir',
+                    note: item.pulang !== '-' ? (isTimeInRange(item.pulang, 15, 16) ? 'Tepat Waktu' : 'Terlambat') : 'Absen Tidak Dilakukan'
+                }))
+                renderAttendanceData()
+            } else {
+                alert("Gagal memuat data presensi.")
+            }
+        })
 }
 
 // Memperbarui data kehadiran berdasarkan aturan waktu
-function updateAttendanceData(data) {
+function updateAttendanceData() {
     // Memperbarui data absen datang
-    data.datang.forEach((item) => {
+    attendanceData.datang.forEach((item) => {
         if (item.time === "-") {
             item.status = "Tidak Hadir"
             item.note = "Absen Tidak Dilakukan"
@@ -155,6 +108,10 @@ function updateAttendanceData(data) {
             if (hour >= 7 && hour < 8) {
                 item.status = "Hadir"
                 item.note = "Tepat Waktu"
+            }
+             else if (hour >= 7 && hour < 8) {
+                item.status = "Hadir"
+                item.note = "Tepat Waktu"
             } else {
                 item.status = "Hadir"
                 item.note = "Terlambat"
@@ -163,7 +120,7 @@ function updateAttendanceData(data) {
     })
 
     // Memperbarui data absen pulang
-    data.pulang.forEach((item) => {
+    attendanceData.pulang.forEach((item) => {
         if (item.time === "-") {
             item.status = "Tidak Hadir"
             item.note = "Absen Tidak Dilakukan"
@@ -180,52 +137,39 @@ function updateAttendanceData(data) {
             }
         }
     })
-
-    return data
 }
 
 // Variabel untuk paginasi
 let currentPage = 1
 const itemsPerPage = 9
 let currentAttendanceType = "datang"
-let currentMonth = "april"
+let currentMonth = "all"
+let filteredByMonth = []
 
 // Menampilkan data kehadiran berdasarkan halaman dan filter saat ini
 function renderAttendanceData() {
     const tableBody = document.getElementById("attendance-data")
-    const data = updateAttendanceData(getAttendanceData())[currentAttendanceType]
+    const data = attendanceData[currentAttendanceType]
+    
+    // Filter berdasarkan bulan
+    filteredByMonth = data.filter(item => {
+        const itemMonth = new Date(item.date).toLocaleString('en-US', { month: 'long' }).toLowerCase()
+        return currentMonth === "all" || itemMonth === currentMonth
+    })
+
+
 
     // Menghapus data yang ada
     tableBody.innerHTML = ""
 
-    // Jika tidak ada data, tampilkan pesan
-    if (data.length === 0) {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td colspan="6" class="text-center py-4 text-gray-500">Tidak ada data yang ditemukan</td>
-        `;
-        tableBody.appendChild(row)
-        
-        // Ganti teks pagination dengan "Tidak ada data"
-        document.getElementById("pagination-info").textContent = "Tidak ada data"
-        document.getElementById("pagination-numbers").innerHTML = ""
-        document.getElementById("prev-page").style.display = "none"
-        document.getElementById("next-page").style.display = "none"
-        return
-    }
-
-    // Tampilkan pagination controls
-    document.getElementById("prev-page").style.display = "block"
-    document.getElementById("next-page").style.display = "block"
-
     // Menghitung paginasi
     const startIndex = (currentPage - 1) * itemsPerPage
-    const endIndex = Math.min(startIndex + itemsPerPage, data.length)
-    const paginatedData = data.slice(startIndex, endIndex)
+    const endIndex = Math.min(startIndex + itemsPerPage, filteredByMonth.length)
+    const paginatedData = filteredByMonth.slice(startIndex, endIndex)
 
     // Memperbarui informasi paginasi
     document.getElementById("pagination-info").textContent =
-        `Menampilkan ${startIndex + 1}-${endIndex} dari ${data.length} data`
+        `Menampilkan ${startIndex + 1}-${endIndex} dari ${filteredByMonth.length} data`
 
     // Menampilkan baris data
     paginatedData.forEach((item) => {
@@ -262,14 +206,11 @@ function renderAttendanceData() {
 // Menampilkan kontrol paginasi
 function renderPagination() {
     const paginationContainer = document.getElementById("pagination-numbers")
-    const data = updateAttendanceData(getAttendanceData())[currentAttendanceType]
-    const totalPages = Math.ceil(data.length / itemsPerPage)
+    const data = attendanceData[currentAttendanceType]
+    const totalPages = Math.ceil(filteredByMonth.length / itemsPerPage)
 
     // Menghapus paginasi yang ada
     paginationContainer.innerHTML = ""
-
-    // Jika tidak ada data, return
-    if (data.length === 0) return
 
     // Menentukan nomor halaman yang akan ditampilkan
     let startPage = Math.max(1, currentPage - 1)
@@ -319,9 +260,24 @@ function initializeExportPDF() {
     const exportPdfBtn = document.getElementById("btn-export-pdf")
 
     exportPdfBtn.addEventListener("click", () => {
-        alert("Data berhasil diekspor!")
+        const table = document.getElementById("attendance-table") // ID elemen <table> atau kontainer tabel kamu
+
+        html2canvas(table).then((canvas) => {
+            const imgData = canvas.toDataURL("image/png")
+            const pdf = new jspdf.jsPDF("p", "mm", "a4")
+
+            const imgProps = pdf.getImageProperties(imgData)
+            const pdfWidth = pdf.internal.pageSize.getWidth()
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width
+
+            pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight)
+            pdf.save("riwayat-presensi.pdf")
+        })
     })
 }
+
+
+
 
 // Menjalankan saat halaman dimuat
 window.addEventListener("load", () => {
@@ -329,5 +285,6 @@ window.addEventListener("load", () => {
     initializeAttendanceTypeTabs()
     initializeMonthFilter()
     initializeExportPDF()
-    renderAttendanceData()
+    loadAttendanceFromServer() // <-- ambil data asli dari backend
+
 })
