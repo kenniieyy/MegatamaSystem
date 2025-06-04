@@ -1,4 +1,4 @@
-// Data ruangan (simulasi)
+// Data ruangan
 let ruanganData = [
     { id: 1, namaRuangan: "Laboratorium Kimia", lokasi: "Lantai 2, dekat ruang kelas 12", keterangan: "Untuk praktikum kimia." },
     { id: 2, namaRuangan: "Laboratorium Fisika", lokasi: "Lantai 2, sebelah Lab Kimia", keterangan: "Untuk praktikum fisika." },
