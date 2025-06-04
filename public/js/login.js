@@ -1,39 +1,112 @@
+// default
+const defaultCredentials = {
+    adminTU: {
+        username: 'admin.tu',
+        password: 'admin123'
+    },
+    teachers: [
+        { id: '1987120101', name: 'Efrizal, S.P., M.Si.', password: 'guru123' },
+        { id: '1987120102', name: 'Syamsul Rizal, S.H., M.H.', password: 'guru123' },
+        { id: '1987120103', name: 'Ahmed Riza Fahlevi, S.H.', password: 'guru123' },
+        { id: '1987120104', name: 'Prof. Dr. Afrizal, S.E.,M.Si.,Ak.', password: 'guru123' },
+        { id: '1987120105', name: 'Prof. Ir. Yusrizal, M.Sc., Ph.D.', password: 'guru123' },
+        { id: '1987120106', name: 'Dr. Ir. Mairizal, M.Si.', password: 'guru123' }
+    ]
+};
 
-// Sample data for autocomplete
-const teacherData = [
-    { nip: '197201231995011002', name: 'Efrizal, S.P., M.Si.' },
-    { nip: '197605212009121002', name: 'Syamsul Rizal, S.H., M.H.' },
-    { nip: '198511212009121009', name: 'Ahmed Riza Fahlevi, S.H.' },
-    { nip: '195907271987011002', name: 'Prof. Dr. Afrizal, S.E.,M.Si.,Ak.' },
-    { nip: '196302041989031003', name: 'Prof. Ir. Yusrizal, M.Sc., Ph.D.' },
-    { nip: '196805281993031001', name: 'Dr. Ir. Mairizal, M.Si.' }
-];
+// Fungsi untuk memeriksa apakah semua bidang yang diperlukan dalam formulir sudah diisi
+function checkFormValidity(formId, buttonId) {
+    const form = document.getElementById(formId);
+    const button = document.getElementById(buttonId);
+    const inputs = form.querySelectorAll('input[required]');
 
-// Autocomplete functionality for guru login
+    let allFilled = true;
+    inputs.forEach(input => {
+        if (!input.value.trim()) {
+            allFilled = false;
+        }
+    });
+
+    button.disabled = !allFilled;
+}
+
+// Tambahkan event listener ke semua form
+function setupFormValidation() {
+    // Admin TU form
+    const tuInputs = document.querySelectorAll('#form-tu input[required]');
+    tuInputs.forEach(input => {
+        input.addEventListener('input', () => {
+            checkFormValidity('form-tu', 'btn-login-tu');
+        });
+    });
+
+    // Guru form
+    const guruInputs = document.querySelectorAll('#form-guru input[required]');
+    guruInputs.forEach(input => {
+        input.addEventListener('input', () => {
+            checkFormValidity('form-guru', 'btn-login-guru');
+        });
+    });
+}
+
+function validateAdminTU() {
+    const username = document.getElementById('username-tu').value.trim();
+    const password = document.getElementById('password-tu').value;
+
+    if (
+        username === defaultCredentials.adminTU.username &&
+        password === defaultCredentials.adminTU.password
+    ) {
+        // Langsung masuk ke dashboard TU
+        window.location.href = 'tu_dashboard.html';
+    } else {
+        showModal('error', 'Login Gagal', 'Username atau password Admin TU tidak valid');
+    }
+}
+
+function validateTeacher() {
+    const identityInput = document.getElementById('identity-guru').value;
+    const password = document.getElementById('password-guru').value;
+
+    const id = identityInput.split(' - ')[0];
+    const teacher = defaultCredentials.teachers.find(t => t.id === id);
+
+    if (teacher && password === teacher.password) {
+        // Masuk ke dashboard guru
+        window.location.href = `dashboard_guru.html?name=${encodeURIComponent(teacher.name)}`;
+    } else {
+        showModal('error', 'Login Gagal', 'ID/Nama atau password Guru tidak valid');
+    }
+}
+
+// Contoh data untuk fitur autocomplete
+const teacherData = defaultCredentials.teachers.map(({ id, name }) => ({ id, name }));
+
+// Fungsi untuk menjalankan fitur autocomplete
 const identityInput = document.getElementById('identity-guru');
 const autocompleteDropdown = document.getElementById('autocomplete-dropdown-guru');
 
 if (identityInput && autocompleteDropdown) {
-    identityInput.addEventListener('input', function() {
+    identityInput.addEventListener('input', function () {
         const inputValue = this.value.toLowerCase();
-        
+
         if (inputValue.length >= 3) {
-            // Filter teachers based on input
-            const filteredTeachers = teacherData.filter(teacher => 
-                teacher.nip.toLowerCase().includes(inputValue) || 
+            const filteredTeachers = teacherData.filter(teacher =>
+                teacher.id.toLowerCase().includes(inputValue) ||
                 teacher.name.toLowerCase().includes(inputValue)
             );
-            
-            // Show dropdown with results
+
             if (filteredTeachers.length > 0) {
                 autocompleteDropdown.innerHTML = '';
                 filteredTeachers.forEach(teacher => {
                     const item = document.createElement('div');
                     item.className = 'autocomplete-item';
-                    item.textContent = `${teacher.nip} - ${teacher.name}`;
-                    item.addEventListener('click', function() {
-                        identityInput.value = `${teacher.nip} - ${teacher.name}`;
+                    item.textContent = `${teacher.id} - ${teacher.name}`;
+                    item.addEventListener('click', function () {
+                        identityInput.value = `${teacher.id} - ${teacher.name}`;
                         autocompleteDropdown.classList.add('hidden');
+                        // Menjalankan validasi form setelah pilihan dipilih
+                        checkFormValidity('form-guru', 'btn-login-guru');
                     });
                     autocompleteDropdown.appendChild(item);
                 });
@@ -47,18 +120,16 @@ if (identityInput && autocompleteDropdown) {
         }
     });
 
-    // Hide dropdown when clicking outside
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (!identityInput.contains(e.target) && !autocompleteDropdown.contains(e.target)) {
             autocompleteDropdown.classList.add('hidden');
         }
     });
 
-    // Keyboard navigation for dropdown
-    identityInput.addEventListener('keydown', function(e) {
+    identityInput.addEventListener('keydown', function (e) {
         const items = autocompleteDropdown.querySelectorAll('.autocomplete-item');
         const selectedItem = autocompleteDropdown.querySelector('.selected');
-        
+
         if (items.length > 0 && !autocompleteDropdown.classList.contains('hidden')) {
             if (e.key === 'ArrowDown') {
                 e.preventDefault();
@@ -84,20 +155,27 @@ if (identityInput && autocompleteDropdown) {
                 e.preventDefault();
                 identityInput.value = selectedItem.textContent;
                 autocompleteDropdown.classList.add('hidden');
+                // Menjalankan validasi form setelah pilihan dipilih
+                checkFormValidity('form-guru', 'btn-login-guru');
             }
         }
     });
 }
 
-// Login button functionality
-// const loginButtons = document.querySelectorAll('.btn-login');
-// loginButtons.forEach(button => {
-//     button.addEventListener('click', function() {
-//         showModal('info', 'Login', 'Fitur dashboard belum tersedia dalam demo ini.');
-//     });
-// });
+// Fungsionalitas tombol login
+document.getElementById('btn-login-tu').addEventListener('click', function () {
+    if (!this.disabled) {
+        validateAdminTU();
+    }
+});
 
-// Modal functionality
+document.getElementById('btn-login-guru').addEventListener('click', function () {
+    if (!this.disabled) {
+        validateTeacher();
+    }
+});
+
+// Fungsionalitas modal
 const modal = document.getElementById('modal');
 const modalContent = document.getElementById('modal-content');
 const modalTitle = document.getElementById('modal-title');
@@ -109,10 +187,10 @@ const modalClose = document.getElementById('modal-close');
 
 function showModal(type, title, message) {
     modalTitle.textContent = title;
-    modalMessage.textContent = message;
+    modalMessage.innerHTML = message; // Gunakan innerHTML agar <br> bisa muncul
     modalDetails.innerHTML = '';
-    
-    // Set icon and color based on type
+
+    // Atur ikon, warna, dan header berdasarkan tipe
     if (type === 'error') {
         modalIcon.className = 'mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 bg-red-100';
         modalIcon.innerHTML = `
@@ -138,13 +216,19 @@ function showModal(type, title, message) {
         `;
         modalHeader.className = 'text-center mb-4 text-primary';
     }
-    
+
+    // Terapkan warna oranye ke tombol tutup (sekunder)
+    modalClose.className = 'w-full py-3 px-6 text-base font-medium rounded-xl focus:outline-none transition-all duration-300 hover:shadow-lg text-white';
+    modalClose.style.backgroundColor = '#FFA725';
+
+    // Tampilkan modal dengan animasi
     modal.classList.remove('hidden');
     setTimeout(() => {
         modalContent.classList.remove('scale-95', 'opacity-0');
         modalContent.classList.add('scale-100', 'opacity-100');
     }, 10);
 }
+
 
 if (modalClose) {
     modalClose.addEventListener('click', () => {
@@ -155,3 +239,8 @@ if (modalClose) {
         }, 300);
     });
 }
+
+// Inisialisasi validasi form saat halaman dimuat
+document.addEventListener('DOMContentLoaded', function () {
+    setupFormValidation();
+});
