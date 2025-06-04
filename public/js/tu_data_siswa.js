@@ -356,7 +356,7 @@ class ToastNotification {
         // Set icon dan warna berdasarkan type
         switch (type) {
             case 'success':
-                this.toastIcon.innerHTML = '<i class="fas fa-check-circle text-green-500 text-xl"></i>';
+                this.toastIcon.innerHTML = '<i class=" text-green-500 text-xl"></i>';
                 this.toastContainer.classList.add('border-l-green-500');
                 break;
             case 'error':
