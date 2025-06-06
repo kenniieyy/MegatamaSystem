@@ -107,25 +107,265 @@ let currentAction = null
 let currentStudentId = null
 let isBulkPromotion = false
 
-// Toggle sidebar
+// Toggle sidebar functionality 
 function initializeSidebar() {
-  const toggleButton = document.getElementById("toggle-sidebar")
+  const toggleBtn = document.getElementById("toggle-sidebar")
   const sidebar = document.getElementById("sidebar")
   const mainContent = document.getElementById("main-content")
   const overlay = document.getElementById("overlay")
 
-  toggleButton.addEventListener("click", () => {
-    sidebar.classList.toggle("collapsed")
-    sidebar.classList.toggle("mobile-open")
-    mainContent.classList.toggle("expanded")
-    overlay.classList.toggle("show")
+  // Cek apakah semua element ada
+  if (!toggleBtn || !sidebar || !mainContent || !overlay) {
+    console.error("Beberapa element tidak ditemukan:", {
+      toggleBtn: !!toggleBtn,
+      sidebar: !!sidebar,
+      mainContent: !!mainContent,
+      overlay: !!overlay,
+    })
+    return
+  }
+
+  // Fungsi untuk reset semua classes dan styles
+  function resetSidebarStates() {
+    sidebar.classList.remove("collapsed", "mobile-open")
+    overlay.classList.remove("show")
+    // Reset inline styles jika ada
+    sidebar.style.transform = ""
+  }
+
+  // Fungsi untuk setup desktop layout
+  function setupDesktopLayout() {
+    resetSidebarStates()
+    // Di desktop, sidebar default terbuka dan main content menyesuaikan
+    mainContent.classList.remove("expanded")
+    sidebar.classList.remove("collapsed")
+  }
+
+  // Fungsi untuk setup mobile layout
+  function setupMobileLayout() {
+    resetSidebarStates()
+    // Di mobile, sidebar default tertutup
+    sidebar.classList.add("collapsed")
+    mainContent.classList.add("expanded")
+  }
+
+  // Fungsi untuk membuka sidebar
+  function openSidebar() {
+    if (window.innerWidth <= 768) {
+      // Mobile: gunakan mobile-open class
+      sidebar.classList.remove("collapsed")
+      sidebar.classList.add("mobile-open")
+      overlay.classList.add("show")
+    } else {
+      // Desktop: hilangkan collapsed class
+      sidebar.classList.remove("collapsed")
+      mainContent.classList.remove("expanded")
+    }
+  }
+
+  // Fungsi untuk menutup sidebar
+  function closeSidebar() {
+    if (window.innerWidth <= 768) {
+      // Mobile: tutup dan hilangkan overlay
+      sidebar.classList.add("collapsed")
+      sidebar.classList.remove("mobile-open")
+      overlay.classList.remove("show")
+    } else {
+      // Desktop: collapse sidebar dan expand main content
+      sidebar.classList.add("collapsed")
+      mainContent.classList.add("expanded")
+    }
+  }
+
+  // Fungsi untuk cek status sidebar (terbuka/tertutup)
+  function isSidebarOpen() {
+    if (window.innerWidth <= 768) {
+      return sidebar.classList.contains("mobile-open")
+    } else {
+      return !sidebar.classList.contains("collapsed")
+    }
+  }
+
+  // Fungsi untuk handle responsive behavior
+  function handleResponsiveLayout() {
+    const currentWidth = window.innerWidth
+
+    if (currentWidth <= 768) {
+      // Switching to mobile
+      setupMobileLayout()
+    } else {
+      // Switching to desktop
+      setupDesktopLayout()
+    }
+
+    console.log(`Layout switched to: ${currentWidth <= 768 ? "Mobile" : "Desktop"} (${currentWidth}px)`)
+  }
+
+  // Toggle sidebar 
+  toggleBtn.addEventListener("click", () => {
+    console.log("Toggle clicked, window width:", window.innerWidth)
+    console.log("Sidebar open status:", isSidebarOpen())
+
+    if (isSidebarOpen()) {
+      closeSidebar()
+      console.log("Sidebar ditutup")
+    } else {
+      openSidebar()
+      console.log("Sidebar dibuka")
+    }
   })
 
+  // Tutup sidebar saat mengklik overlay (hanya di mobile)
   overlay.addEventListener("click", () => {
-    sidebar.classList.remove("mobile-open")
-    overlay.classList.remove("show")
+    console.log("Overlay clicked - closing sidebar")
+    closeSidebar()
   })
+
+  // Handle window resize 
+  let resizeTimeout
+  window.addEventListener("resize", () => {
+    // Debounce resize event untuk performa
+    clearTimeout(resizeTimeout)
+    resizeTimeout = setTimeout(() => {
+      handleResponsiveLayout()
+    }, 100)
+  })
+
+  // Initialize layout berdasarkan ukuran window saat ini
+  handleResponsiveLayout()
+
+  console.log("Responsive sidebar initialized successfully")
 }
+
+// Fungsi tambahan untuk debugging
+function debugSidebar() {
+  const sidebar = document.getElementById("sidebar")
+  const mainContent = document.getElementById("main-content")
+  const overlay = document.getElementById("overlay")
+
+  console.log("=== SIDEBAR DEBUG INFO ===")
+  console.log("Window width:", window.innerWidth)
+  console.log("Device type:", window.innerWidth <= 768 ? "Mobile" : "Desktop")
+  console.log("Sidebar classes:", sidebar.className)
+  console.log("Main content classes:", mainContent.className)
+  console.log("Overlay classes:", overlay.className)
+  console.log("Sidebar computed transform:", window.getComputedStyle(sidebar).transform)
+}
+
+//LOGIC UNTUK TOAST NOTIFICATION
+class ToastNotification {
+  constructor() {
+    this.toastElement = document.getElementById('toast-notification');
+    this.toastIcon = document.getElementById('toast-icon');
+    this.toastTitle = document.getElementById('toast-title');
+    this.toastMessage = document.getElementById('toast-message');
+    this.toastClose = document.getElementById('toast-close');
+    this.toastContainer = this.toastElement.querySelector('.bg-white');
+
+    this.isVisible = false;
+    this.hideTimeout = null;
+
+    this.setupEventListeners();
+  }
+
+  setupEventListeners() {
+    // Event listener untuk tombol close
+    this.toastClose.addEventListener('click', () => {
+      this.hide();
+    });
+
+    // Auto hide setelah 5 detik
+    this.toastElement.addEventListener('transitionend', (e) => {
+      if (e.target === this.toastElement && this.isVisible) {
+        this.autoHide();
+      }
+    });
+  }
+
+  show(type, title, message) {
+    // Clear timeout sebelumnya jika ada
+    if (this.hideTimeout) {
+      clearTimeout(this.hideTimeout);
+    }
+
+    // Set konten toast
+    this.setContent(type, title, message);
+
+    // Reset classes
+    this.toastElement.classList.remove('toast-exit', 'toast-show');
+    this.toastElement.classList.add('toast-enter');
+
+    // Force reflow untuk memastikan class diterapkan
+    this.toastElement.offsetHeight;
+
+    // Tampilkan toast dengan animasi
+    setTimeout(() => {
+      this.toastElement.classList.remove('toast-enter');
+      this.toastElement.classList.add('toast-show');
+      this.isVisible = true;
+    }, 10);
+  }
+
+  hide() {
+    if (!this.isVisible) return;
+
+    // Clear auto hide timeout
+    if (this.hideTimeout) {
+      clearTimeout(this.hideTimeout);
+    }
+
+    // Sembunyikan dengan animasi
+    this.toastElement.classList.remove('toast-show');
+    this.toastElement.classList.add('toast-exit');
+    this.isVisible = false;
+
+    // Reset ke posisi awal setelah animasi selesai
+    setTimeout(() => {
+      this.toastElement.classList.remove('toast-exit');
+      this.toastElement.classList.add('toast-enter');
+    }, 300);
+  }
+
+  autoHide() {
+    this.hideTimeout = setTimeout(() => {
+      this.hide();
+    }, 5000); // Auto hide setelah 5 detik
+  }
+
+  setContent(type, title, message) {
+    // Reset border color
+    this.toastContainer.className = this.toastContainer.className.replace(/border-l-(green|red|yellow|blue)-500/g, '');
+
+    // Set icon dan warna berdasarkan type
+    switch (type) {
+      case 'success':
+        this.toastIcon.innerHTML = '<i class="fas fa-check-circle text-green-500 text-xl"></i>';
+        this.toastContainer.classList.add('border-l-green-500');
+        break;
+      case 'error':
+        this.toastIcon.innerHTML = '<i class="fas fa-times-circle text-red-500 text-xl"></i>';
+        this.toastContainer.classList.add('border-l-red-500');
+        break;
+      case 'warning':
+        this.toastIcon.innerHTML = '<i class="fas fa-exclamation-triangle text-yellow-500 text-xl"></i>';
+        this.toastContainer.classList.add('border-l-yellow-500');
+        break;
+      case 'info':
+        this.toastIcon.innerHTML = '<i class="fas fa-info-circle text-blue-500 text-xl"></i>';
+        this.toastContainer.classList.add('border-l-blue-500');
+        break;
+      default:
+        this.toastIcon.innerHTML = '<i class="fas fa-info-circle text-gray-500 text-xl"></i>';
+        this.toastContainer.classList.add('border-l-gray-500');
+    }
+
+    this.toastTitle.textContent = title;
+    this.toastMessage.textContent = message;
+  }
+}
+
+// Inisialisasi toast notification
+const toast = new ToastNotification();
 
 // Tampilkan modal konfirmasi
 function showConfirmationModal(studentId, action) {
@@ -185,6 +425,8 @@ function showBulkPromotionModal() {
   const newConfirmButton = confirmButton.cloneNode(true)
   confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton)
 
+  // Reset text tombol konfirmasi
+  document.getElementById("confirm-action").textContent = "Konfirmasi"
   document.getElementById("confirm-action").addEventListener("click", confirmBulkAction)
 
   modal.classList.add("show")
@@ -214,8 +456,16 @@ function confirmAction() {
   if (currentStudentId && currentAction) {
     const studentIndex = studentData.findIndex((s) => s.id === currentStudentId)
     if (studentIndex !== -1) {
+      const student = studentData[studentIndex]
       studentData[studentIndex].status = currentAction
       renderStudentData()
+
+      // Tampilkan toast notification berdasarkan aksi
+      if (currentAction === 'promote') {
+        toast.show('success', 'Berhasil!', `${student.name} berhasil dinaikkan kelas!`)
+      } else if (currentAction === 'not_promote') {
+        toast.show('info', 'Status Diperbarui!', `${student.name} ditetapkan tidak naik kelas.`)
+      }
     }
   }
   closeModal()
@@ -224,12 +474,18 @@ function confirmAction() {
 // Konfirmasi tindakan massal
 function confirmBulkAction() {
   if (isBulkPromotion && currentAction === "promote") {
+    const pendingStudents = studentData.filter((student) => student.status === "pending")
+    const promotedCount = pendingStudents.length
+
     studentData.forEach((student) => {
       if (student.status === "pending") {
         student.status = "promote"
       }
     })
     renderStudentData()
+
+    // Tampilkan toast notification untuk bulk promotion
+    toast.show('success', 'Berhasil!', `${promotedCount} siswa berhasil dinaikkan kelas!`)
   }
   closeModal()
 }
@@ -468,7 +724,10 @@ function initializeButtons() {
 
   if (exportButton) {
     exportButton.addEventListener("click", () => {
-      alert("Data berhasil diekspor!")
+      // Simulasi export data
+      setTimeout(() => {
+        toast.show('success', 'Berhasil!', 'Data berhasil diekspor!')
+      }, 500)
     })
   }
 
