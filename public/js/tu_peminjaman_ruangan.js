@@ -479,7 +479,7 @@ function saveReservationData() {
     studentName: document.getElementById("student-name").value,
     studentNIS: document.getElementById("student-nis").value,
     studentClass: document.getElementById("student-class").value,
-    studentPhone: document.getElementById("student-phone").value,
+    studentPhone: document.getElementById("student-phone").value || "", // Buat opsional
     roomType: document.getElementById("room-type").value,
     roomName: roomData[document.getElementById("room-type").value],
     date: reservationDate,
@@ -589,7 +589,7 @@ function generateDummyHistory() {
       studentName: "Ahmad Fauzi",
       studentNIS: "123456789",
       studentClass: "11",
-      studentPhone: "081234567890",
+      studentPhone: i % 3 === 0 ? "" : "081234567890", // Beberapa data tanpa nomor telepon
       roomType: selectedRoom,
       roomName: roomData[selectedRoom],
       date: reservationDate,
@@ -879,7 +879,8 @@ function openViewModal(id) {
   document.getElementById("view-student-name").textContent = reservationData.studentName
   document.getElementById("view-student-nis").textContent = reservationData.studentNIS
   document.getElementById("view-student-class").textContent = `Kelas ${reservationData.studentClass}`
-  document.getElementById("view-student-phone").textContent = reservationData.studentPhone
+  // Tampilkan nomor telepon atau "-" jika kosong
+  document.getElementById("view-student-phone").textContent = reservationData.studentPhone || "-"
   document.getElementById("view-reservation-date").textContent = formattedDate
   document.getElementById("view-reservation-time").textContent =
     `${reservationData.startTime} - ${reservationData.endTime}`
@@ -982,7 +983,7 @@ function saveEditReservation(id) {
     document.getElementById("edit-modal").style.display = "none"
 
     // Tampilkan toast notification untuk edit
-    toast.show("success", "Berhasil!", "Data peminjaman berhasil diperbarui")
+    toast.show("success", "Berhasil!", "Data peminjaman berhasil diperbarui!")
   }
 }
 
@@ -1025,7 +1026,7 @@ function deleteReservation(id) {
     document.getElementById("delete-modal").style.display = "none"
 
     // Tampilkan toast notification untuk hapus
-    toast.show("success", "Berhasil!", "Data peminjaman berhasil dihapus")
+    toast.show("success", "Berhasil!", "Data peminjaman berhasil dihapus!")
   }
 }
 
