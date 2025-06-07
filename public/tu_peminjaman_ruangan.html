@@ -235,13 +235,13 @@
                                         </select>
                                     </div>
 
-                                    <!-- No. Telepon -->
+                                    <!-- No. Telepon (Opsional) -->
                                     <div>
                                         <label for="student-phone"
-                                            class="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon</label>
+                                            class="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon <span class="text-gray-400 text-xs">(Opsional)</span></label>
                                         <input type="tel" id="student-phone" name="student-phone"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                                            placeholder="Masukkan nomor telepon" required>
+                                            placeholder="Masukkan nomor telepon">
                                     </div>
                                 </div>
                             </form>
@@ -647,32 +647,28 @@
         </div>
     </div>
 
-    <!-- Modal Hapus Peminjaman -->
-    <div id="delete-modal" class="modal-peminjaman-ruang">
-        <div class="modal-content-peminjaman-ruang" style="max-width: 500px;">
-            <div class="modal-header-peminjaman-ruang">
-                <h3 class="text-lg font-semibold text-gray-800">Hapus Peminjaman</h3>
-                <span class="close-peminjaman-ruang" id="close-delete-modal">&times;</span>
-            </div>
-            <div class="modal-body-peminjaman-ruang">
+    <!-- Modal Hapus Peminjaman - Updated Design -->
+    <div id="delete-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl max-w-sm w-full p-6">
                 <div class="text-center">
                     <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                         <i class="fas fa-trash text-red-600 text-2xl"></i>
                     </div>
-                    <p class="text-gray-600 mb-4">Apakah Anda yakin ingin menghapus Peminjaman Ruang ini? Tindakan ini
-                        tidak
-                        dapat dibatalkan.</p>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Hapus Peminjaman</h3>
+                    <p class="text-gray-600 mb-6">Apakah Anda yakin ingin menghapus Peminjaman Ruang ini? Tindakan ini tidak dapat dibatalkan.</p>
+
+                    <div class="flex space-x-3">
+                        <button id="cancel-delete-btn"
+                            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                            Batal
+                        </button>
+                        <button id="confirm-delete-btn"
+                            class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                            Hapus
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <div class="modal-footer-peminjaman-ruang">
-                <button id="cancel-delete-btn"
-                    class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors text-sm font-medium">
-                    Batal
-                </button>
-                <button id="confirm-delete-btn"
-                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
-                    Hapus
-                </button>
             </div>
         </div>
     </div>
