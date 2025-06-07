@@ -1,245 +1,393 @@
-// Tampilkan/sembunyikan sidebar
+// Toggle sidebar functionality
 function initializeSidebar() {
-    const toggleButton = document.getElementById('toggle-sidebar');
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.getElementById('main-content');
-    const overlay = document.getElementById('overlay');
+  const toggleBtn = document.getElementById("toggle-sidebar")
+  const sidebar = document.getElementById("sidebar")
+  const mainContent = document.getElementById("main-content")
+  const overlay = document.getElementById("overlay")
 
-    // Saat tombol toggle diklik
-    toggleButton.addEventListener('click', function () {
-        sidebar.classList.toggle('collapsed');
-        sidebar.classList.toggle('mobile-open');
-        mainContent.classList.toggle('expanded');
-        overlay.classList.toggle('show');
-    });
+  // Check if all elements exist
+  if (!toggleBtn || !sidebar || !mainContent || !overlay) {
+    console.error("Some elements not found:", {
+      toggleBtn: !!toggleBtn,
+      sidebar: !!sidebar,
+      mainContent: !!mainContent,
+      overlay: !!overlay,
+    })
+    return
+  }
 
-    // Tutup sidebar saat overlay diklik
-    overlay.addEventListener('click', function () {
-        sidebar.classList.remove('mobile-open');
-        overlay.classList.remove('show');
-    });
-}
+  // Function to reset all classes and styles
+  function resetSidebarStates() {
+    sidebar.classList.remove("collapsed", "mobile-open")
+    overlay.classList.remove("show")
+    // Reset inline styles if any
+    sidebar.style.transform = ""
+  }
 
-// Inisialisasi combobox untuk mata pelajaran
-function initializeCombobox() {
-    const subjectInput = document.getElementById('subject-input');
-    const subjectHidden = document.getElementById('subject');
-    const subjectDropdown = document.getElementById('subject-dropdown');
-    const addNewSubject = document.getElementById('add-new-subject');
-    const newSubjectText = document.getElementById('new-subject-text');
+  // Function to setup desktop layout
+  function setupDesktopLayout() {
+    resetSidebarStates()
+    // On desktop, sidebar default open and main content adjusts
+    mainContent.classList.remove("expanded")
+    sidebar.classList.remove("collapsed")
+  }
 
-    // Simpan opsi asli untuk filter
-    const originalOptions = Array.from(subjectDropdown.querySelectorAll('.combobox-option')).map(option => ({
-        element: option,
-        value: option.getAttribute('data-value')
-    }));
+  // Function to setup mobile layout
+  function setupMobileLayout() {
+    resetSidebarStates()
+    // On mobile, sidebar default closed
+    sidebar.classList.add("collapsed")
+    mainContent.classList.add("expanded")
+  }
 
-    // Tampilkan dropdown saat input difokuskan
-    subjectInput.addEventListener('focus', function () {
-        subjectDropdown.classList.add('show');
-    });
+  // Function to open sidebar
+  function openSidebar() {
+    if (window.innerWidth <= 768) {
+      // Mobile: use mobile-open class
+      sidebar.classList.remove("collapsed")
+      sidebar.classList.add("mobile-open")
+      overlay.classList.add("show")
+    } else {
+      // Desktop: remove collapsed class
+      sidebar.classList.remove("collapsed")
+      mainContent.classList.remove("expanded")
+    }
+  }
 
-    // Sembunyikan dropdown saat klik di luar elemen input atau dropdown
-    document.addEventListener('click', function (e) {
-        if (!subjectInput.contains(e.target) && !subjectDropdown.contains(e.target)) {
-            subjectDropdown.classList.remove('show');
-        }
-    });
+  // Function to close sidebar
+  function closeSidebar() {
+    if (window.innerWidth <= 768) {
+      // Mobile: close and remove overlay
+      sidebar.classList.add("collapsed")
+      sidebar.classList.remove("mobile-open")
+      overlay.classList.remove("show")
+    } else {
+      // Desktop: collapse sidebar and expand main content
+      sidebar.classList.add("collapsed")
+      mainContent.classList.add("expanded")
+    }
+  }
 
-    // Filter pilihan saat mengetik
-    subjectInput.addEventListener('input', function () {
-        const value = this.value.trim().toLowerCase();
-        let exactMatch = false;
+  // Function to check sidebar status (open/closed)
+  function isSidebarOpen() {
+    if (window.innerWidth <= 768) {
+      return sidebar.classList.contains("mobile-open")
+    } else {
+      return !sidebar.classList.contains("collapsed")
+    }
+  }
 
-        // Filter opsi yang sesuai
-        originalOptions.forEach(option => {
-            const optionValue = option.value.toLowerCase();
-            if (optionValue.includes(value)) {
-                option.element.style.display = 'block';
-                if (optionValue === value) {
-                    exactMatch = true;
-                }
-            } else {
-                option.element.style.display = 'none';
-            }
-        });
+  // Function to handle responsive behavior
+  function handleResponsiveLayout() {
+    const currentWidth = window.innerWidth
 
-        // Tampilkan/sembunyikan opsi "Tambah baru"
-        if (value && !exactMatch) {
-            newSubjectText.textContent = this.value.trim();
-            addNewSubject.classList.add('show');
-        } else {
-            addNewSubject.classList.remove('show');
-        }
-
-        // Perbarui nilai input tersembunyi
-        subjectHidden.value = this.value;
-    });
-
-    // Pilih opsi saat diklik
-    subjectDropdown.addEventListener('click', function (e) {
-        const option = e.target.closest('.combobox-option');
-        if (option) {
-            selectOption(option);
-        }
-    });
-
-    // Tambah mata pelajaran baru
-    addNewSubject.addEventListener('click', function () {
-        const newSubject = subjectInput.value.trim();
-        if (newSubject) {
-            const newOption = document.createElement('div');
-            newOption.className = 'combobox-option';
-            newOption.setAttribute('data-value', newSubject);
-            newOption.textContent = newSubject;
-
-            // Add to dropdown before "Add new" option
-            subjectDropdown.insertBefore(newOption, addNewSubject);
-
-            // Add to original options
-            originalOptions.push({
-                element: newOption,
-                value: newSubject
-            });
-
-            // Select the new option
-            selectOption(newOption);
-        }
-    });
-
-    // Fungsi untuk memilih opsi
-    function selectOption(option) {
-        // Hapus kelas 'selected' dari semua opsi
-        subjectDropdown.querySelectorAll('.combobox-option').forEach(opt => {
-            opt.classList.remove('selected');
-        });
-
-        // Tambahkan kelas 'selected' pada opsi yang dipilih
-        option.classList.add('selected');
-
-        // Perbarui input dan field tersembunyi
-        const value = option.getAttribute('data-value');
-        subjectInput.value = value;
-        subjectHidden.value = value;
-
-        // Sembunyikan dropdown
-        subjectDropdown.classList.remove('show');
+    if (currentWidth <= 768) {
+      // Switching to mobile
+      setupMobileLayout()
+    } else {
+      // Switching to desktop
+      setupDesktopLayout()
     }
 
-    // Navigasi menggunakan keyboard
-    subjectInput.addEventListener('keydown', function (e) {
-        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-            e.preventDefault();
+    console.log(`Layout switched to: ${currentWidth <= 768 ? "Mobile" : "Desktop"} (${currentWidth}px)`)
+  }
 
-            const visibleOptions = Array.from(subjectDropdown.querySelectorAll('.combobox-option')).filter(
-                option => option.style.display !== 'none'
-            );
+  // Toggle sidebar
+  toggleBtn.addEventListener("click", () => {
+    console.log("Toggle clicked, window width:", window.innerWidth)
+    console.log("Sidebar open status:", isSidebarOpen())
 
-            if (visibleOptions.length === 0) return;
+    if (isSidebarOpen()) {
+      closeSidebar()
+      console.log("Sidebar closed")
+    } else {
+      openSidebar()
+      console.log("Sidebar opened")
+    }
+  })
 
-            const selectedOption = subjectDropdown.querySelector('.combobox-option.selected');
-            let nextIndex = 0;
+  // Close sidebar when clicking overlay (mobile only)
+  overlay.addEventListener("click", () => {
+    console.log("Overlay clicked - closing sidebar")
+    closeSidebar()
+  })
 
-            if (selectedOption) {
-                const currentIndex = visibleOptions.indexOf(selectedOption);
-                if (e.key === 'ArrowDown') {
-                    nextIndex = (currentIndex + 1) % visibleOptions.length;
-                } else {
-                    nextIndex = (currentIndex - 1 + visibleOptions.length) % visibleOptions.length;
-                }
-            }
+  // Handle window resize
+  let resizeTimeout
+  window.addEventListener("resize", () => {
+    // Debounce resize event for performance
+    clearTimeout(resizeTimeout)
+    resizeTimeout = setTimeout(() => {
+      handleResponsiveLayout()
+    }, 100)
+  })
 
-            selectOption(visibleOptions[nextIndex]);
-        } else if (e.key === 'Enter') {
-            e.preventDefault();
+  // Initialize layout based on current window size
+  handleResponsiveLayout()
 
-            if (addNewSubject.classList.contains('show')) {
-                addNewSubject.click();
-            } else {
-                const visibleOption = subjectDropdown.querySelector('.combobox-option:not([style*="display: none"])');
-                if (visibleOption) {
-                    selectOption(visibleOption);
-                }
-            }
-        } else if (e.key === 'Escape') {
-            subjectDropdown.classList.remove('show');
-        }
-    });
+  console.log("Responsive sidebar initialized successfully")
 }
 
-// Proses pengiriman formulir
-function initializeForm() {
-    const profileForm = document.getElementById('profile-form');
+//LOGIC UNTUK TOAST NOTIFICATION
+class ToastNotification {
+  constructor() {
+    this.toastElement = document.getElementById('toast-notification');
+    this.toastIcon = document.getElementById('toast-icon');
+    this.toastTitle = document.getElementById('toast-title');
+    this.toastMessage = document.getElementById('toast-message');
+    this.toastClose = document.getElementById('toast-close');
+    this.toastContainer = this.toastElement.querySelector('.bg-white');
 
-    profileForm.addEventListener('submit', function (e) {
-        e.preventDefault();
+    this.isVisible = false;
+    this.hideTimeout = null;
 
-        const formData = new FormData(profileForm);
-        const selectedSubject = document.getElementById('subject').value;
-        const statusSelect = document.getElementById('status');
-        const selectedStatus = statusSelect.options[statusSelect.selectedIndex].text;
+    this.setupEventListeners();
+  }
 
-        console.log('Form data submitted:');
-        for (let [key, value] of formData.entries()) {
-            console.log(`${key}: ${value}`);
-        }
-
-        updateProfileDisplay(formData.get('fullname'), selectedSubject, selectedStatus);
-        showNotification('Profil berhasil diperbarui!');
+  setupEventListeners() {
+    // Event listener untuk tombol close
+    this.toastClose.addEventListener('click', () => {
+      this.hide();
     });
-}
 
-// Perbarui tampilan profil setelah disimpan
-function updateProfileDisplay(fullname, subject, status) {
-    document.querySelector('.text-center h4').textContent = fullname;
-    document.querySelector('.text-center p').textContent = `Guru ${subject}`;
-    document.querySelector('.avatar-ring + span').textContent = fullname;
+    // Auto hide setelah 5 detik
+    this.toastElement.addEventListener('transitionend', (e) => {
+      if (e.target === this.toastElement && this.isVisible) {
+        this.autoHide();
+      }
+    });
+  }
 
-    let statusClass = '';
-    if (status === 'Aktif') {
-        statusClass = 'status-active';
-    } else if (status === 'Non Aktif') {
-        statusClass = 'status-inactive';
-    } else if (status === 'Cuti') {
-        statusClass = 'status-leave';
+  show(type, title, message) {
+    // Clear timeout sebelumnya jika ada
+    if (this.hideTimeout) {
+      clearTimeout(this.hideTimeout);
     }
 
-}
+    // Set konten toast
+    this.setContent(type, title, message);
 
-// Tampilkan notifikasi sukses
-function showNotification(message) {
-    const notification = document.createElement('div');
-    notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg z-50';
-    notification.textContent = message;
+    // Reset classes
+    this.toastElement.classList.remove('toast-exit', 'toast-show');
+    this.toastElement.classList.add('toast-enter');
 
-    document.body.appendChild(notification);
+    // Force reflow untuk memastikan class diterapkan
+    this.toastElement.offsetHeight;
 
+    // Tampilkan toast dengan animasi
     setTimeout(() => {
-        notification.remove();
-    }, 3000);
+      this.toastElement.classList.remove('toast-enter');
+      this.toastElement.classList.add('toast-show');
+      this.isVisible = true;
+    }, 10);
+  }
+
+  hide() {
+    if (!this.isVisible) return;
+
+    // Clear auto hide timeout
+    if (this.hideTimeout) {
+      clearTimeout(this.hideTimeout);
+    }
+
+    // Sembunyikan dengan animasi
+    this.toastElement.classList.remove('toast-show');
+    this.toastElement.classList.add('toast-exit');
+    this.isVisible = false;
+
+    // Reset ke posisi awal setelah animasi selesai
+    setTimeout(() => {
+      this.toastElement.classList.remove('toast-exit');
+      this.toastElement.classList.add('toast-enter');
+    }, 300);
+  }
+
+  autoHide() {
+    this.hideTimeout = setTimeout(() => {
+      this.hide();
+    }, 5000); // Auto hide setelah 5 detik
+  }
+
+  setContent(type, title, message) {
+    // Reset border color
+    this.toastContainer.className = this.toastContainer.className.replace(/border-l-(green|red|yellow|blue)-500/g, '');
+
+    // Set icon dan warna berdasarkan type
+    switch (type) {
+      case 'success':
+        this.toastIcon.innerHTML = '<i class="fas fa-check-circle text-green-500 text-xl"></i>';
+        this.toastContainer.classList.add('border-l-green-500');
+        break;
+      case 'error':
+        this.toastIcon.innerHTML = '<i class="fas fa-times-circle text-red-500 text-xl"></i>';
+        this.toastContainer.classList.add('border-l-red-500');
+        break;
+      case 'warning':
+        this.toastIcon.innerHTML = '<i class="fas fa-exclamation-triangle text-yellow-500 text-xl"></i>';
+        this.toastContainer.classList.add('border-l-yellow-500');
+        break;
+      case 'info':
+        this.toastIcon.innerHTML = '<i class="fas fa-info-circle text-blue-500 text-xl"></i>';
+        this.toastContainer.classList.add('border-l-blue-500');
+        break;
+      default:
+        this.toastIcon.innerHTML = '<i class="fas fa-info-circle text-gray-500 text-xl"></i>';
+        this.toastContainer.classList.add('border-l-gray-500');
+    }
+
+    this.toastTitle.textContent = title;
+    this.toastMessage.textContent = message;
+  }
 }
 
-// Inisialisasi unggah foto profil
+// Inisialisasi toast notification
+const toast = new ToastNotification();
+
+// Combobox functionality
+function initializeCombobox() {
+  const input = document.getElementById('subject-input')
+  const dropdown = document.getElementById('subject-dropdown')
+  const hiddenInput = document.getElementById('subject')
+  const addNewOption = document.getElementById('add-new-subject')
+  const newSubjectText = document.getElementById('new-subject-text')
+
+  let isOpen = false
+
+  // Show dropdown
+  function showDropdown() {
+    dropdown.style.display = 'block'
+    isOpen = true
+  }
+
+  // Hide dropdown
+  function hideDropdown() {
+    dropdown.style.display = 'none'
+    isOpen = false
+  }
+
+  // Filter options based on input
+  function filterOptions() {
+    const searchTerm = input.value.toLowerCase()
+    const options = dropdown.querySelectorAll('.combobox-option')
+    let hasVisibleOptions = false
+
+    options.forEach(option => {
+      const text = option.textContent.toLowerCase()
+      if (text.includes(searchTerm)) {
+        option.style.display = 'block'
+        hasVisibleOptions = true
+      } else {
+        option.style.display = 'none'
+      }
+    })
+
+    // Show/hide "add new" option
+    if (searchTerm && !hasVisibleOptions) {
+      newSubjectText.textContent = input.value
+      addNewOption.style.display = 'block'
+    } else {
+      addNewOption.style.display = 'none'
+    }
+  }
+
+  // Select option
+  function selectOption(value, text) {
+    input.value = text || value
+    hiddenInput.value = value
+    hideDropdown()
+
+    // Remove selected class from all options
+    dropdown.querySelectorAll('.combobox-option').forEach(opt => {
+      opt.classList.remove('selected')
+    })
+
+    // Add selected class to chosen option
+    const selectedOption = dropdown.querySelector(`[data-value="${value}"]`)
+    if (selectedOption) {
+      selectedOption.classList.add('selected')
+    }
+  }
+
+  // Event listeners
+  input.addEventListener('focus', () => {
+    showDropdown()
+    filterOptions()
+  })
+
+  input.addEventListener('input', () => {
+    filterOptions()
+    if (!isOpen) showDropdown()
+  })
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      hideDropdown()
+    }
+  })
+
+  // Click on options
+  dropdown.addEventListener('click', (e) => {
+    if (e.target.classList.contains('combobox-option')) {
+      const value = e.target.getAttribute('data-value')
+      const text = e.target.textContent
+      selectOption(value, text)
+    } else if (e.target.closest('#add-new-subject')) {
+      const newValue = input.value
+      selectOption(newValue, newValue)
+
+      // Add new option to dropdown for future use
+      const newOption = document.createElement('div')
+      newOption.className = 'combobox-option selected'
+      newOption.setAttribute('data-value', newValue)
+      newOption.textContent = newValue
+      dropdown.insertBefore(newOption, addNewOption)
+    }
+  })
+
+  // Click outside to close
+  document.addEventListener('click', (e) => {
+    if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+      hideDropdown()
+    }
+  })
+}
+
+// Photo upload functionality
 function initializePhotoUpload() {
-    const photoUpload = document.getElementById('photo-upload');
-    const profilePhoto = document.querySelector('.profile-photo');
+  const photoUpload = document.getElementById('photo-upload')
+  const profilePhoto = document.querySelector('.profile-photo')
 
-    photoUpload.addEventListener('change', function (e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                profilePhoto.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-    });
+  photoUpload.addEventListener('change', (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        profilePhoto.src = e.target.result
+        toast.show('success', 'Berhasil!', 'Foto profil berhasil diperbarui!')
+      }
+      reader.readAsDataURL(file)
+    }
+  })
 }
 
-// Jalankan semua fungsi saat halaman dimuat
+// Form submission
+function initializeForm() {
+  const form = document.getElementById('profile-form')
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault()
+
+    // Simulate form processing
+    setTimeout(() => {
+      toast.show('success', 'Berhasil!', 'Profil berhasil diperbarui!')
+    }, 500)
+  })
+}
+
+// Initialize everything when page loads
 window.addEventListener('load', () => {
-    initializeSidebar();
-    initializeCombobox();
-    initializeForm();
-    initializePhotoUpload();
-});
+  initializeSidebar()
+  initializeCombobox()
+  initializePhotoUpload()
+  initializeForm()
+})

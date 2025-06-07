@@ -84,25 +84,271 @@ let attendanceHistory = [];
 let currentPage = 1;
 const itemsPerPage = 5;
 
-// Fungsi untuk mengatur sidebar
+// Toggle sidebar functionality 
 function initializeSidebar() {
-    const toggleButton = document.getElementById('toggle-sidebar');
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.getElementById('main-content');
-    const overlay = document.getElementById('overlay');
+    const toggleBtn = document.getElementById("toggle-sidebar")
+    const sidebar = document.getElementById("sidebar")
+    const mainContent = document.getElementById("main-content")
+    const overlay = document.getElementById("overlay")
 
-    toggleButton.addEventListener('click', function () {
-        sidebar.classList.toggle('collapsed');
-        sidebar.classList.toggle('mobile-open');
-        mainContent.classList.toggle('expanded');
-        overlay.classList.toggle('show');
-    });
+    // Cek apakah semua element ada
+    if (!toggleBtn || !sidebar || !mainContent || !overlay) {
+        console.error("Beberapa element tidak ditemukan:", {
+            toggleBtn: !!toggleBtn,
+            sidebar: !!sidebar,
+            mainContent: !!mainContent,
+            overlay: !!overlay,
+        })
+        return
+    }
 
-    // Tutup sidebar saat mengklik overlay
-    overlay.addEventListener('click', function () {
-        sidebar.classList.remove('mobile-open');
-        overlay.classList.remove('show');
-    });
+    // Fungsi untuk reset semua classes dan styles
+    function resetSidebarStates() {
+        sidebar.classList.remove("collapsed", "mobile-open")
+        overlay.classList.remove("show")
+        // Reset inline styles jika ada
+        sidebar.style.transform = ""
+    }
+
+    // Fungsi untuk setup desktop layout
+    function setupDesktopLayout() {
+        resetSidebarStates()
+        // Di desktop, sidebar default terbuka dan main content menyesuaikan
+        mainContent.classList.remove("expanded")
+        sidebar.classList.remove("collapsed")
+    }
+
+    // Fungsi untuk setup mobile layout
+    function setupMobileLayout() {
+        resetSidebarStates()
+        // Di mobile, sidebar default tertutup
+        sidebar.classList.add("collapsed")
+        mainContent.classList.add("expanded")
+    }
+
+    // Fungsi untuk membuka sidebar
+    function openSidebar() {
+        if (window.innerWidth <= 768) {
+            // Mobile: gunakan mobile-open class
+            sidebar.classList.remove("collapsed")
+            sidebar.classList.add("mobile-open")
+            overlay.classList.add("show")
+        } else {
+            // Desktop: hilangkan collapsed class
+            sidebar.classList.remove("collapsed")
+            mainContent.classList.remove("expanded")
+        }
+    }
+
+    // Fungsi untuk menutup sidebar
+    function closeSidebar() {
+        if (window.innerWidth <= 768) {
+            // Mobile: tutup dan hilangkan overlay
+            sidebar.classList.add("collapsed")
+            sidebar.classList.remove("mobile-open")
+            overlay.classList.remove("show")
+        } else {
+            // Desktop: collapse sidebar dan expand main content
+            sidebar.classList.add("collapsed")
+            mainContent.classList.add("expanded")
+        }
+    }
+
+    // Fungsi untuk cek status sidebar (terbuka/tertutup)
+    function isSidebarOpen() {
+        if (window.innerWidth <= 768) {
+            return sidebar.classList.contains("mobile-open")
+        } else {
+            return !sidebar.classList.contains("collapsed")
+        }
+    }
+
+    // Fungsi untuk handle responsive behavior
+    function handleResponsiveLayout() {
+        const currentWidth = window.innerWidth
+
+        if (currentWidth <= 768) {
+            // Switching to mobile
+            setupMobileLayout()
+        } else {
+            // Switching to desktop
+            setupDesktopLayout()
+        }
+
+        console.log(`Layout switched to: ${currentWidth <= 768 ? "Mobile" : "Desktop"} (${currentWidth}px)`)
+    }
+
+    // Toggle sidebar 
+    toggleBtn.addEventListener("click", () => {
+        console.log("Toggle clicked, window width:", window.innerWidth)
+        console.log("Sidebar open status:", isSidebarOpen())
+
+        if (isSidebarOpen()) {
+            closeSidebar()
+            console.log("Sidebar ditutup")
+        } else {
+            openSidebar()
+            console.log("Sidebar dibuka")
+        }
+    })
+
+    // Tutup sidebar saat mengklik overlay (hanya di mobile)
+    overlay.addEventListener("click", () => {
+        console.log("Overlay clicked - closing sidebar")
+        closeSidebar()
+    })
+
+    // Handle window resize 
+    let resizeTimeout
+    window.addEventListener("resize", () => {
+        // Debounce resize event untuk performa
+        clearTimeout(resizeTimeout)
+        resizeTimeout = setTimeout(() => {
+            handleResponsiveLayout()
+        }, 100)
+    })
+
+    // Initialize layout berdasarkan ukuran window saat ini
+    handleResponsiveLayout()
+
+    console.log("Responsive sidebar initialized successfully")
+}
+
+// Fungsi tambahan untuk debugging
+function debugSidebar() {
+    const sidebar = document.getElementById("sidebar")
+    const mainContent = document.getElementById("main-content")
+    const overlay = document.getElementById("overlay")
+
+    console.log("=== SIDEBAR DEBUG INFO ===")
+    console.log("Window width:", window.innerWidth)
+    console.log("Device type:", window.innerWidth <= 768 ? "Mobile" : "Desktop")
+    console.log("Sidebar classes:", sidebar.className)
+    console.log("Main content classes:", mainContent.className)
+    console.log("Overlay classes:", overlay.className)
+    console.log("Sidebar computed transform:", window.getComputedStyle(sidebar).transform)
+}
+
+//LOGIC UNTUK TOAST NOTIFICATION
+class ToastNotification {
+    constructor() {
+        this.toastElement = document.getElementById('toast-notification');
+        this.toastIcon = document.getElementById('toast-icon');
+        this.toastTitle = document.getElementById('toast-title');
+        this.toastMessage = document.getElementById('toast-message');
+        this.toastClose = document.getElementById('toast-close');
+        this.toastContainer = this.toastElement.querySelector('.bg-white');
+
+        this.isVisible = false;
+        this.hideTimeout = null;
+
+        this.setupEventListeners();
+    }
+
+    setupEventListeners() {
+        // Event listener untuk tombol close
+        this.toastClose.addEventListener('click', () => {
+            this.hide();
+        });
+
+        // Auto hide setelah 5 detik
+        this.toastElement.addEventListener('transitionend', (e) => {
+            if (e.target === this.toastElement && this.isVisible) {
+                this.autoHide();
+            }
+        });
+    }
+
+    show(type, title, message) {
+        // Clear timeout sebelumnya jika ada
+        if (this.hideTimeout) {
+            clearTimeout(this.hideTimeout);
+        }
+
+        // Set konten toast
+        this.setContent(type, title, message);
+
+        // Reset classes
+        this.toastElement.classList.remove('toast-exit', 'toast-show');
+        this.toastElement.classList.add('toast-enter');
+
+        // Force reflow untuk memastikan class diterapkan
+        this.toastElement.offsetHeight;
+
+        // Tampilkan toast dengan animasi
+        setTimeout(() => {
+            this.toastElement.classList.remove('toast-enter');
+            this.toastElement.classList.add('toast-show');
+            this.isVisible = true;
+        }, 10);
+    }
+
+    hide() {
+        if (!this.isVisible) return;
+
+        // Clear auto hide timeout
+        if (this.hideTimeout) {
+            clearTimeout(this.hideTimeout);
+        }
+
+        // Sembunyikan dengan animasi
+        this.toastElement.classList.remove('toast-show');
+        this.toastElement.classList.add('toast-exit');
+        this.isVisible = false;
+
+        // Reset ke posisi awal setelah animasi selesai
+        setTimeout(() => {
+            this.toastElement.classList.remove('toast-exit');
+            this.toastElement.classList.add('toast-enter');
+        }, 300);
+    }
+
+    autoHide() {
+        this.hideTimeout = setTimeout(() => {
+            this.hide();
+        }, 5000); // Auto hide setelah 5 detik
+    }
+
+    setContent(type, title, message) {
+        // Reset border color
+        this.toastContainer.className = this.toastContainer.className.replace(/border-l-(green|red|yellow|blue)-500/g, '');
+
+        // Set icon dan warna berdasarkan type
+        switch (type) {
+            case 'success':
+                this.toastIcon.innerHTML = '<i class="fas fa-check-circle text-green-500 text-xl"></i>';
+                this.toastContainer.classList.add('border-l-green-500');
+                break;
+            case 'error':
+                this.toastIcon.innerHTML = '<i class="fas fa-times-circle text-red-500 text-xl"></i>';
+                this.toastContainer.classList.add('border-l-red-500');
+                break;
+            case 'warning':
+                this.toastIcon.innerHTML = '<i class="fas fa-exclamation-triangle text-yellow-500 text-xl"></i>';
+                this.toastContainer.classList.add('border-l-yellow-500');
+                break;
+            case 'info':
+                this.toastIcon.innerHTML = '<i class="fas fa-info-circle text-blue-500 text-xl"></i>';
+                this.toastContainer.classList.add('border-l-blue-500');
+                break;
+            default:
+                this.toastIcon.innerHTML = '<i class="fas fa-info-circle text-gray-500 text-xl"></i>';
+                this.toastContainer.classList.add('border-l-gray-500');
+        }
+
+        this.toastTitle.textContent = title;
+        this.toastMessage.textContent = message;
+    }
+}
+
+// Inisialisasi toast notification
+const toast = new ToastNotification();
+
+// Fungsi untuk mengecek apakah sudah ada presensi untuk tanggal tertentu
+function checkAttendanceExists(date, classNumber) {
+    return attendanceHistory.some(item =>
+        item.date === date && item.class === classNumber
+    );
 }
 
 // Fungsi untuk mengatur tab
@@ -144,14 +390,6 @@ function initializeTabs() {
 // Fungsi untuk mengatur pemilihan kelas
 function initializeClassSelection() {
     const classCards = document.querySelectorAll('.class-card');
-
-    // Set class 7 as active and go to form directly on page load
-    // setTimeout(() => {
-    //     document.getElementById('content-classes').classList.remove('active');
-    //     document.getElementById('content-form-presensi').classList.add('active');
-    //     document.getElementById('class-name-display').textContent = `Kelas ${selectedClass}`;
-    //     setCurrentDate();
-    // }, 500);
 
     // Only allow Class 7 to be clickable
     const class7Card = document.querySelector('.class-card[data-class="7"]');
@@ -206,6 +444,13 @@ function initializeNavigation() {
             return;
         }
 
+        // Cek apakah sudah ada presensi untuk tanggal ini
+        const dateInput = document.getElementById('date');
+        if (checkAttendanceExists(dateInput.value, selectedClass)) {
+            toast.show('warning', 'Perhatian!', 'Presensi untuk tanggal ini sudah pernah diinput. Setiap hari hanya boleh mengisi presensi satu kali.');
+            return;
+        }
+
         document.getElementById('content-form-presensi').classList.remove('active');
         document.getElementById('content-attendance').classList.add('active');
 
@@ -234,7 +479,7 @@ function initializeNavigation() {
         // Validasi presensi
         const allStudentsChecked = validateAttendance();
         if (!allStudentsChecked) {
-            alert('Silakan isi keterangan untuk semua siswa.');
+            toast.show('warning', 'Perhatian!', 'Silakan isi keterangan untuk semua siswa.');
             return;
         }
 
@@ -342,7 +587,7 @@ function validateAttendance() {
     return allChecked;
 }
 
-// Fungsi untuk menyimpan data presensi
+// Fungsi untuk menyimpan data presensi (TANPA TOAST NOTIFICATION)
 function saveAttendanceData() {
     const attendanceData = {
         id: Date.now(), // Gunakan timestamp sebagai ID unik
@@ -377,6 +622,8 @@ function saveAttendanceData() {
     localStorage.setItem('attendanceHistory', JSON.stringify(attendanceHistory));
 
     console.log('Data presensi yang disimpan:', attendanceData);
+
+    // TIDAK ADA TOAST NOTIFICATION DI SINI - hanya mengandalkan success card
 }
 
 // Fungsi untuk memuat data riwayat presensi
@@ -543,7 +790,7 @@ function renderAttendanceHistory(data) {
                                 </svg>
                             </button>
                             ${canEdit ? `
-                            <button class="edit-attendance px-2 py-1 text-green-600 hover:text-green-800" data-id="${item.id}">
+                            <button class="edit-attendance px-2 py-1 text-orange-600 hover:text-orange-800" data-id="${item.id}">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
@@ -668,7 +915,7 @@ function openViewModal(id) {
     const attendanceData = attendanceHistory.find(item => item.id.toString() === id);
 
     if (!attendanceData) {
-        alert('Data presensi tidak ditemukan.');
+        toast.show('error', 'Error!', 'Data presensi tidak ditemukan.');
         return;
     }
 
@@ -731,7 +978,7 @@ function openEditModal(id) {
     const attendanceData = attendanceHistory.find(item => item.id.toString() === id);
 
     if (!attendanceData) {
-        alert('Data presensi tidak ditemukan.');
+        toast.show('error', 'Error!', 'Data presensi tidak ditemukan.');
         return;
     }
 
@@ -821,13 +1068,13 @@ function openEditModal(id) {
     };
 }
 
-// Fungsi untuk menyimpan perubahan presensi
+// Fungsi untuk menyimpan perubahan presensi (DENGAN TOAST NOTIFICATION)
 function saveEditedAttendance(id) {
     // Cari data presensi berdasarkan ID
     const index = attendanceHistory.findIndex(item => item.id.toString() === id);
 
     if (index === -1) {
-        alert('Data presensi tidak ditemukan.');
+        toast.show('error', 'Error!', 'Data presensi tidak ditemukan.');
         return;
     }
 
@@ -853,8 +1100,8 @@ function saveEditedAttendance(id) {
     // Refresh tampilan
     filterAttendanceHistory();
 
-    // Tampilkan pesan sukses
-    alert('Data presensi berhasil diperbarui.');
+    // Tampilkan toast sukses
+    toast.show('success', 'Berhasil!', 'Data presensi berhasil diperbarui!');
 }
 
 // Fungsi untuk mengkapitalisasi huruf pertama
@@ -872,4 +1119,7 @@ window.addEventListener('load', () => {
 
     // Set tanggal hari ini sebagai default
     setCurrentDate();
+
+    // Load attendance history untuk inisialisasi data
+    loadAttendanceHistory();
 });

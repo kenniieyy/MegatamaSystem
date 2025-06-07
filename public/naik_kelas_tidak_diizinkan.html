@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="css/final.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 
 <body class="font-poppins mode-2">
@@ -161,6 +162,22 @@
                 </button>
                 <button id="confirm-action" class="btn-gradient">
                     Konfirmasi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-notification" class="fixed top-4 right-4 z-50 toast-enter toast-transition">
+        <div class="bg-white rounded-lg shadow-lg border-l-4 p-4 max-w-sm">
+            <div class="flex items-center">
+                <div id="toast-icon" class="mr-3"></div>
+                <div class="flex-1">
+                    <h4 id="toast-title" class="font-semibold text-gray-800"></h4>
+                    <p id="toast-message" class="text-sm text-gray-600"></p>
+                </div>
+                <button id="toast-close" class="ml-2 text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
                 </button>
             </div>
         </div>
