@@ -237,7 +237,7 @@ function confirmDelete() {
     if (deleteId !== null) {
         siswaData = siswaData.filter(s => s.id !== deleteId);
         applyFilters();
-        toast.show('success', 'Berhasil!', 'Data Siswa berhasil dihapus!');
+        toast.show('success', 'Berhasil!', `Data Siswa berhasil dihapus!`);
 
         // Tutup modal dan reset ID
         closeDeleteModal();

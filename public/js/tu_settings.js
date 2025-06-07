@@ -292,6 +292,8 @@ function submitForm() {
   // Tampilkan loading state
   const submitButton = document.querySelector('button[type="submit"]')
   const originalText = submitButton.textContent
+  submitButton.textContent = 'Menyimpan...';
+    submitButton.disabled = true;
   
 
   // Simulasi pengiriman data ke server
