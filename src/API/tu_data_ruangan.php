@@ -1,69 +1,96 @@
 <?php
-header('Content-Type: application/json; charset=utf-8'); // wajib buat fetch bisa baca JSON
+header('Content-Type: application/json');
+ini_set('display_errors', 1); // Tampilkan error di output (untuk debugging)
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-$host = 'localhost';
-$user = 'root';
-$pass = '';
-$db   = 'proyek_ppsi';
+// Koneksi ke database MySQL
+$host = "localhost";
+$user = "root";
+$password = "";
+$dbname = "proyek_ppsi"; 
 
-$conn = new mysqli($host, $user, $pass, $db);
+$conn = new mysqli($host, $user, $password, $dbname);
 if ($conn->connect_error) {
-    http_response_code(500);
-    echo json_encode([
-        "status" => "error",
-        "message" => "Koneksi gagal: " . $conn->connect_error
-    ]);
+    // Log error koneksi database
+    error_log("Koneksi database gagal: " . $conn->connect_error);
+    echo json_encode(['success' => false, 'message' => 'Koneksi database gagal: ' . $conn->connect_error]);
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // validasi form data dari JavaScript
-    $namaRuangan = isset($_POST['namaRuangan']) ? $_POST['namaRuangan'] : '';
-    $lokasi = isset($_POST['lokasi']) ? $_POST['lokasi'] : '';
-    $keterangan = isset($_POST['keterangan']) ? $_POST['keterangan'] : '';
+// Ambil input JSON
+$input = json_decode(file_get_contents('php://input'), true);
 
-    if (empty($namaRuangan) || empty($lokasi)) {
-        http_response_code(400);
-        echo json_encode([
-            "status" => "error",
-            "message" => "Nama ruangan dan lokasi wajib diisi."
-        ]);
-        exit;
-    }
+// Log input JSON yang diterima
+error_log("Input JSON diterima: " . print_r($input, true));
 
-    $stmt = $conn->prepare("INSERT INTO ruangan (nama_ruangan, lokasi, keterangan) VALUES (?, ?, ?)");
-    if (!$stmt) {
-        http_response_code(500);
-        echo json_encode([
-            "status" => "error",
-            "message" => "Prepare statement gagal: " . $conn->error
-        ]);
-        exit;
-    }
+$action = $_GET['action'] ?? ($input['action'] ?? '');
 
-    $stmt->bind_param("sss", $namaRuangan, $lokasi, $keterangan);
+// Log aksi yang terdeteksi
+error_log("Aksi terdeteksi: " . $action);
 
-    if ($stmt->execute()) {
-        echo json_encode([
-            "status" => "success",
-            "message" => "Data berhasil disimpan"
-        ]);
+if ($action == 'get') {
+    // Ambil data ruangan
+    $result = $conn->query("SELECT * FROM ruangan ORDER BY id DESC");
+    if ($result) {
+        $data = [];
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+        echo json_encode(['success' => true, 'data' => $data]);
     } else {
-        http_response_code(500);
-        echo json_encode([
-            "status" => "error",
-            "message" => "Gagal menyimpan data: " . $stmt->error
-        ]);
+        // Log error query
+        error_log("Query GET gagal: " . $conn->error);
+        echo json_encode(['success' => false, 'message' => 'Gagal mengambil data: ' . $conn->error]);
+    }
+    exit;
+} elseif ($action == 'add') {
+    // Tambah data ruangan
+    $namaRuangan = $conn->real_escape_string($input['namaRuangan'] ?? '');
+    $lokasi = $conn->real_escape_string($input['lokasi'] ?? '');
+    $keterangan = $conn->real_escape_string($input['keterangan'] ?? '');
+
+    // Log data yang akan ditambahkan
+    error_log("Data ADD: namaRuangan=" . $namaRuangan . ", lokasi=" . $lokasi . ", keterangan=" . $keterangan);
+
+    if (!$namaRuangan || !$lokasi) {
+        echo json_encode(['success' => false, 'message' => 'Nama Ruangan dan Lokasi wajib diisi.']);
+        exit;
     }
 
-    $stmt->close();
-} else {
-    http_response_code(405);
-    echo json_encode([
-        "status" => "error",
-        "message" => "Metode tidak diizinkan"
-    ]);
-}
+    $sql = "INSERT INTO ruangan (namaRuangan, lokasi, keterangan) VALUES ('$namaRuangan', '$lokasi', '$keterangan')";
+    if ($conn->query($sql)) {
+        echo json_encode(['success' => true]);
+    } else {
+        // Log error query
+        error_log("Query ADD gagal: " . $conn->error);
+        echo json_encode(['success' => false, 'message' => 'Gagal menyimpan data: ' . $conn->error]);
+    }
+    exit;
+} elseif ($action == 'delete') {
+    // Hapus data ruangan
+    $id = (int) ($input['id'] ?? 0);
 
-$conn->close();
+    // Log ID yang akan dihapus
+    error_log("Data DELETE: id=" . $id);
+
+    if ($id <= 0) {
+        echo json_encode(['success' => false, 'message' => 'ID tidak valid.']);
+        exit;
+    }
+    $sql = "DELETE FROM ruangan WHERE id = $id";
+    if ($conn->query($sql)) {
+        echo json_encode(['success' => true]);
+    } else {
+        // Log error query
+        error_log("Query DELETE gagal: " . $conn->error);
+        echo json_encode(['success' => false, 'message' => 'Gagal menghapus data: ' . $conn->error]);
+    }
+    exit;
+} else {
+    // Log aksi tidak dikenali
+    error_log("Aksi tidak dikenali: " . $action);
+    echo json_encode(['success' => false, 'message' => 'Aksi tidak dikenali.']);
+    exit;
+}
 ?>
