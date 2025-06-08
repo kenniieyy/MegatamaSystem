@@ -1,4 +1,3 @@
-
 // Data siswa (simulasi)
 let siswaData = [
     { id: 1, namaLengkap: "Rizky Pratama", jenisKelamin: "Laki - Laki", nis: "2301456781", kelas: "9", noHp: "081234567890", status: "Aktif" },
@@ -19,7 +18,6 @@ let currentPage = 1;
 const itemsPerPage = 9;
 let filteredData = [...siswaData];
 let editId = null;
-
 
 // DOM Elements
 const sidebar = document.getElementById('sidebar');
@@ -54,23 +52,23 @@ function renderTable() {
     const pageData = filteredData.slice(startIndex, endIndex);
 
     tableBody.innerHTML = pageData.map(siswa => `
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${siswa.namaLengkap}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${siswa.jenisKelamin}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${siswa.nis}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${siswa.kelas}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${siswa.noHp}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${getStatusBadge(siswa.status)}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button onclick="editSiswa(${siswa.id})" class="text-orange-600 hover:text-orange-900 mr-3">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button onclick="deleteSiswa(${siswa.id})" class="text-red-600 hover:text-red-900">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+        <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${siswa.namaLengkap}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${siswa.jenisKelamin}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${siswa.nis}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${siswa.kelas}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${siswa.noHp}</td>
+            <td class="px-6 py-4 whitespace-nowrap">${getStatusBadge(siswa.status)}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <button onclick="editSiswa(${siswa.id})" class="text-orange-600 hover:text-orange-900 mr-3">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button onclick="deleteSiswa(${siswa.id})" class="text-red-600 hover:text-red-900">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
 
     updatePagination();
 }
@@ -164,7 +162,7 @@ function hideModal(modalId) {
 // Tambah Siswa Modal
 tambahSiswaBtn.addEventListener('click', () => showModal('tambahSiswaModal'));
 document.getElementById('closeTambahModal').addEventListener('click', () => hideModal('tambahSiswaModal'));
-// document.getElementById('cancelTambahSiswa').addEventListener('click', () => hideModal('tambahSiswaModal'));
+document.getElementById('cancelTambahSiswa').addEventListener('click', () => hideModal('tambahSiswaModal'));
 
 // Tambah Siswa Form
 document.getElementById('tambahSiswaForm').addEventListener('submit', (e) => {
@@ -198,7 +196,6 @@ document.getElementById('tambahSiswaForm').addEventListener('submit', (e) => {
     applyFilters();
 });
 
-
 // CRUD functions
 function editSiswa(id) {
     const siswa = siswaData.find(s => s.id === id);
@@ -213,18 +210,9 @@ function editSiswa(id) {
     form.kelas.value = siswa.kelas;
     form.noHp.value = siswa.noHp;
     form.status.value = siswa.status;
-    document.getElementById('closeTambahModal').addEventListener('click', () => {
-        editId = null;
-        hideModal('tambahSiswaModal');
-    });
-    document.getElementById('cancelTambahSiswa').addEventListener('click', () => {
-        editId = null;
-        hideModal('tambahSiswaModal');
-    });
 
     showModal('tambahSiswaModal');
 }
-
 
 let deleteId = null; // Variable untuk menyimpan ID yang akan dihapus
 
@@ -266,10 +254,7 @@ document.addEventListener('keydown', function (e) {
 // Initial render
 renderTable();
 
-
-
-
-//LOGIC UNTUK TOAST NOTIFICATION
+// LOGIC UNTUK TOAST NOTIFICATION
 class ToastNotification {
     constructor() {
         this.toastElement = document.getElementById('toast-notification');
@@ -384,19 +369,33 @@ class ToastNotification {
 // Inisialisasi toast notification
 const toast = new ToastNotification();
 
-// Event listeners untuk demo buttons
-document.getElementById('show-success').addEventListener('click', () => {
-    toast.show('success', 'Berhasil!', 'Data berhasil dihapus dari sistem');
-});
+// Event listeners untuk demo buttons (hanya jika elemen ada)
+document.addEventListener('DOMContentLoaded', () => {
+    const showSuccessBtn = document.getElementById('show-success');
+    if (showSuccessBtn) {
+        showSuccessBtn.addEventListener('click', () => {
+            toast.show('success', 'Berhasil!', 'Data berhasil dihapus dari sistem');
+        });
+    }
 
-document.getElementById('show-error').addEventListener('click', () => {
-    toast.show('error', 'Error!', 'Terjadi kesalahan saat menghapus data');
-});
+    const showErrorBtn = document.getElementById('show-error');
+    if (showErrorBtn) {
+        showErrorBtn.addEventListener('click', () => {
+            toast.show('error', 'Error!', 'Terjadi kesalahan saat menghapus data');
+        });
+    }
 
-document.getElementById('show-warning').addEventListener('click', () => {
-    toast.show('warning', 'Peringatan!', 'Pastikan Anda yakin ingin menghapus data ini');
-});
+    const showWarningBtn = document.getElementById('show-warning');
+    if (showWarningBtn) {
+        showWarningBtn.addEventListener('click', () => {
+            toast.show('warning', 'Peringatan!', 'Pastikan Anda yakin ingin menghapus data ini');
+        });
+    }
 
-document.getElementById('show-info').addEventListener('click', () => {
-    toast.show('info', 'Informasi', 'Proses penghapusan data sedang berlangsung');
+    const showInfoBtn = document.getElementById('show-info');
+    if (showInfoBtn) {
+        showInfoBtn.addEventListener('click', () => {
+            toast.show('info', 'Informasi', 'Proses penghapusan data sedang berlangsung');
+        });
+    }
 });
