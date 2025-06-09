@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Presensi Siswa-Yayasan Megatama Jambi</title>
+    <title>Kelulusan Siswa-Yayasan Megatama Jambi</title>
     <link rel="stylesheet" href="css/final.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
@@ -54,9 +54,9 @@
                     </div>
                     <span class="menu-text">Riwayat Presensi</span>
                 </a>
-                <a href="presensi_siswa.html" class="menu-item active px-3 py-2 text-sm font-medium rounded-md">
+                <a href="presensi_siswa.html" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
                     <div class="menu-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none"
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -64,15 +64,15 @@
                     </div>
                     <span class="menu-text">Presensi Siswa</span>
                 </a>
-                <a href="naik_kelas.html" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
+                <a href="kelulusan_siswa.html" class="menu-item active px-3 py-2 text-sm font-medium rounded-md">
                     <div class="menu-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                         </svg>
                     </div>
-                    <span class="menu-text">Kenaikan Kelas</span>
+                    <span class="menu-text">Kelulusan Siswa</span>
                 </a>
                 <a href="settings_guru.html" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
                     <div class="menu-icon">
@@ -118,7 +118,7 @@
                                 d="M4 6h16M4 12h16M4 18h7" />
                         </svg>
                     </button>
-                    <h1 class="ml-3 text-lg font-semibold text-gray-800">Presensi Siswa</h1>
+                    <h1 class="ml-3 text-lg font-semibold text-gray-800">Kelulusan Siswa</h1>
                 </div>
                 <div class="flex items-center">
                     <div class="flex items-center">
@@ -133,12 +133,109 @@
         </header>
 
         <!-- Page Content -->
-        <main class="p-0 bg-pattern" style="height: calc(100vh - 60px);">
-            <!-- Konten akan ditampilkan berdasarkan peran pengguna -->
-            <div id="content-container" class="h-full">
-                <!-- Konten diisi oleh JavaScript -->
+        <main class="p-4 bg-pattern">
+            <!-- Tabel Data Siswa -->
+            <div class="card mb-4">
+                <div class="card-header flex flex-col md:flex-row md:items-center justify-between gap-3">
+                    <h3 class="text-base font-medium text-gray-700">Tabel Data Kelulusan Siswa</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <!-- Promote All Button -->
+                        <button id="btn-promote-all" class="btn-success flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                            </svg>
+                            Luluskan Semua Siswa
+                        </button>
+                        <!-- Export Button -->
+                        <button id="btn-export-data" class="btn-gradient flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Export Data
+                        </button>
+                    </div>
+                </div>
+                <div class="p-3">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="table-header text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <tr>
+                                    <th class="px-4 py-3 text-left">No</th>
+                                    <th class="px-4 py-3 text-left">Nama Lengkap</th>
+                                    <th class="px-4 py-3 text-left">Jenis Kelamin</th>
+                                    <th class="px-4 py-3 text-left">NIS</th>
+                                    <th class="px-4 py-3 text-left">Kelas</th>
+                                    <th class="px-4 py-3 text-left">No HP</th>
+                                    <th class="px-4 py-3 text-left">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-data" class="bg-white divide-y divide-gray-200 text-sm">
+                                <!-- Data diisi oleh JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="flex items-center justify-between mt-4">
+                        <div id="pagination-info" class="text-sm text-gray-500">
+                            Menampilkan 1-10 dari 30 data
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <button id="prev-page" class="pagination-item text-gray-500" disabled>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </button>
+                            <div id="pagination-numbers" class="flex items-center space-x-1">
+                                <!-- Nomor pagination akan diisi oleh JavaScript -->
+                            </div>
+                            <button id="next-page" class="pagination-item text-gray-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
+    </div>
+
+    <!-- Modal Konfirmasi -->
+    <div id="confirmation-modal" class="modal-overlay-naik-kelas">
+        <div class="modal-container-naik-kelas">
+            <div class="modal-header-naik-kelas">
+                <h3 class="modal-title-naik-kelas">Konfirmasi Kelulusan</h3>
+                <button class="modal-close-naik-kelas" onclick="closeModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body-naik-kelas">
+                <p id="modal-message-naik-kelas" class="text-gray-600 text-center mb-2"></p>
+                <p id="modal-submessage-naik-kelas" class="text-sm text-gray-500 text-center"></p>
+            </div>
+            <div class="modal-footer-naik-kelas">
+                <button onclick="closeModal()"
+                    class="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50">
+                    Batal
+                </button>
+                <button id="confirm-action" class="btn-gradient">
+                    Konfirmasi
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- Toast Notification -->
@@ -157,7 +254,7 @@
         </div>
     </div>
 
-    <script src="js/presensi_siswa_tidak_diizinkan.js"></script>
+    <script src="js/kelulusan_siswa.js"></script>
 </body>
 
 </html>

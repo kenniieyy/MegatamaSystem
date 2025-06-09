@@ -203,7 +203,7 @@
 
         <!-- Content Area -->
         <main class="p-6">
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="bg-white rounded-lg shadow-lg border border-gray-200">
                 <!-- Table Header -->
                 <div class="px-6 py-4 border-b border-gray-200">
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
@@ -214,12 +214,11 @@
                                 <i
                                     class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                                 <input type="text" id="searchInput" placeholder="search"
-                                    class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                                    class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
                             </div>
-
                             <!-- Filter Kelas -->
                             <select id="kelasFilter"
-                                class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                                class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
                                 <option value="">Kelas</option>
                                 <option value="7">Kelas 7</option>
                                 <option value="8">Kelas 8</option>
@@ -340,13 +339,18 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+<<<<<<< HEAD
                                 <input type="text" name="namasiswa" required
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+=======
+                                <input type="text" name="namaLengkap" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+>>>>>>> 6ea2a26beb334226e9bb3903c73dadb02db13627
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Kelamin</label>
                                 <select name="jenisKelamin" required
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
                                     <option value="">Pilih</option>
                                     <option value="Laki - Laki">Laki - Laki</option>
                                     <option value="Perempuan">Perempuan</option>
@@ -357,12 +361,12 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">NIS</label>
                                 <input type="text" name="nis" required
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Kelas</label>
                                 <select name="kelas" required
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
                                     <option value="">Pilih Kelas</option>
                                     <option value="7">7</option>
                                     <option value="8">8</option>
@@ -376,12 +380,12 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">No. HP</label>
                             <input type="tel" name="noHp" required
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
                             <select name="status" required
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
                                 <option value="">Pilih Status</option>
                                 <option value="Aktif">Aktif</option>
                                 <option value="Non-Aktif">Non-Aktif</option>
@@ -413,7 +417,7 @@
                         <i class="fas fa-trash text-red-600 text-2xl"></i>
                     </div>
                     <h3 class="text-lg font-semibold text-gray-800 mb-2">Hapus Data Siswa</h3>
-                    <p class="text-gray-600 mb-6">Apakah Anda yakin ingin menghapus Siswa guru ini? Tindakan ini tidak
+                    <p class="text-gray-600 mb-6">Apakah Anda yakin ingin menghapus Siswa ini? Tindakan ini tidak
                         dapat dibatalkan.</p>
 
                     <div class="flex space-x-3">

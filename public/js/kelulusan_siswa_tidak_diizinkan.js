@@ -2,18 +2,18 @@
 const currentUser = {
   name: "Olivia Putri",
   role: "teacher", // 'homeroom_teacher' or 'teacher'
-  class: "7", // Hanya untuk guru wali kelas
+  class: "12", // Hanya untuk guru wali kelas
   avatar: "https://randomuser.me/api/portraits/women/44.jpg",
 }
 
-// Contoh data siswa kelas 7 (hanya ditampilkan untuk guru wali kelas)
+// Contoh data siswa kelas 9 dan 12 (hanya ditampilkan untuk guru wali kelas)
 const studentData = [
   {
     id: 1,
     name: "Ahmad Fauzi",
     gender: "Laki-laki",
     nis: "2024025",
-    class: "7",
+    class: "12",
     phone: "081234567814",
     status: "pending",
   },
@@ -22,7 +22,7 @@ const studentData = [
     name: "Anisa Putri",
     gender: "Perempuan",
     nis: "2024001",
-    class: "7",
+    class: "12",
     phone: "081234567890",
     status: "pending",
   },
@@ -31,7 +31,7 @@ const studentData = [
     name: "Budi Santoso",
     gender: "Laki-laki",
     nis: "2024006",
-    class: "7",
+    class: "12",
     phone: "081234567895",
     status: "pending",
   },
@@ -40,7 +40,7 @@ const studentData = [
     name: "Citra Dewi",
     gender: "Perempuan",
     nis: "2024015",
-    class: "7",
+    class: "12",
     phone: "081234567804",
     status: "pending",
   },
@@ -49,7 +49,7 @@ const studentData = [
     name: "Deni Kurniawan",
     gender: "Laki-laki",
     nis: "2024009",
-    class: "7",
+    class: "12",
     phone: "081234567898",
     status: "pending",
   },
@@ -58,7 +58,7 @@ const studentData = [
     name: "Eka Fitriani",
     gender: "Perempuan",
     nis: "2024019",
-    class: "7",
+    class: "12",
     phone: "081234567808",
     status: "pending",
   },
@@ -67,7 +67,7 @@ const studentData = [
     name: "Fajar Ramadhan",
     gender: "Laki-laki",
     nis: "2024003",
-    class: "7",
+    class: "12",
     phone: "081234567892",
     status: "pending",
   },
@@ -76,7 +76,7 @@ const studentData = [
     name: "Gita Nuraini",
     gender: "Perempuan",
     nis: "2024004",
-    class: "7",
+    class: "12",
     phone: "081234567893",
     status: "pending",
   },
@@ -85,7 +85,7 @@ const studentData = [
     name: "Hadi Prasetyo",
     gender: "Laki-laki",
     nis: "2024011",
-    class: "7",
+    class: "12",
     phone: "081234567800",
     status: "pending",
   },
@@ -94,7 +94,7 @@ const studentData = [
     name: "Indah Permata",
     gender: "Perempuan",
     nis: "2024027",
-    class: "7",
+    class: "12",
     phone: "081234567816",
     status: "pending",
   },
@@ -377,7 +377,7 @@ function showConfirmationModal(studentId, action) {
   currentStudentId = studentId
   currentAction = action
 
-  const actionText = action === "promote" ? "naik kelas" : "tidak naik kelas"
+  const actionText = action === "promote" ? "lulus" : "tidak lulus"
   message.textContent = `Apakah Anda yakin ingin menetapkan status ${actionText} untuk siswa ${student.name}?`
 
   confirmButton.onclick = () => confirmAction()
@@ -385,7 +385,7 @@ function showConfirmationModal(studentId, action) {
   modal.classList.add("show")
 }
 
-// Tampilkan modal konfirmasi untuk kenaikan kelas massal
+// Tampilkan modal konfirmasi untuk kelulusan massal
 function showBulkPromotionModal() {
   const modal = document.getElementById("confirmation-modal")
   const message = document.getElementById("modal-message-naik-kelas")
@@ -402,7 +402,7 @@ function showBulkPromotionModal() {
 
   // Jika tidak ada siswa yang pending, tampilkan pesan khusus
   if (pendingStudents.length === 0) {
-    message.textContent = "Tidak ada siswa yang perlu dinaikkan kelas."
+    message.textContent = "Tidak ada siswa yang perlu diluluskan."
 
     // Ubah tombol konfirmasi menjadi "Tutup"
     const newConfirmButton = confirmButton.cloneNode(true)
@@ -419,7 +419,7 @@ function showBulkPromotionModal() {
   currentAction = "promote"
   currentStudentId = null
 
-  message.textContent = `Tindakan ini akan menetapkan status "Naik Kelas" untuk ${pendingStudents.length} siswa yang belum diproses.`
+  message.textContent = `Tindakan ini akan menetapkan status "Lulus" untuk ${pendingStudents.length} siswa yang belum diproses.`
 
   // "Hapus event listener lama (jika ada), lalu tambahkan event listener yang baru."
   const newConfirmButton = confirmButton.cloneNode(true)
@@ -462,9 +462,9 @@ function confirmAction() {
 
       // Tampilkan toast notification berdasarkan aksi
       if (currentAction === 'promote') {
-        toast.show('success', 'Berhasil!', `${student.name} berhasil dinaikkan kelas!`)
+        toast.show('success', 'Berhasil!', `${student.name} berhasil dinyatakan lulus!`)
       } else if (currentAction === 'not_promote') {
-        toast.show('info', 'Status Diperbarui!', `${student.name} ditetapkan tidak naik kelas.`)
+        toast.show('info', 'Status Diperbarui!', `${student.name} dinyatakan tidak lulus.`)
       }
     }
   }
@@ -485,7 +485,7 @@ function confirmBulkAction() {
     renderStudentData()
 
     // Tampilkan toast notification untuk bulk promotion
-    toast.show('success', 'Berhasil!', `${promotedCount} siswa berhasil dinaikkan kelas!`)
+    toast.show('success', 'Berhasil!', `${promotedCount} siswa berhasil diluluskan!`)
   }
   closeModal()
 }
@@ -507,7 +507,7 @@ function renderAccessDenied() {
                     <h2>Akses Terbatas</h2>
                     <p>
                         Saat ini Anda tidak terdaftar sebagai <strong>Wali Kelas</strong> dalam sistem.<br>
-                        Oleh karena itu, Anda tidak memiliki akses untuk mengelola data kenaikan kelas siswa.
+                        Oleh karena itu, Anda tidak memiliki akses untuk mengelola data kelulusan siswa.
                     </p>
                 </div>
             </div>
@@ -525,14 +525,14 @@ function renderStudentTable() {
             <!-- Tabel Data Siswa -->
             <div class="card mb-4">
                 <div class="card-header flex flex-col md:flex-row md:items-center justify-between gap-3">
-                    <h3 class="text-base font-medium text-gray-700">Tabel Data Kenaikan Kelas</h3>
+                    <h3 class="text-base font-medium text-gray-700">Tabel Data Kelulusan Siswa</h3>
                     <div class="flex flex-wrap gap-2">
                         <!-- Promote All Button -->
                         <button id="btn-promote-all" class="btn-success flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
                             </svg>
-                            Naikkan Semua Siswa
+                            Luluskan Semua Siswa
                         </button>
                         <!-- Export Button -->
                         <button id="btn-export-data" class="btn-gradient flex items-center">
@@ -631,17 +631,17 @@ function renderStudentData() {
     let actionButtons = ""
 
     if (student.status === "promote") {
-      statusBadge = `<span class="badge success">Naik Kelas</span>`
+      statusBadge = `<span class="badge success">Lulus</span>`
     } else if (student.status === "not_promote") {
-      statusBadge = `<span class="badge danger">Tidak Naik</span>`
+      statusBadge = `<span class="badge danger">Tidak Lulus</span>`
     } else {
       actionButtons = `
                 <div class="flex space-x-2">
                     <button onclick="showConfirmationModal(${student.id}, 'promote')" class="btn-success">
-                        Naik
+                        Lulus
                     </button>
                     <button onclick="showConfirmationModal(${student.id}, 'not_promote')" class="btn-danger">
-                        Tidak Naik
+                        Tidak Lulus
                     </button>
                 </div>
             `
@@ -751,7 +751,7 @@ function initializePage() {
 function changeUserRole(newRole) {
   currentUser.role = newRole
   if (newRole === "homeroom_teacher") {
-    currentUser.class = "7"
+    currentUser.class = "9"
   } else {
     currentUser.class = null
   }
