@@ -1,91 +1,97 @@
 <?php
+// === HEADER DAN DEBUGGING ===
+header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json");
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-header("Content-Type: application/json");
+// === KONEKSI DATABASE ===
+include __DIR__ . '/../config/koneksi.php';
+date_default_timezone_set('Asia/Jakarta');
+$today = date('Y-m-d');
 
-// Koneksi database
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db = "proyek_ppsi";
+// === STATUS CARD ===
+$totalGuru = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM guru WHERE status = 'Aktif'"));
+$totalSiswa = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM siswa"));
+$absenDatang = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM rekap_absen_guru WHERE tanggal = '$today' AND tipe = 'datang' AND status = 'hadir'"));
+$absenPulangCount = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM rekap_absen_guru WHERE tanggal = '$today' AND tipe = 'pulang' AND status = 'hadir'"));
+$ruanganDipinjam = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM peminjaman_ruangan WHERE tanggal_peminjaman = '$today'"));
 
-$conn = new mysqli($host, $user, $pass, $db);
-if ($conn->connect_error) {
-    echo json_encode(["success" => false, "message" => "Koneksi gagal: " . $conn->connect_error]);
-    exit;
+$statusCards = [
+    'absen_datang_hari_ini' => $absenDatang,
+    'absen_pulang_hari_ini' => $absenPulangCount > 0 ? "$absenPulangCount Sudah Pulang" : "Belum Absen Pulang",
+    'total_guru' => $totalGuru,
+    'total_siswa' => $totalSiswa,
+    'ruangan_dipinjam_hari_ini' => $ruanganDipinjam
+];
+
+// === AKTIVITAS TERBARU ===
+$aktivitas = [];
+$queryAktivitas = mysqli_query($conn, "SELECT * FROM log_aktivitas ORDER BY waktu DESC LIMIT 5");
+while ($row = mysqli_fetch_assoc($queryAktivitas)) {
+    $aktivitas[] = [
+        'keterangan' => $row['keterangan'],
+        'waktu' => date('d-m-Y H:i:s', strtotime($row['waktu'])) . " WIB",
+        'icon' => $row['tipe'] ?? 'teacher'
+    ];
 }
 
-$method = $_SERVER['REQUEST_METHOD'];
-
-// === Handle GET list ===
-if ($method === 'GET' && isset($_GET["action"]) && $_GET["action"] === "list") {
-    $result = $conn->query("SELECT * FROM peminjaman_ruangan ORDER BY id DESC");
-    if (!$result) {
-        echo json_encode(["success" => false, "message" => "Query gagal: " . $conn->error]);
-        $conn->close();
-        exit;
+// === FUNGSI CHART ===
+function getMonthlyCount($conn, $table, $tanggalField, $extraWhere = '') {
+    $data = [];
+    $year = date('Y');
+    for ($i = 1; $i <= 12; $i++) {
+        $month = str_pad($i, 2, '0', STR_PAD_LEFT);
+        $query = "SELECT COUNT(*) as total FROM $table WHERE MONTH($tanggalField) = '$month' AND YEAR($tanggalField) = '$year' $extraWhere";
+        $res = mysqli_query($conn, $query);
+        $row = mysqli_fetch_assoc($res);
+        $namaBulan = strtolower(date('F', mktime(0, 0, 0, $i, 10)));
+        $data[$namaBulan] = (int) $row['total'];
     }
-
-    $rows = [];
-    while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
-    }
-
-    echo json_encode(["success" => true, "data" => $rows]);
-    $conn->close();
-    exit;
+    return $data;
 }
 
-// === Handle POST create new reservation ===
-if ($method === 'POST') {
-    $raw = file_get_contents("php://input");
-    $data = json_decode($raw, true);
-
-    if (is_null($data)) {
-        echo json_encode(["success" => false, "message" => "Gagal membaca data JSON. Data mentah: " . $raw]);
-        exit;
+function getKehadiranPersen($conn, $tipe) {
+    $data = [];
+    $totalGuru = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM guru WHERE status = 'Aktif'"));
+    $year = date('Y');
+    for ($i = 1; $i <= 12; $i++) {
+        $month = str_pad($i, 2, '0', STR_PAD_LEFT);
+        $query = "SELECT COUNT(*) as hadir FROM rekap_absen_guru WHERE tipe = '$tipe' AND status = 'hadir' AND MONTH(tanggal) = '$month' AND YEAR(tanggal) = '$year'";
+        $res = mysqli_query($conn, $query);
+        $row = mysqli_fetch_assoc($res);
+        $persen = $totalGuru > 0 ? round(($row['hadir'] / $totalGuru) * 100) : 0;
+        $namaBulan = strtolower(date('F', mktime(0, 0, 0, $i, 10)));
+        $data[$namaBulan] = $persen;
     }
-
-    // Sanitasi dan trim input
-    $nama = trim($data["nama_lengkap"] ?? "");
-    $nis = trim($data["nis"] ?? "");
-    $kelas = trim($data["kelas"] ?? "");
-    $telepon = trim($data["no_telepon"] ?? "");
-    $ruangan = trim($data["jenis_ruangan"] ?? "");
-    $tanggal = trim($data["tanggal_peminjaman"] ?? "");
-    $deskripsi = trim($data["deskripsi_kegiatan"] ?? "");
-    $jam_mulai = trim($data["jam_mulai"] ?? "");
-    $jam_selesai = trim($data["jam_selesai"] ?? "");
-    $penanggung = trim($data["penanggung_jawab"] ?? "");
-
-    // Cek jika ada data kosong
-    if ($nama === "" || $nis === "" || $kelas === "" || $ruangan === "" || $tanggal === "" || $deskripsi === "" || $jam_mulai === "" || $jam_selesai === "" || $penanggung === "") {
-        echo json_encode(["success" => false, "message" => "Semua field wajib diisi."]);
-        exit;
-    }
-
-    // Prepared statement untuk insert
-    $stmt = $conn->prepare("INSERT INTO peminjaman_ruangan (nama_lengkap, nis, kelas, no_telepon, jenis_ruangan, tanggal_peminjaman, deskripsi_kegiatan, jam_mulai, jam_selesai, penanggung_jawab) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    if (!$stmt) {
-        echo json_encode(["success" => false, "message" => "Prepare statement gagal: " . $conn->error]);
-        exit;
-    }
-
-    $stmt->bind_param("ssssssssss", $nama, $nis, $kelas, $telepon, $ruangan, $tanggal, $deskripsi, $jam_mulai, $jam_selesai, $penanggung);
-
-    if ($stmt->execute()) {
-        echo json_encode(["success" => true, "message" => "Peminjaman berhasil disimpan."]);
-    } else {
-        echo json_encode(["success" => false, "message" => "Query gagal: " . $stmt->error]);
-    }
-
-    $stmt->close();
-    $conn->close();
-    exit;
+    return $data;
 }
 
-// Jika bukan GET list atau POST maka beri respon error
-echo json_encode(["success" => false, "message" => "Metode request tidak diizinkan atau action tidak dikenali."]);
-$conn->close();
-exit;
+function getJumlahSiswaPerKelas($conn) {
+    $result = [];
+    $query = "SELECT kelas, COUNT(*) as jumlah FROM siswa GROUP BY kelas";
+    $res = mysqli_query($conn, $query);
+    while ($row = mysqli_fetch_assoc($res)) {
+        $result[$row['kelas']] = (int)$row['jumlah'];
+    }
+    return $result;
+}
+
+// === CHARTS DATA ===
+$charts = [
+    'peminjaman_ruangan' => getMonthlyCount($conn, 'peminjaman_ruangan', 'tanggal_peminjaman'),
+    'kehadiran_guru_datang' => getKehadiranPersen($conn, 'datang'),
+    'kehadiran_guru_pulang' => getKehadiranPersen($conn, 'pulang'),
+    'jumlah_siswa' => getJumlahSiswaPerKelas($conn)
+];
+
+// === KIRIM JSON RESPONSE ===
+echo json_encode([
+    'success' => true,
+    'data' => [
+        'status_cards' => $statusCards,
+        'aktivitas_terbaru' => $aktivitas,
+        'charts' => $charts
+    ]
+]);

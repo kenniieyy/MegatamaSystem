@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 09, 2025 at 06:49 AM
+-- Generation Time: Jun 12, 2025 at 04:17 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -24,22 +24,6 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `absen_guru`
---
-
-CREATE TABLE `absen_guru` (
-  `id_absen` int(11) NOT NULL,
-  `id_guru` int(11) DEFAULT NULL,
-  `tanggal` date NOT NULL,
-  `jam_datang` time DEFAULT NULL,
-  `jam_pulang` time DEFAULT NULL,
-  `foto_datang` varchar(255) DEFAULT NULL,
-  `foto_pulang` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `guru`
 --
 
@@ -54,6 +38,19 @@ CREATE TABLE `guru` (
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
   `foto` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `log_aktivitas`
+--
+
+CREATE TABLE `log_aktivitas` (
+  `id` int(11) NOT NULL,
+  `keterangan` text DEFAULT NULL,
+  `waktu` datetime DEFAULT NULL,
+  `tipe` enum('teacher','room') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -104,6 +101,48 @@ CREATE TABLE `peminjaman_ruangan` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `rekap_absen_guru`
+--
+
+CREATE TABLE `rekap_absen_guru` (
+  `id` int(11) NOT NULL,
+  `id_guru` int(11) NOT NULL,
+  `tanggal` date DEFAULT NULL,
+  `waktu` time DEFAULT NULL,
+  `status` enum('hadir','tidak hadir') DEFAULT NULL,
+  `keterangan` enum('Tepat Waktu','Terlambat','Absen Tidak Dilakukan') DEFAULT NULL,
+  `tipe` enum('datang','pulang') DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rekap_absen_siswa`
+--
+
+CREATE TABLE `rekap_absen_siswa` (
+  `id` int(11) NOT NULL,
+  `nis` varchar(20) DEFAULT NULL,
+  `tanggal` date DEFAULT NULL,
+  `status` enum('hadir','izin','sakit','alpa') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ruangan`
+--
+
+CREATE TABLE `ruangan` (
+  `id` int(11) NOT NULL,
+  `namaRuangan` varchar(100) NOT NULL,
+  `lokasi` varchar(100) NOT NULL,
+  `keterangan` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `siswa`
 --
 
@@ -121,22 +160,41 @@ CREATE TABLE `siswa` (
 --
 
 --
--- Indexes for table `absen_guru`
---
-ALTER TABLE `absen_guru`
-  ADD PRIMARY KEY (`id_absen`),
-  ADD KEY `id_guru` (`id_guru`);
-
---
 -- Indexes for table `guru`
 --
 ALTER TABLE `guru`
   ADD PRIMARY KEY (`id_guru`);
 
 --
+-- Indexes for table `log_aktivitas`
+--
+ALTER TABLE `log_aktivitas`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `peminjaman_ruangan`
 --
 ALTER TABLE `peminjaman_ruangan`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `rekap_absen_guru`
+--
+ALTER TABLE `rekap_absen_guru`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_guru` (`id_guru`);
+
+--
+-- Indexes for table `rekap_absen_siswa`
+--
+ALTER TABLE `rekap_absen_siswa`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `nis` (`nis`);
+
+--
+-- Indexes for table `ruangan`
+--
+ALTER TABLE `ruangan`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -156,10 +214,50 @@ ALTER TABLE `guru`
   MODIFY `id_guru` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1010;
 
 --
+-- AUTO_INCREMENT for table `log_aktivitas`
+--
+ALTER TABLE `log_aktivitas`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `peminjaman_ruangan`
 --
 ALTER TABLE `peminjaman_ruangan`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `rekap_absen_guru`
+--
+ALTER TABLE `rekap_absen_guru`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `rekap_absen_siswa`
+--
+ALTER TABLE `rekap_absen_siswa`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `ruangan`
+--
+ALTER TABLE `ruangan`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `rekap_absen_guru`
+--
+ALTER TABLE `rekap_absen_guru`
+  ADD CONSTRAINT `rekap_absen_guru_ibfk_1` FOREIGN KEY (`id_guru`) REFERENCES `guru` (`id_guru`);
+
+--
+-- Constraints for table `rekap_absen_siswa`
+--
+ALTER TABLE `rekap_absen_siswa`
+  ADD CONSTRAINT `rekap_absen_siswa_ibfk_1` FOREIGN KEY (`nis`) REFERENCES `siswa` (`nis`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -23,36 +23,55 @@ let studentChart;
 document.addEventListener('DOMContentLoaded', function() {
 
     // Fungsi untuk mengambil data dari API
+
     async function fetchDashboardData() {
-        try {
-            const response = await fetch('http://localhost/MegatamaSystem/src/API/tu_ashboard.php'); // Sesuaikan URL API Anda
-            const data = await response.json();
-
-            if (!data.success) {
-                console.error("Error from API:", data.message);
-                // Tampilkan pesan error di UI jika perlu
-                return;
-            }
-
-            // Memperbarui Status Cards
-            updateStatusCards(data.data.status_cards);
-
-            // Memperbarui Aktivitas Terbaru
-            updateRecentActivities(data.data.aktivitas_terbaru);
-
-            // Memperbarui Charts (panggil setelah data chart tersedia)
-            initializeCharts(data.data.charts); // Panggil initializeCharts dengan data dari API
-
-            // Update filter ruangan dengan data yang ada di Chart.js
-            const currentMonth = new Date().toLocaleString('en-US', { month: 'long' }).toLowerCase();
-            document.getElementById('room-filter').value = currentMonth;
-            // updateRoomChart(currentMonth); // Panggil ini setelah chart diinisialisasi
-
-        } catch (error) {
-            console.error('Error fetching dashboard data:', error);
-            // Tampilkan pesan error koneksi di UI
+    try {
+        const response = await fetch('http://localhost/MegatamaSystem/src/API/tu_dashboard.php') // Replace with your actual endpoint
+        if (!response.ok) {
+            // If the response is not OK (e.g., 404, 500)
+            const errorText = await response.text(); // Read the response as text
+            console.error('Error fetching dashboard data:', response.status, response.statusText, errorText);
+            // You might want to throw an error or handle the non-OK response appropriately
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        const data = await response.json(); // Attempt to parse as JSON
+        // Process your data here
+        console.log('Dashboard data:', data);
+    } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        // Tampilkan pesan error koneksi di UI
     }
+}
+    // async function fetchDashboardData() {
+    //     try {
+    //         const response = await fetch('http://localhost/MegatamaSystem/src/API/tu_dashboard.php'); // Sesuaikan URL API Anda
+    //         const data = await response.json();
+
+    //         if (!data.success) {
+    //             console.error("Error from API:", data.message);
+    //             // Tampilkan pesan error di UI jika perlu
+    //             return;
+    //         }
+
+    //         // Memperbarui Status Cards
+    //         updateStatusCards(data.data.status_cards);
+
+    //         // Memperbarui Aktivitas Terbaru
+    //         updateRecentActivities(data.data.aktivitas_terbaru);
+
+    //         // Memperbarui Charts (panggil setelah data chart tersedia)
+    //         initializeCharts(data.data.charts); // Panggil initializeCharts dengan data dari API
+
+    //         // Update filter ruangan dengan data yang ada di Chart.js
+    //         const currentMonth = new Date().toLocaleString('en-US', { month: 'long' }).toLowerCase();
+    //         document.getElementById('room-filter').value = currentMonth;
+    //         // updateRoomChart(currentMonth); // Panggil ini setelah chart diinisialisasi
+
+    //     } catch (error) {
+    //         console.error('Error fetching dashboard data:', error);
+    //         // Tampilkan pesan error koneksi di UI
+    //     }
+    // }
 
     // Fungsi untuk memperbarui kartu status
     function updateStatusCards(statusData) {
