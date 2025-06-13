@@ -474,6 +474,18 @@
                                 </thead>
                                 <tbody id="reservation-history" class="bg-white divide-y divide-gray-200">
                                     <!-- Data riwayat peminjaman akan diisi oleh JavaScript -->
+                                    <tr>
+                                        <td>${i + 1}</td>
+                                        <td>${item.nama_lengkap}</td>
+                                        <td>${item.jenis_ruangan}</td>
+                                        <td>${item.tanggal_peminjaman}</td>
+                                        <td>${item.jam_mulai} - ${item.jam_selesai}</td>
+                                        <td>
+                                        <button class="btn-lihat text-blue-600 hover:underline mr-2" data-id="${item.id}">Lihat</button>
+                                        <button class="btn-edit text-yellow-600 hover:underline mr-2" data-id="${item.id}">Edit</button>
+                                        <button class="btn-delete text-red-600 hover:underline" data-id="${item.id}">Hapus</button>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -481,7 +493,7 @@
                         <!-- Pagination -->
                         <div class="px-6 py-4 flex items-center justify-between border-t border-gray-200">
                             <div id="pagination-info" class="text-sm text-gray-500">
-                                Menampilkan 0-0 dari 0 data
+                                Menampilkan 
                             </div>
                             <div class="flex items-center space-x-2">
                                 <button id="prevPage"
