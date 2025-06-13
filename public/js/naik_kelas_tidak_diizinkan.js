@@ -7,6 +7,8 @@ const currentUser = {
 }
 
 // Contoh data siswa kelas 7 (hanya ditampilkan untuk guru wali kelas)
+// Jika Anda ingin mengambil data dari server, Anda perlu mengaktifkan kembali bagian fetch
+// dan mengubah 'const studentData' menjadi 'let studentData'.
 const studentData = [
   {
     id: 1,
@@ -98,7 +100,7 @@ const studentData = [
     phone: "081234567816",
     status: "pending",
   },
-]
+];
 
 // Variabel paginasi
 let currentPage = 1
@@ -107,25 +109,291 @@ let currentAction = null
 let currentStudentId = null
 let isBulkPromotion = false
 
-// Toggle sidebar
+// Fungsionalitas sidebar yang dapat dialihkan
 function initializeSidebar() {
-  const toggleButton = document.getElementById("toggle-sidebar")
+  const toggleBtn = document.getElementById("toggle-sidebar")
   const sidebar = document.getElementById("sidebar")
   const mainContent = document.getElementById("main-content")
   const overlay = document.getElementById("overlay")
 
-  toggleButton.addEventListener("click", () => {
-    sidebar.classList.toggle("collapsed")
-    sidebar.classList.toggle("mobile-open")
-    mainContent.classList.toggle("expanded")
-    overlay.classList.toggle("show")
+  // Periksa apakah semua elemen ada
+  if (!toggleBtn || !sidebar || !mainContent || !overlay) {
+    console.error("Beberapa elemen tidak ditemukan:", {
+      toggleBtn: !!toggleBtn,
+      sidebar: !!sidebar,
+      mainContent: !!mainContent,
+      overlay: !!overlay,
+    })
+    return
+  }
+
+  // Fungsi untuk mengatur ulang semua kelas dan gaya
+  function resetSidebarStates() {
+    sidebar.classList.remove("collapsed", "mobile-open")
+    overlay.classList.remove("show")
+    // Atur ulang gaya inline jika ada
+    sidebar.style.transform = ""
+  }
+
+  // Fungsi untuk mengatur tata letak desktop
+  function setupDesktopLayout() {
+    resetSidebarStates()
+    // Di desktop, sidebar default terbuka dan konten utama menyesuaikan
+    mainContent.classList.remove("expanded")
+    sidebar.classList.remove("collapsed")
+  }
+
+  // Fungsi untuk mengatur tata letak seluler
+  function setupMobileLayout() {
+    resetSidebarStates()
+    // Di seluler, sidebar default tertutup
+    sidebar.classList.add("collapsed")
+    mainContent.classList.add("expanded")
+  }
+
+  // Fungsi untuk membuka sidebar
+  function openSidebar() {
+    if (window.innerWidth <= 768) {
+      // Seluler: gunakan kelas mobile-open
+      sidebar.classList.remove("collapsed")
+      sidebar.classList.add("mobile-open")
+      overlay.classList.add("show")
+    } else {
+      // Desktop: hilangkan kelas collapsed
+      sidebar.classList.remove("collapsed")
+      mainContent.classList.remove("expanded")
+    }
+  }
+
+  // Fungsi untuk menutup sidebar
+  function closeSidebar() {
+    if (window.innerWidth <= 768) {
+      // Seluler: tutup dan hilangkan overlay
+      sidebar.classList.add("collapsed")
+      sidebar.classList.remove("mobile-open")
+      overlay.classList.remove("show")
+    } else {
+      // Desktop: sembunyikan sidebar dan perluas konten utama
+      sidebar.classList.add("collapsed")
+      mainContent.classList.add("expanded")
+    }
+  }
+
+  // Fungsi untuk memeriksa status sidebar (terbuka/tertutup)
+  function isSidebarOpen() {
+    if (window.innerWidth <= 768) {
+      return sidebar.classList.contains("mobile-open")
+    } else {
+      return !sidebar.classList.contains("collapsed")
+    }
+  }
+
+  // Fungsi untuk menangani perilaku responsif
+  function handleResponsiveLayout() {
+    const currentWidth = window.innerWidth
+
+    if (currentWidth <= 768) {
+      // Beralih ke seluler
+      setupMobileLayout()
+    } else {
+      // Beralih ke desktop
+      setupDesktopLayout()
+    }
+
+    console.log(`Tata letak diubah menjadi: ${currentWidth <= 768 ? "Seluler" : "Desktop"} (${currentWidth}px)`)
+  }
+
+  // Alihkan sidebar
+  toggleBtn.addEventListener("click", () => {
+    console.log("Tombol toggle diklik, lebar jendela:", window.innerWidth)
+    console.log("Status sidebar terbuka:", isSidebarOpen())
+
+    if (isSidebarOpen()) {
+      closeSidebar()
+      console.log("Sidebar ditutup")
+    } else {
+      openSidebar()
+      console.log("Sidebar dibuka")
+    }
   })
 
+  // Tutup sidebar saat mengklik overlay (hanya di seluler)
   overlay.addEventListener("click", () => {
-    sidebar.classList.remove("mobile-open")
-    overlay.classList.remove("show")
+    console.log("Overlay diklik - menutup sidebar")
+    closeSidebar()
   })
+
+  // Tangani perubahan ukuran jendela
+  let resizeTimeout
+  window.addEventListener("resize", () => {
+    // Debounce peristiwa resize untuk kinerja
+    clearTimeout(resizeTimeout)
+    resizeTimeout = setTimeout(() => {
+      handleResponsiveLayout()
+    }, 100)
+  })
+
+  // Inisialisasi tata letak berdasarkan ukuran jendela saat ini
+  handleResponsiveLayout()
+
+  console.log("Sidebar responsif berhasil diinisialisasi")
 }
+
+// Fungsi tambahan untuk debugging
+function debugSidebar() {
+  const sidebar = document.getElementById("sidebar")
+  const mainContent = document.getElementById("main-content")
+  const overlay = document.getElementById("overlay")
+
+  console.log("=== INFO DEBUG SIDEBAR ===")
+  console.log("Lebar jendela:", window.innerWidth)
+  console.log("Jenis perangkat:", window.innerWidth <= 768 ? "Seluler" : "Desktop")
+  console.log("Kelas sidebar:", sidebar.className)
+  console.log("Kelas konten utama:", mainContent.className)
+  console.log("Kelas overlay:", overlay.className)
+  console.log("Transformasi komputasi sidebar:", window.getComputedStyle(sidebar).transform)
+}
+
+// LOGIKA UNTUK NOTIFIKASI TOAST
+class ToastNotification {
+  constructor() {
+    this.toastElement = document.getElementById('toast-notification');
+
+    // PENTING: Periksa apakah elemen toast ditemukan sebelum melanjutkan
+    if (!this.toastElement) {
+        console.error("Elemen HTML dengan ID 'toast-notification' tidak ditemukan. ToastNotification tidak dapat diinisialisasi.");
+        // Atur properti ke null untuk mencegah kesalahan lebih lanjut jika objek masih digunakan
+        this.toastIcon = null;
+        this.toastTitle = null;
+        this.toastMessage = null;
+        this.toastClose = null;
+        this.toastContainer = null;
+        this.isVisible = false;
+        this.hideTimeout = null;
+        return; // Keluar dari konstruktor
+    }
+
+    this.toastIcon = document.getElementById('toast-icon');
+    this.toastTitle = document.getElementById('toast-title');
+    this.toastMessage = document.getElementById('toast-message');
+    this.toastClose = document.getElementById('toast-close');
+    this.toastContainer = this.toastElement.querySelector('.bg-white'); // Sekarang ini aman karena toastElement sudah diperiksa
+
+    this.isVisible = false;
+    this.hideTimeout = null;
+
+    // Hanya siapkan pendengar peristiwa jika elemen-elemen inti ditemukan
+    if (this.toastElement && this.toastClose) {
+      this.setupEventListeners();
+    }
+  }
+
+  setupEventListeners() {
+    // Pendengar peristiwa untuk tombol tutup
+    this.toastClose.addEventListener('click', () => {
+      this.hide();
+    });
+
+    // Sembunyikan otomatis setelah 5 detik
+    this.toastElement.addEventListener('transitionend', (e) => {
+      if (e.target === this.toastElement && this.isVisible) {
+        this.autoHide();
+      }
+    });
+  }
+
+  show(type, title, message) {
+    if (!this.toastElement || !this.toastContainer) { // Cegah menampilkan jika elemen toast tidak diinisialisasi dengan benar
+        console.error("Elemen notifikasi toast tidak tersedia.");
+        return;
+    }
+    // Hapus timeout sebelumnya jika ada
+    if (this.hideTimeout) {
+      clearTimeout(this.hideTimeout);
+    }
+
+    // Atur konten toast
+    this.setContent(type, title, message);
+
+    // Atur ulang kelas
+    this.toastElement.classList.remove('toast-exit', 'toast-show');
+    this.toastElement.classList.add('toast-enter');
+
+    // Paksa reflow untuk memastikan kelas diterapkan
+    this.toastElement.offsetHeight;
+
+    // Tampilkan toast dengan animasi
+    setTimeout(() => {
+      this.toastElement.classList.remove('toast-enter');
+      this.toastElement.classList.add('toast-show');
+      this.isVisible = true;
+    }, 10);
+  }
+
+  hide() {
+    if (!this.isVisible || !this.toastElement) return; // Tambahkan pemeriksaan untuk toastElement
+
+    // Hapus timeout sembunyikan otomatis
+    if (this.hideTimeout) {
+      clearTimeout(this.hideTimeout);
+    }
+
+    // Sembunyikan dengan animasi
+    this.toastElement.classList.remove('toast-show');
+    this.toastElement.classList.add('toast-exit');
+    this.isVisible = false;
+
+    // Atur ulang ke posisi awal setelah animasi selesai
+    setTimeout(() => {
+      this.toastElement.classList.remove('toast-exit');
+      this.toastElement.classList.add('toast-enter');
+    }, 300);
+  }
+
+  autoHide() {
+    this.hideTimeout = setTimeout(() => {
+      this.hide();
+    }, 5000); // Sembunyikan otomatis setelah 5 detik
+  }
+
+  setContent(type, title, message) {
+    if (!this.toastContainer || !this.toastIcon || !this.toastTitle || !this.toastMessage) {
+        console.error("Elemen konten toast tidak tersedia. Tidak dapat mengatur konten.");
+        return;
+    }
+    // Atur ulang warna batas
+    this.toastContainer.className = this.toastContainer.className.replace(/border-l-(green|red|yellow|blue)-500/g, '');
+
+    // Atur ikon dan warna berdasarkan tipe
+    switch (type) {
+      case 'success':
+        this.toastIcon.innerHTML = '<i class="fas fa-check-circle text-green-500 text-xl"></i>';
+        this.toastContainer.classList.add('border-l-green-500');
+        break;
+      case 'error':
+        this.toastIcon.innerHTML = '<i class="fas fa-times-circle text-red-500 text-xl"></i>';
+        this.toastContainer.classList.add('border-l-red-500');
+        break;
+      case 'warning':
+        this.toastIcon.innerHTML = '<i class="fas fa-exclamation-triangle text-yellow-500 text-xl"></i>';
+        this.toastContainer.classList.add('border-l-yellow-500');
+        break;
+      case 'info':
+        this.toastIcon.innerHTML = '<i class="fas fa-info-circle text-blue-500 text-xl"></i>';
+        this.toastContainer.classList.add('border-l-blue-500');
+        break;
+      default:
+        this.toastIcon.innerHTML = '<i class="fas fa-info-circle text-gray-500 text-xl"></i>';
+        this.toastContainer.classList.add('border-l-gray-500');
+    }
+
+    this.toastTitle.textContent = title;
+    this.toastMessage.textContent = message;
+  }
+}
+
+// Inisialisasi notifikasi toast (deklarasikan di sini, inisialisasi nanti)
+let toast;
 
 // Tampilkan modal konfirmasi
 function showConfirmationModal(studentId, action) {
@@ -133,6 +401,16 @@ function showConfirmationModal(studentId, action) {
   const modal = document.getElementById("confirmation-modal")
   const message = document.getElementById("modal-message-naik-kelas")
   const confirmButton = document.getElementById("confirm-action")
+
+  if (!student) {
+      console.error("Siswa tidak ditemukan untuk ID:", studentId);
+      toast.show('error', 'Kesalahan', 'Data siswa tidak ditemukan.');
+      return;
+  }
+  if (!modal || !message || !confirmButton) {
+      console.error("Elemen modal tidak ditemukan untuk modal konfirmasi.");
+      return;
+  }
 
   currentStudentId = studentId
   currentAction = action
@@ -153,14 +431,14 @@ function showBulkPromotionModal() {
   const confirmButton = document.getElementById("confirm-action")
 
   if (!modal || !message || !confirmButton) {
-    console.error("Modal elements not found")
+    console.error("Elemen modal tidak ditemukan")
     return
   }
 
-  // Hitung hanya siswa yang masih pending
+  // Hitung hanya siswa yang masih tertunda
   const pendingStudents = studentData.filter((student) => student.status === "pending")
 
-  // Jika tidak ada siswa yang pending, tampilkan pesan khusus
+  // Jika tidak ada siswa yang tertunda, tampilkan pesan khusus
   if (pendingStudents.length === 0) {
     message.textContent = "Tidak ada siswa yang perlu dinaikkan kelas."
 
@@ -181,10 +459,12 @@ function showBulkPromotionModal() {
 
   message.textContent = `Tindakan ini akan menetapkan status "Naik Kelas" untuk ${pendingStudents.length} siswa yang belum diproses.`
 
-  // "Hapus event listener lama (jika ada), lalu tambahkan event listener yang baru."
+  // "Hapus pendengar peristiwa lama (jika ada), lalu tambahkan pendengar peristiwa yang baru."
   const newConfirmButton = confirmButton.cloneNode(true)
   confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton)
 
+  // Atur ulang teks tombol konfirmasi
+  document.getElementById("confirm-action").textContent = "Konfirmasi"
   document.getElementById("confirm-action").addEventListener("click", confirmBulkAction)
 
   modal.classList.add("show")
@@ -214,8 +494,16 @@ function confirmAction() {
   if (currentStudentId && currentAction) {
     const studentIndex = studentData.findIndex((s) => s.id === currentStudentId)
     if (studentIndex !== -1) {
+      const student = studentData[studentIndex]
       studentData[studentIndex].status = currentAction
       renderStudentData()
+
+      // Tampilkan notifikasi toast berdasarkan aksi
+      if (currentAction === 'promote') {
+        toast.show('success', 'Berhasil!', `${student.name} berhasil dinaikkan kelas!`)
+      } else if (currentAction === 'not_promote') {
+        toast.show('info', 'Status Diperbarui!', `${student.name} ditetapkan tidak naik kelas.`)
+      }
     }
   }
   closeModal()
@@ -224,12 +512,18 @@ function confirmAction() {
 // Konfirmasi tindakan massal
 function confirmBulkAction() {
   if (isBulkPromotion && currentAction === "promote") {
+    const pendingStudents = studentData.filter((student) => student.status === "pending")
+    const promotedCount = pendingStudents.length
+
     studentData.forEach((student) => {
       if (student.status === "pending") {
         student.status = "promote"
       }
     })
     renderStudentData()
+
+    // Tampilkan notifikasi toast untuk promosi massal
+    toast.show('success', 'Berhasil!', `${promotedCount} siswa berhasil dinaikkan kelas!`)
   }
   closeModal()
 }
@@ -237,7 +531,10 @@ function confirmBulkAction() {
 // Render pesan akses ditolak
 function renderAccessDenied() {
   const container = document.getElementById("content-container")
-  if (!container) return
+  if (!container) {
+    console.error("Elemen 'content-container' tidak ditemukan untuk akses ditolak.")
+    return;
+  }
 
   container.innerHTML = `
         <main class="p-4 bg-pattern">
@@ -262,7 +559,10 @@ function renderAccessDenied() {
 // Render tabel data siswa (untuk guru wali kelas)
 function renderStudentTable() {
   const container = document.getElementById("content-container")
-  if (!container) return
+  if (!container) {
+    console.error("Elemen 'content-container' tidak ditemukan untuk tabel siswa.")
+    return;
+  }
 
   container.innerHTML = `
         <main class="p-4 bg-pattern">
@@ -278,18 +578,25 @@ function renderStudentTable() {
                             </svg>
                             Naikkan Semua Siswa
                         </button>
-                        <!-- Export Button -->
+                        <!-- Export Data Button -->
                         <button id="btn-export-data" class="btn-gradient flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                             Export Data
                         </button>
+                        <!-- Export PDF Button -->
+                        <button id="btn-export-pdf" class="btn-primary flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Export PDF
+                        </button>
                     </div>
                 </div>
                 <div class="p-3">
                     <div class="overflow-x-auto">
-                        <table class="w-full">
+                        <table id="attendance-table" class="w-full">
                             <thead class="table-header text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 <tr>
                                     <th class="px-4 py-3 text-left">No</th>
@@ -335,7 +642,8 @@ function renderStudentTable() {
 
   // Render data siswa dan pagination
   renderStudentData()
-  initializeButtons()
+  initializeButtons() // Inisialisasi tombol setelah mereka dirender
+  initializeExportPDF() // Inisialisasi tombol ekspor PDF
 }
 
 // Render data siswa
@@ -468,7 +776,10 @@ function initializeButtons() {
 
   if (exportButton) {
     exportButton.addEventListener("click", () => {
-      alert("Data berhasil diekspor!")
+      // Simulasi export data
+      setTimeout(() => {
+        if (toast) toast.show('success', 'Berhasil!', 'Data berhasil diekspor (simulasi)!')
+      }, 500)
     })
   }
 
@@ -479,13 +790,104 @@ function initializeButtons() {
   }
 }
 
+// Mengatur tombol ekspor PDF
+function initializeExportPDF() {
+    const exportPdfBtn = document.getElementById("btn-export-pdf");
+
+    if (!exportPdfBtn) {
+        console.error("Tombol 'Export PDF' dengan ID 'btn-export-pdf' tidak ditemukan.");
+        return;
+    }
+
+    exportPdfBtn.addEventListener("click", () => {
+        const table = document.getElementById("attendance-table");
+
+        if (!table) {
+            console.error("Tabel dengan ID 'attendance-table' tidak ditemukan.");
+            if (toast) toast.show("error", "Gagal!", "Tabel data tidak ditemukan untuk diekspor.");
+            return;
+        }
+
+        exportPdfBtn.innerText = "Memproses...";
+        exportPdfBtn.disabled = true;
+
+        // Pastikan html2canvas dan jspdf tersedia di window scope
+        if (typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') {
+            console.error("Pustaka html2canvas atau jspdf tidak dimuat. Pastikan Anda menyertakannya di HTML.");
+            if (toast) toast.show("error", "Gagal!", "Pustaka ekspor PDF tidak ditemukan.");
+            exportPdfBtn.innerText = "Export PDF";
+            exportPdfBtn.disabled = false;
+            return;
+        }
+
+        const scale = 2; // Tingkatkan skala untuk kualitas yang lebih baik
+        html2canvas(table, { scale: scale }).then((canvas) => {
+            const imgData = canvas.toDataURL("image/png");
+            const { jsPDF } = window.jspdf; // Akses jspdf dari window
+            const pdf = new jsPDF("p", "mm", "a4");
+
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
+
+            const imgWidth = pdfWidth;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            let heightLeft = imgHeight;
+            let position = 0;
+
+            while (heightLeft > 0) {
+                pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+                heightLeft -= pdfHeight;
+                if (heightLeft > 0) {
+                    pdf.addPage();
+                    position = heightLeft - imgHeight;
+                }
+            }
+
+            // Konversi PDF ke Blob dan unduh otomatis
+            const blob = pdf.output("blob");
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "kenaikan-kelas.pdf";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            if (toast) toast.show("success", "Berhasil!", "Data berhasil diekspor ke PDF!");
+            exportPdfBtn.innerText = "Export PDF";
+            exportPdfBtn.disabled = false;
+        }).catch((error) => {
+            console.error("Gagal membuat PDF:", error);
+            if (toast) toast.show("error", "Gagal!", "Terjadi kesalahan saat membuat PDF.");
+            exportPdfBtn.innerText = "Export PDF";
+            exportPdfBtn.disabled = false;
+        });
+    });
+}
+
 // Inisialisasi halaman berdasarkan peran pengguna
 function initializePage() {
+  const contentContainer = document.getElementById("content-container");
+  if (!contentContainer) {
+      console.error("Elemen 'content-container' tidak ditemukan. Halaman tidak dapat diinisialisasi.");
+      return;
+  }
+
   if (currentUser.role === "homeroom_teacher") {
     renderStudentTable()
   } else {
     renderAccessDenied()
   }
+
+  // Inisialisasi toast notification setelah konten dirender
+  // Ini penting jika elemen toast berada di dalam 'content-container'
+  toast = new ToastNotification();
+
+  // Tombol akan diinisialisasi oleh renderStudentTable jika role adalah homeroom_teacher
+  // Jika role bukan homeroom_teacher, tombol tidak akan ada, jadi tidak perlu inisialisasi di sini.
+  // initializeButtons() dan initializeExportPDF() sudah dipanggil di dalam renderStudentTable().
 }
 
 // Fungsi untuk mensimulasikan perubahan peran (untuk pengujian programmatik)
@@ -506,7 +908,7 @@ function changeUserRole(newRole) {
 // Jalankan saat halaman dimuat
 window.addEventListener("load", () => {
   initializeSidebar()
-  initializePage()
+  initializePage() // Ini sekarang akan menangani inisialisasi toast dan tombol
 })
 
 // Jadikan fungsi tersedia secara global
@@ -516,3 +918,4 @@ window.closeModal = closeModal
 window.confirmAction = confirmAction
 window.confirmBulkAction = confirmBulkAction
 window.changeUserRole = changeUserRole
+window.ToastNotification = ToastNotification; // Jadikan ToastNotification dapat diakses secara global jika diperlukan

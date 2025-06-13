@@ -67,16 +67,17 @@ const statusText = document.getElementById('status-text');
 const autocompleteDropdown = document.getElementById('autocomplete-dropdown');
 let stream = null;
 
-// data dummy
-const teacherData = [
-    { id: '1987120101', name: 'Efrizal, S.P., M.Si.' },
-    { id: '1987120102', name: 'Syamsul Rizal, S.H., M.H.' },
-    { id: '1987120103', name: 'Ahmed Riza Fahlevi, S.H.' },
-    { id: '1987120104', name: 'Prof. Dr. Afrizal, S.E.,M.Si.,Ak.' },
-    { id: '1987120105', name: 'Prof. Ir. Yusrizal, M.Sc., Ph.D.' },
-    { id: '1987120106', name: 'Dr. Ir. Mairizal, M.Si.' }
-];
+let teacherData = [];
 
+fetch('proses/get_guru.php')
+    .then(response => response.json())
+    .then(data => {
+        teacherData = data;
+    })
+    .catch(error => {
+        console.error('Gagal mengambil data guru:', error);
+        showModal('error', 'Gagal', 'Tidak bisa memuat data guru dari server.');
+    });
 // Simpan data presensi di localStorage
 function getAttendanceData() {
     const today = new Date().toLocaleDateString('id-ID');
@@ -241,6 +242,7 @@ identityInput.addEventListener('input', validateForm);
 passwordInput.addEventListener('input', validateForm);
 
 // ambil gambar
+// ambil gambar
 captureBtn.addEventListener('click', () => {
     if (!stream || captureBtn.disabled) return;
 
@@ -260,23 +262,47 @@ captureBtn.addEventListener('click', () => {
     const ctx = canvasElement.getContext('2d');
     ctx.drawImage(cameraElement, 0, 0, canvasElement.width, canvasElement.height);
 
-    // cek waktu sekarang
+    // konversi gambar ke base64
+    const imageData = canvasElement.toDataURL("image/png");
+
+    // Dapatkan waktu dan tanggal saat ini *sebelum* fetch request
     const now = new Date();
-    const hour = now.getHours();
-    const minutes = now.getMinutes();
-    const day = now.getDay(); // 0 = Minggu, 1 = Senin, ..., 6 = Sabtu
+    const formattedHours = String(now.getHours()).padStart(2, '0');
+    const formattedMinutes = String(now.getMinutes()).padStart(2, '0');
+    const formattedSeconds = String(now.getSeconds()).padStart(2, '0');
+    const timeString = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
 
-    // ambil data presensi dari localStorage
-    const attendanceData = getAttendanceData();
-    const teacherId = identityInput.value.split('-')[0]?.trim() || 'unknown';
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const dateString = now.toLocaleDateString('id-ID', options);
 
-    // cek apakah hari kerja (Senin-Jumat)
-    if (day < 1 || day > 5) {
-        showModal('error', 'Absen Gagal', 'Absensi hanya dapat dilakukan pada hari kerja (Senin-Jumat).');
-        return;
+    // Dapatkan teacherId, name, dan id dari input identitas
+    let name = identityInput.value;
+    let id = '';
+    if (identityInput.value.includes('-')) {
+        const parts = identityInput.value.split('-');
+        id = parts[0].trim();
+        name = parts[1].trim();
     }
 
-    // cek apakah sudah absen datang atau pulang
+    // Tentukan attendanceType dan onTime/status berdasarkan waktu saat ini
+    let attendanceType = '';
+    let status = '';
+    let onTime = false; // Inisialisasi onTime
+
+    const hour = now.getHours();
+    const minutes = now.getMinutes();
+    const day = now.getDay();
+
+    // Logika validasi awal sebelum mengirim ke server
+    if (day < 1 || day > 5) {
+        showModal('error', 'Absen Gagal', 'Absensi hanya dapat dilakukan pada hari kerja (Senin-Jumat).');
+        return; // Hentikan proses jika bukan hari kerja
+    }
+
+    // Ambil data presensi dari localStorage untuk cek duplikasi
+    const attendanceData = getAttendanceData();
+    const teacherId = id || 'unknown'; // Gunakan ID yang sudah diekstrak
+
     if (attendanceData[teacherId]) {
         const hasMorningAttendance = attendanceData[teacherId].morning;
         const hasAfternoonAttendance = attendanceData[teacherId].afternoon;
@@ -295,9 +321,9 @@ captureBtn.addEventListener('click', () => {
                 return;
             }
 
-            // Jika belum absen datang tapi mau absen pulang
+            // Jika belum absen datang tapi mau absen pulang (kasus absen datang terlambat)
             if (!hasMorningAttendance) {
-                // Catat sebagai absen datang terlambat
+                // Catat sebagai absen datang terlambat di localStorage
                 attendanceData[teacherId] = attendanceData[teacherId] || {};
                 attendanceData[teacherId].morning = {
                     time: `${String(hour).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`,
@@ -306,113 +332,122 @@ captureBtn.addEventListener('click', () => {
                 };
                 saveAttendanceData(attendanceData);
 
-                // Minta scan lagi untuk absen pulang
                 showModal('info', 'Absen Datang Terlambat', 'Anda belum melakukan absen datang. Sistem mencatat absen datang terlambat. Silakan scan ulang untuk absen pulang.');
-                return;
+                return; // Minta scan lagi untuk absen pulang
             }
         }
     }
 
-    // format waktu dengan nol di depan untuk tampilan
-    const formattedHours = String(now.getHours()).padStart(2, '0');
-    const formattedMinutes = String(now.getMinutes()).padStart(2, '0');
-    const formattedSeconds = String(now.getSeconds()).padStart(2, '0');
-    const timeString = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
-
-    // format tanggal untuk tampilan
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const dateString = now.toLocaleDateString('id-ID', options);
-
-    // ambil nama dan id dari input identitas
-    let name = identityInput.value;
-    let id = '';
-
-    if (identityInput.value.includes('-')) {
-        const parts = identityInput.value.split('-');
-        id = parts[0].trim();
-        name = parts[1].trim();
+    // Menentukan Tipe dan Status Absensi
+    if (hour < 6 || (hour === 6 && minutes < 30)) {
+        showModal('error', 'Absen Gagal', 'Absen hanya dapat dilakukan mulai pukul 06:30.');
+        return;
+    } else if (hour < 10 || (hour === 10 && minutes <= 30)) {
+        attendanceType = 'Datang';
+        // Tepat waktu jika absen sebelum 07:30
+        if (hour < 7 || (hour === 7 && minutes <= 30)) {
+            status = 'Tepat Waktu';
+            onTime = true;
+        } else {
+            status = 'Terlambat';
+            onTime = false;
+        }
+    } else {
+        attendanceType = 'Pulang';
+        // Khusus Jumat (11:30-14:00)
+        if (day === 5) {
+            if (hour < 11 || (hour === 11 && minutes < 30)) {
+                status = 'Terlambat (Sebelum waktu pulang)';
+                onTime = false;
+            } else if (hour >= 14) {
+                status = 'Terlambat';
+                onTime = false;
+            } else {
+                status = 'Tepat Waktu';
+                onTime = true;
+            }
+        }
+        // Senin-Kamis (setelah 10:30)
+        else {
+            status = 'Tepat Waktu'; // Tidak ada keterlambatan untuk pulang Senin-Kamis
+            onTime = true;
+        }
     }
 
-    // perbarui indikator status
+
+    // siapkan form data
+    const formData = new FormData();
+    formData.append("identity", identityInput.value);
+    formData.append("password", passwordInput.value);
+    formData.append("image", imageData);
+    // Tambahkan data waktu dan tanggal ke formData jika dibutuhkan oleh backend
+    formData.append("dateString", dateString);
+    formData.append("timeString", timeString);
+    formData.append("attendanceType", attendanceType);
+    formData.append("onTime", onTime ? 'true' : 'false');
+
+
+    // perbarui indikator status sebelum mengirim
     statusIndicator.className = 'w-3 h-3 rounded-full bg-blue-500 mr-2 pulse-animation';
     statusText.textContent = 'Memproses data presensi...';
     statusText.className = 'text-sm text-primary font-medium';
 
-    // Proses absensi
-    setTimeout(() => {
-        let attendanceType = '';
-        let status = '';
-        let isLate = false;
+    // kirim ke server
+    fetch("proses/presensi_guru.php", {
+        method: "POST",
+        body: formData
+    })
+    .then(async res => {
+        const response = await res.json();
 
-        // Waktu absen datang (06:30-10:30)
-        if (hour < 6 || (hour === 6 && minutes < 30)) {
-            showModal('error', 'Absen Gagal', 'Absen hanya dapat dilakukan mulai pukul 06:30.');
-            return;
-        } else if (hour < 10 || (hour === 10 && minutes <= 30)) {
-            attendanceType = 'Datang';
+        if (!res.ok || response.status !== "success") {
+            // Jika server mengembalikan error, tampilkan pesan error
+            throw new Error(response.message || "Presensi gagal.");
+        }
 
-            // Tepat waktu jika absen sebelum 07:00
-            if (hour < 7 || (hour === 7 && minutes <= 30)) {
-                status = 'Tepat Waktu';
-            } else {
-                status = 'Terlambat';
-                isLate = true;
-            }
+        const { name: resName, nip: resNip } = response; // Gunakan alias untuk menghindari konflik nama
 
-            // Simpan data absen datang
-            attendanceData[teacherId] = attendanceData[teacherId] || {};
+        // Simpan data presensi di localStorage setelah berhasil dari server
+        attendanceData[teacherId] = attendanceData[teacherId] || {};
+        if (attendanceType === 'Datang') {
             attendanceData[teacherId].morning = {
                 time: timeString,
                 status: status,
                 date: dateString
             };
-        }
-        // Waktu absen pulang
-        else {
-            attendanceType = 'Pulang';
-
-            // Khusus Jumat (11:30-14:00)
-            if (day === 5) {
-                if (hour < 11 || (hour === 11 && minutes < 30)) {
-                    status = 'Terlambat (Sebelum waktu pulang)';
-                    isLate = true;
-                } else if (hour >= 14) {
-                    status = 'Terlambat';
-                    isLate = true;
-                } else {
-                    status = 'Tepat Waktu';
-                }
-            }
-            // Senin-Kamis (setelah 10:30)
-            else {
-                status = 'Tepat Waktu'; // Tidak ada keterlambatan untuk pulang Senin-Kamis
-            }
-
-            // Simpan data absen pulang
-            attendanceData[teacherId] = attendanceData[teacherId] || {};
+        } else if (attendanceType === 'Pulang') {
             attendanceData[teacherId].afternoon = {
                 time: timeString,
                 status: status,
                 date: dateString
             };
         }
-
         saveAttendanceData(attendanceData);
 
-        showAttendanceModal('success', isLate ? 'Terlambat' : 'Tepat Waktu', {
-            name: name,
-            id: id || '123456',
-            date: dateString,
-            time: timeString,
-            type: attendanceType,
-            status: status
+        // Tampilkan modal keberhasilan dengan detail
+        showAttendanceModal("success", response.message, {
+            name: resName,
+            nip: resNip,
+            date: dateString, // dateString sekarang sudah didefinisikan
+            time: timeString, // timeString sekarang sudah didefinisikan
+            type: attendanceType, // attendanceType sekarang sudah didefinisikan
+            status: status // status sekarang sudah didefinisikan (berdasarkan onTime)
         });
 
-        // perbarui status
+        // perbarui status indikator setelah berhasil
         statusIndicator.className = 'w-3 h-3 rounded-full bg-green-500 mr-2 pulse-animation';
         statusText.textContent = 'Kamera aktif dan siap digunakan';
         statusText.className = 'text-sm text-primary font-medium';
-    }, 1500);
+    })
+    .catch(err => {
+        console.error("Presensi gagal:", err);
+        showModal("error", "Presensi Gagal", err.message);
+
+        // perbarui status indikator setelah gagal
+        statusIndicator.className = 'w-3 h-3 rounded-full bg-red-500 mr-2';
+        statusText.textContent = 'Terjadi kesalahan, coba lagi.';
+        statusText.className = 'text-sm text-red-800 font-medium';
+    });
 });
 
 // fungsi modal

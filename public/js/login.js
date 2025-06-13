@@ -1,17 +1,21 @@
 // default
+
+let teacherData = [];
+
+fetch('proses/get_guru.php')
+    .then(res => res.json())
+    .then(data => {
+        teacherData = data;
+    })
+    .catch(err => console.error('Gagal mengambil data guru:', err));
+
+
+
 const defaultCredentials = {
     adminTU: {
         username: 'admin.tu',
         password: 'admin123'
     },
-    teachers: [
-        { id: '1987120101', name: 'Efrizal, S.P., M.Si.', password: 'guru123' },
-        { id: '1987120102', name: 'Syamsul Rizal, S.H., M.H.', password: 'guru123' },
-        { id: '1987120103', name: 'Ahmed Riza Fahlevi, S.H.', password: 'guru123' },
-        { id: '1987120104', name: 'Prof. Dr. Afrizal, S.E.,M.Si.,Ak.', password: 'guru123' },
-        { id: '1987120105', name: 'Prof. Ir. Yusrizal, M.Sc., Ph.D.', password: 'guru123' },
-        { id: '1987120106', name: 'Dr. Ir. Mairizal, M.Si.', password: 'guru123' }
-    ]
 };
 
 // Fungsi untuk memeriksa apakah semua bidang yang diperlukan dalam formulir sudah diisi
@@ -67,20 +71,26 @@ function validateAdminTU() {
 function validateTeacher() {
     const identityInput = document.getElementById('identity-guru').value;
     const password = document.getElementById('password-guru').value;
-
     const id = identityInput.split(' - ')[0];
-    const teacher = defaultCredentials.teachers.find(t => t.id === id);
 
-    if (teacher && password === teacher.password) {
-        // Masuk ke dashboard guru
-        window.location.href = `dashboard_guru.html?name=${encodeURIComponent(teacher.name)}`;
-    } else {
-        showModal('error', 'Login Gagal', 'ID/Nama atau password Guru tidak valid');
-    }
+    fetch('proses/login_guru.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `id=${encodeURIComponent(id)}&password=${encodeURIComponent(password)}`
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = `dashboard_guru.php?name=${encodeURIComponent(data.name)}`;
+            } else {
+                showModal('error', 'Login Gagal', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Login error:', error);
+            showModal('error', 'Login Gagal', 'Terjadi kesalahan koneksi ke server');
+        });
 }
-
-// Contoh data untuk fitur autocomplete
-const teacherData = defaultCredentials.teachers.map(({ id, name }) => ({ id, name }));
 
 // Fungsi untuk menjalankan fitur autocomplete
 const identityInput = document.getElementById('identity-guru');
@@ -105,7 +115,6 @@ if (identityInput && autocompleteDropdown) {
                     item.addEventListener('click', function () {
                         identityInput.value = `${teacher.id} - ${teacher.name}`;
                         autocompleteDropdown.classList.add('hidden');
-                        // Menjalankan validasi form setelah pilihan dipilih
                         checkFormValidity('form-guru', 'btn-login-guru');
                     });
                     autocompleteDropdown.appendChild(item);
@@ -119,6 +128,7 @@ if (identityInput && autocompleteDropdown) {
             autocompleteDropdown.classList.add('hidden');
         }
     });
+
 
     document.addEventListener('click', function (e) {
         if (!identityInput.contains(e.target) && !autocompleteDropdown.contains(e.target)) {

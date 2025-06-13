@@ -10,6 +10,35 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
+    <style>
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .modal-backdrop {
+            backdrop-filter: blur(4px);
+        }
+
+        /* Animasi untuk toast */
+        .toast-enter {
+            transform: translateX(100%) translateY(-100%);
+            opacity: 0;
+        }
+
+        .toast-show {
+            transform: translateX(0) translateY(0);
+            opacity: 1;
+        }
+
+        .toast-exit {
+            transform: translateX(100%) translateY(-100%);
+            opacity: 0;
+        }
+
+        .toast-transition {
+            transition: all 0.3s ease-out;
+        }
+    </style>
     <script>
         tailwind.config = {
             theme: {
@@ -173,21 +202,21 @@
 
         <!-- Content -->
         <div class="p-6">
-            <div class="bg-white rounded-xl shadow-lg">
+            <div class="bg-white rounded-lg shadow-lg border border-gray-200">
                 <!-- Table Header -->
-                <div class="p-6 border-b border-gray-200">
-                    <div class="flex justify-between items-center">
+                <div class="p-6 py-4 border-b border-gray-200">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
                         <h2 class="text-lg font-semibold text-gray-800">Tabel Data Guru</h2>
                         <div class="flex items-center space-x-4">
                             <!-- Search Input -->
                             <div class="relative">
                                 <input type="text" id="searchInput" placeholder="search"
-                                    class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64">
+                                    class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64 text-sm">
                                 <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                             </div>
                             <!-- Add Button -->
                             <button onclick="openAddModal()"
-                                class="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center">
+                                class="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center text-sm">
                                 <i class="fas fa-plus mr-2"></i>
                                 Tambah
                             </button>
@@ -402,6 +431,22 @@
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-notification" class="fixed top-4 right-4 z-50 toast-enter transition-all duration-300 ease-out">
+        <div class="bg-white rounded-lg shadow-lg border-l-4 p-4 max-w-sm">
+            <div class="flex items-center">
+                <div id="toast-icon" class="mr-3"></div>
+                <div class="flex-1">
+                    <h4 id="toast-title" class="font-semibold text-gray-800"></h4>
+                    <p id="toast-message" class="text-sm text-gray-600"></p>
+                </div>
+                <button id="toast-close" class="ml-2 text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
         </div>
     </div>

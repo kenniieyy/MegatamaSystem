@@ -1,78 +1,44 @@
 // Data siswa untuk setiap kelas
-const classData = {
-    '7': [
-        { id: 1, name: 'Ahmad Fauzi', gender: 'L' },
-        { id: 2, name: 'Anisa Putri', gender: 'P' },
-        { id: 3, name: 'Budi Santoso', gender: 'L' },
-        { id: 4, name: 'Citra Dewi', gender: 'P' },
-        { id: 5, name: 'Deni Kurniawan', gender: 'L' },
-        { id: 6, name: 'Eka Fitriani', gender: 'P' },
-        { id: 7, name: 'Fajar Ramadhan', gender: 'L' },
-        { id: 8, name: 'Gita Nuraini', gender: 'P' },
-        { id: 9, name: 'Hadi Prasetyo', gender: 'L' },
-        { id: 10, name: 'Indah Permata', gender: 'P' }
-    ],
-    '8': [
-        { id: 1, name: 'Joko Widodo', gender: 'L' },
-        { id: 2, name: 'Kartika Sari', gender: 'P' },
-        { id: 3, name: 'Lukman Hakim', gender: 'L' },
-        { id: 4, name: 'Mira Lestari', gender: 'P' },
-        { id: 5, name: 'Nanda Pratama', gender: 'L' },
-        { id: 6, name: 'Olivia Putri', gender: 'P' },
-        { id: 7, name: 'Putra Wijaya', gender: 'L' },
-        { id: 8, name: 'Qori Amalia', gender: 'P' },
-        { id: 9, name: 'Rendi Saputra', gender: 'L' },
-        { id: 10, name: 'Sinta Dewi', gender: 'P' }
-    ],
-    '9': [
-        { id: 1, name: 'Tono Sucipto', gender: 'L' },
-        { id: 2, name: 'Umi Kalsum', gender: 'P' },
-        { id: 3, name: 'Vino Bastian', gender: 'L' },
-        { id: 4, name: 'Wati Susilawati', gender: 'P' },
-        { id: 5, name: 'Xaverius Andi', gender: 'L' },
-        { id: 6, name: 'Yanti Komalasari', gender: 'P' },
-        { id: 7, name: 'Zaki Firmansyah', gender: 'L' },
-        { id: 8, name: 'Amelia Zahra', gender: 'P' },
-        { id: 9, name: 'Bayu Segara', gender: 'L' },
-        { id: 10, name: 'Cinta Laura', gender: 'P' }
-    ],
-    '10': [
-        { id: 1, name: 'Dimas Anggara', gender: 'L' },
-        { id: 2, name: 'Erni Wijayanti', gender: 'P' },
-        { id: 3, name: 'Faisal Rahman', gender: 'L' },
-        { id: 4, name: 'Gina Salsabila', gender: 'P' },
-        { id: 5, name: 'Hendra Gunawan', gender: 'L' },
-        { id: 6, name: 'Intan Permatasari', gender: 'P' },
-        { id: 7, name: 'Joni Iskandar', gender: 'L' },
-        { id: 8, name: 'Kirana Dewi', gender: 'P' },
-        { id: 9, name: 'Lutfi Halimawan', gender: 'L' },
-        { id: 10, name: 'Mawar Melati', gender: 'P' }
-    ],
-    '11': [
-        { id: 1, name: 'Naufal Hidayat', gender: 'L' },
-        { id: 2, name: 'Oktavia Ramadhani', gender: 'P' },
-        { id: 3, name: 'Pandu Wibowo', gender: 'L' },
-        { id: 4, name: 'Qonita Alya', gender: 'P' },
-        { id: 5, name: 'Rizki Ramadhan', gender: 'L' },
-        { id: 6, name: 'Sari Indah', gender: 'P' },
-        { id: 7, name: 'Tegar Perkasa', gender: 'L' },
-        { id: 8, name: 'Umi Fadilah', gender: 'P' },
-        { id: 9, name: 'Vino Bastian', gender: 'L' },
-        { id: 10, name: 'Wulan Guritno', gender: 'P' }
-    ],
-    '12': [
-        { id: 1, name: 'Xaverius Andi', gender: 'L' },
-        { id: 2, name: 'Yuliana Sari', gender: 'P' },
-        { id: 3, name: 'Zaki Ahmad', gender: 'L' },
-        { id: 4, name: 'Anita Permata', gender: 'P' },
-        { id: 5, name: 'Bima Sakti', gender: 'L' },
-        { id: 6, name: 'Citra Kirana', gender: 'P' },
-        { id: 7, name: 'Dodi Sudrajat', gender: 'L' },
-        { id: 8, name: 'Eka Putri', gender: 'P' },
-        { id: 9, name: 'Farhan Syahputra', gender: 'L' },
-        { id: 10, name: 'Gita Gutawa', gender: 'P' }
-    ]
-};
+let classData = {}; // Kosongkan, akan diisi dari fetch
+
+// Fungsi untuk mengambil data siswa dari server
+function fetchClassData() {
+    fetch('proses/get_siswa.php')
+        .then(response => {
+            if (!response.ok) throw new Error('Gagal mengambil data dari server.');
+            return response.json();
+        })
+        .then(data => {
+            classData = data;
+            // Pastikan 'toast' object tersedia sebelum digunakan
+            if (typeof toast !== 'undefined') {
+            } else {
+                console.log('Data siswa berhasil dimuat.');
+            }
+        })
+        .catch(error => {
+            console.error(error);
+            // Pastikan 'toast' object tersedia sebelum digunakan
+            if (typeof toast !== 'undefined') {
+                toast.show('error', 'Gagal!', 'Tidak bisa memuat data siswa.');
+            } else {
+                console.error('Tidak bisa memuat data siswa.');
+            }
+        });
+}
+
+// Panggil saat halaman dimuat
+document.addEventListener('DOMContentLoaded', () => {
+    fetchClassData();
+    initializeSidebar();
+    initializeTabs();
+    initializeClassSelection();
+    initializeNavigation();
+    initializeHistoryFilter(); // Pastikan ini dipanggil untuk setup filter
+    setCurrentDate(); // Set tanggal hari ini sebagai default
+    initializeAttendanceActions();
+
+});
 
 // Variabel untuk menyimpan kelas yang dipilih
 let selectedClass = '7'; // Default to class 7
@@ -84,25 +50,281 @@ let attendanceHistory = [];
 let currentPage = 1;
 const itemsPerPage = 5;
 
-// Fungsi untuk mengatur sidebar
+// Toggle sidebar functionality
 function initializeSidebar() {
-    const toggleButton = document.getElementById('toggle-sidebar');
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.getElementById('main-content');
-    const overlay = document.getElementById('overlay');
+    const toggleBtn = document.getElementById("toggle-sidebar")
+    const sidebar = document.getElementById("sidebar")
+    const mainContent = document.getElementById("main-content")
+    const overlay = document.getElementById("overlay")
 
-    toggleButton.addEventListener('click', function () {
-        sidebar.classList.toggle('collapsed');
-        sidebar.classList.toggle('mobile-open');
-        mainContent.classList.toggle('expanded');
-        overlay.classList.toggle('show');
-    });
+    // Cek apakah semua element ada
+    if (!toggleBtn || !sidebar || !mainContent || !overlay) {
+        console.error("Beberapa element tidak ditemukan:", {
+            toggleBtn: !!toggleBtn,
+            sidebar: !!sidebar,
+            mainContent: !!mainContent,
+            overlay: !!overlay,
+        })
+        return
+    }
 
-    // Tutup sidebar saat mengklik overlay
-    overlay.addEventListener('click', function () {
-        sidebar.classList.remove('mobile-open');
-        overlay.classList.remove('show');
-    });
+    // Fungsi untuk reset semua classes dan styles
+    function resetSidebarStates() {
+        sidebar.classList.remove("collapsed", "mobile-open")
+        overlay.classList.remove("show")
+        // Reset inline styles jika ada
+        sidebar.style.transform = ""
+    }
+
+    // Fungsi untuk setup desktop layout
+    function setupDesktopLayout() {
+        resetSidebarStates()
+        // Di desktop, sidebar default terbuka dan main content menyesuaikan
+        mainContent.classList.remove("expanded")
+        sidebar.classList.remove("collapsed")
+    }
+
+    // Fungsi untuk setup mobile layout
+    function setupMobileLayout() {
+        resetSidebarStates()
+        // Di mobile, sidebar default tertutup
+        sidebar.classList.add("collapsed")
+        mainContent.classList.add("expanded")
+    }
+
+    // Fungsi untuk membuka sidebar
+    function openSidebar() {
+        if (window.innerWidth <= 768) {
+            // Mobile: gunakan mobile-open class
+            sidebar.classList.remove("collapsed")
+            sidebar.classList.add("mobile-open")
+            overlay.classList.add("show")
+        } else {
+            // Desktop: hilangkan collapsed class
+            sidebar.classList.remove("collapsed")
+            mainContent.classList.remove("expanded")
+        }
+    }
+
+    // Fungsi untuk menutup sidebar
+    function closeSidebar() {
+        if (window.innerWidth <= 768) {
+            // Mobile: tutup dan hilangkan overlay
+            sidebar.classList.add("collapsed")
+            sidebar.classList.remove("mobile-open")
+            overlay.classList.remove("show")
+        } else {
+            // Desktop: collapse sidebar dan expand main content
+            sidebar.classList.add("collapsed")
+            mainContent.classList.add("expanded")
+        }
+    }
+
+    // Fungsi untuk cek status sidebar (terbuka/tertutup)
+    function isSidebarOpen() {
+        if (window.innerWidth <= 768) {
+            return sidebar.classList.contains("mobile-open")
+        } else {
+            return !sidebar.classList.contains("collapsed")
+        }
+    }
+
+    // Fungsi untuk handle responsive behavior
+    function handleResponsiveLayout() {
+        const currentWidth = window.innerWidth
+
+        if (currentWidth <= 768) {
+            // Switching to mobile
+            setupMobileLayout()
+        } else {
+            // Switching to desktop
+            setupDesktopLayout()
+        }
+
+        console.log(`Layout switched to: ${currentWidth <= 768 ? "Mobile" : "Desktop"} (${currentWidth}px)`)
+    }
+
+    // Toggle sidebar
+    toggleBtn.addEventListener("click", () => {
+        console.log("Toggle clicked, window width:", window.innerWidth)
+        console.log("Sidebar open status:", isSidebarOpen())
+
+        if (isSidebarOpen()) {
+            closeSidebar()
+            console.log("Sidebar ditutup")
+        } else {
+            openSidebar()
+            console.log("Sidebar dibuka")
+        }
+    })
+
+    // Tutup sidebar saat mengklik overlay (hanya di mobile)
+    overlay.addEventListener("click", () => {
+        console.log("Overlay clicked - closing sidebar")
+        closeSidebar()
+    })
+
+    // Handle window resize
+    let resizeTimeout
+    window.addEventListener("resize", () => {
+        // Debounce resize event untuk performa
+        clearTimeout(resizeTimeout)
+        resizeTimeout = setTimeout(() => {
+            handleResponsiveLayout()
+        }, 100)
+    })
+
+    // Initialize layout berdasarkan ukuran window saat ini
+    handleResponsiveLayout()
+
+    console.log("Responsive sidebar initialized successfully")
+}
+
+// Fungsi tambahan untuk debugging
+function debugSidebar() {
+    const sidebar = document.getElementById("sidebar")
+    const mainContent = document.getElementById("main-content")
+    const overlay = document.getElementById("overlay")
+
+    console.log("=== SIDEBAR DEBUG INFO ===")
+    console.log("Window width:", window.innerWidth)
+    console.log("Device type:", window.innerWidth <= 768 ? "Mobile" : "Desktop")
+    console.log("Sidebar classes:", sidebar.className)
+    console.log("Main content classes:", mainContent.className)
+    console.log("Overlay classes:", overlay.className)
+    console.log("Sidebar computed transform:", window.getComputedStyle(sidebar).transform)
+}
+
+//LOGIC UNTUK TOAST NOTIFICATION
+class ToastNotification {
+    constructor() {
+        this.toastElement = document.getElementById('toast-notification');
+        this.toastIcon = document.getElementById('toast-icon');
+        this.toastTitle = document.getElementById('toast-title');
+        this.toastMessage = document.getElementById('toast-message');
+        this.toastClose = document.getElementById('toast-close');
+        this.toastContainer = this.toastElement ? this.toastElement.querySelector('.bg-white') : null;
+
+        this.isVisible = false;
+        this.hideTimeout = null;
+
+        this.setupEventListeners();
+    }
+
+    setupEventListeners() {
+        // Event listener untuk tombol close
+        if (this.toastClose) {
+            this.toastClose.addEventListener('click', () => {
+                this.hide();
+            });
+        }
+
+        // Auto hide setelah 5 detik
+        if (this.toastElement) {
+            this.toastElement.addEventListener('transitionend', (e) => {
+                if (e.target === this.toastElement && this.isVisible) {
+                    this.autoHide();
+                }
+            });
+        }
+    }
+
+    show(type, title, message) {
+        if (!this.toastElement || !this.toastIcon || !this.toastTitle || !this.toastMessage || !this.toastContainer) {
+            console.error("Toast notification elements not found. Cannot show toast.");
+            return;
+        }
+
+        // Clear timeout sebelumnya jika ada
+        if (this.hideTimeout) {
+            clearTimeout(this.hideTimeout);
+        }
+
+        // Set konten toast
+        this.setContent(type, title, message);
+
+        // Reset classes
+        this.toastElement.classList.remove('toast-exit', 'toast-show');
+        this.toastElement.classList.add('toast-enter');
+
+        // Force reflow untuk memastikan class diterapkan
+        this.toastElement.offsetHeight;
+
+        // Tampilkan toast dengan animasi
+        setTimeout(() => {
+            this.toastElement.classList.remove('toast-enter');
+            this.toastElement.classList.add('toast-show');
+            this.isVisible = true;
+        }, 10);
+    }
+
+    hide() {
+        if (!this.isVisible) return;
+
+        // Clear auto hide timeout
+        if (this.hideTimeout) {
+            clearTimeout(this.hideTimeout);
+        }
+
+        // Sembunyikan dengan animasi
+        this.toastElement.classList.remove('toast-show');
+        this.toastElement.classList.add('toast-exit');
+        this.isVisible = false;
+
+        // Reset ke posisi awal setelah animasi selesai
+        setTimeout(() => {
+            this.toastElement.classList.remove('toast-exit');
+            this.toastElement.classList.add('toast-enter');
+        }, 300);
+    }
+
+    autoHide() {
+        this.hideTimeout = setTimeout(() => {
+            this.hide();
+        }, 5000); // Auto hide setelah 5 detik
+    }
+
+    setContent(type, title, message) {
+        // Reset border color
+        this.toastContainer.className = this.toastContainer.className.replace(/border-l-(green|red|yellow|blue|gray)-500/g, '');
+
+        // Set icon dan warna berdasarkan type
+        switch (type) {
+            case 'success':
+                this.toastIcon.innerHTML = '<i class="fas fa-check-circle text-green-500 text-xl"></i>';
+                this.toastContainer.classList.add('border-l-green-500');
+                break;
+            case 'error':
+                this.toastIcon.innerHTML = '<i class="fas fa-times-circle text-red-500 text-xl"></i>';
+                this.toastContainer.classList.add('border-l-red-500');
+                break;
+            case 'warning':
+                this.toastIcon.innerHTML = '<i class="fas fa-exclamation-triangle text-yellow-500 text-xl"></i>';
+                this.toastContainer.classList.add('border-l-yellow-500');
+                break;
+            case 'info':
+                this.toastIcon.innerHTML = '<i class="fas fa-info-circle text-blue-500 text-xl"></i>';
+                this.toastContainer.classList.add('border-l-blue-500');
+                break;
+            default:
+                this.toastIcon.innerHTML = '<i class="fas fa-info-circle text-gray-500 text-xl"></i>';
+                this.toastContainer.classList.add('border-l-gray-500');
+        }
+
+        this.toastTitle.textContent = title;
+        this.toastMessage.textContent = message;
+    }
+}
+
+// Inisialisasi toast notification
+const toast = new ToastNotification();
+
+
+// Fungsi untuk mengecek apakah sudah ada presensi untuk tanggal tertentu
+function checkAttendanceExists(date, classNumber) {
+    return attendanceHistory.some(item =>
+        item.date === date && item.class === classNumber
+    );
 }
 
 // Fungsi untuk mengatur tab
@@ -116,60 +338,63 @@ function initializeTabs() {
     const contentSuccess = document.getElementById('content-success');
 
     // Tab Daftar Kelas
-    tabClasses.addEventListener('click', function () {
-        tabClasses.classList.add('active');
-        tabHistory.classList.remove('active');
-        contentClasses.classList.add('active');
-        contentFormPresensi.classList.remove('active');
-        contentAttendance.classList.remove('active');
-        contentHistory.classList.remove('active');
-        contentSuccess.classList.remove('active');
-    });
+    if (tabClasses) {
+        tabClasses.addEventListener('click', function () {
+            tabClasses.classList.add('active');
+            if (tabHistory) tabHistory.classList.remove('active');
+            if (contentClasses) contentClasses.classList.add('active');
+            if (contentFormPresensi) contentFormPresensi.classList.remove('active');
+            if (contentAttendance) contentAttendance.classList.remove('active');
+            if (contentHistory) contentHistory.classList.remove('active');
+            if (contentSuccess) contentSuccess.classList.remove('active');
+        });
+    }
 
     // Tab Riwayat Presensi
-    tabHistory.addEventListener('click', function () {
-        tabHistory.classList.add('active');
-        tabClasses.classList.remove('active');
-        contentHistory.classList.add('active');
-        contentClasses.classList.remove('active');
-        contentFormPresensi.classList.remove('active');
-        contentAttendance.classList.remove('active');
-        contentSuccess.classList.remove('active');
+    if (tabHistory) {
+        tabHistory.addEventListener('click', async function () {
+            tabHistory.classList.add('active');
+            if (tabClasses) tabClasses.classList.remove('active');
+            if (contentHistory) contentHistory.classList.add('active');
+            if (contentClasses) contentClasses.classList.remove('active');
+            if (contentFormPresensi) contentFormPresensi.classList.remove('active');
+            if (contentAttendance) contentAttendance.classList.remove('active');
+            if (contentSuccess) contentSuccess.classList.remove('active');
 
-        // Load riwayat presensi
-        loadAttendanceHistory();
-    });
+            // Load riwayat presensi
+            await loadAttendanceHistory();
+        });
+    }
 }
 
 // Fungsi untuk mengatur pemilihan kelas
 function initializeClassSelection() {
     const classCards = document.querySelectorAll('.class-card');
 
-    // Set class 7 as active and go to form directly on page load
-    // setTimeout(() => {
-    //     document.getElementById('content-classes').classList.remove('active');
-    //     document.getElementById('content-form-presensi').classList.add('active');
-    //     document.getElementById('class-name-display').textContent = `Kelas ${selectedClass}`;
-    //     setCurrentDate();
-    // }, 500);
-
-    // Only allow Class 7 to be clickable
-    const class7Card = document.querySelector('.class-card[data-class="7"]');
-    class7Card.addEventListener('click', function () {
-        // Set the selected class
-        selectedClass = '7';
-
-        // Show the attendance form
-        document.getElementById('content-classes').classList.remove('active');
-        document.getElementById('content-form-presensi').classList.add('active');
-
-        // Display the selected class name
-        document.getElementById('class-name-display').textContent = `Kelas ${selectedClass}`;
-
-        // Set current date
-        setCurrentDate();
+    classCards.forEach(card => {
+        const classNumber = card.dataset.class;
+        if (classNumber === userClass) {
+            // Aktifkan event click untuk kelas wali
+            card.addEventListener('click', function () {
+                selectedClass = classNumber;
+                const contentClasses = document.getElementById('content-classes');
+                const contentFormPresensi = document.getElementById('content-form-presensi');
+                if (contentClasses) contentClasses.classList.remove('active');
+                if (contentFormPresensi) contentFormPresensi.classList.add('active');
+                const classNameDisplay = document.getElementById('class-name-display');
+                const classNameDisplay2 = document.getElementById('class-name-display-2');
+                if (classNameDisplay) classNameDisplay.textContent = `Kelas ${selectedClass}`;
+                if (classNameDisplay2) classNameDisplay2.textContent = `Kelas ${selectedClass}`;
+                setCurrentDate();
+                loadStudentList(selectedClass);
+            });
+        } else {
+            card.classList.add('disabled');
+        }
     });
 }
+
+
 
 // Fungsi untuk mengatur tanggal saat ini
 function setCurrentDate() {
@@ -178,12 +403,15 @@ function setCurrentDate() {
     const month = String(today.getMonth() + 1).padStart(2, '0');
     const day = String(today.getDate()).padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
-    document.getElementById('date').value = formattedDate;
+    // Check if the element exists before trying to set its value
+    const dateElement = document.getElementById('date');
+    if (dateElement) {
+        dateElement.value = formattedDate;
+    }
 }
 
 // Fungsi untuk mengatur navigasi antar section
 function initializeNavigation() {
-    // Tombol untuk navigasi
     const backToClasses = document.getElementById('back-to-classes');
     const nextToAttendance = document.getElementById('next-to-attendance');
     const backToForm = document.getElementById('back-to-form');
@@ -191,136 +419,230 @@ function initializeNavigation() {
     const newAttendance = document.getElementById('new-attendance');
     const viewHistory = document.getElementById('view-history');
 
-    // Navigasi dari form presensi ke daftar kelas
-    backToClasses.addEventListener('click', function () {
-        document.getElementById('content-form-presensi').classList.remove('active');
-        document.getElementById('content-classes').classList.add('active');
-    });
+    if (backToClasses) {
+        backToClasses.addEventListener('click', function () {
+            const contentFormPresensi = document.getElementById('content-form-presensi');
+            const contentClasses = document.getElementById('content-classes');
+            if (contentFormPresensi) contentFormPresensi.classList.remove('active');
+            if (contentClasses) contentClasses.classList.add('active');
+        });
+    }
 
-    // Navigasi dari form presensi ke daftar siswa
-    nextToAttendance.addEventListener('click', function () {
-        // Validasi form
-        const form = document.getElementById('attendance-info-form');
-        if (!form.checkValidity()) {
-            form.reportValidity();
+    if (nextToAttendance) {
+        nextToAttendance.addEventListener('click', function () {
+            const form = document.getElementById('attendance-info-form');
+            if (!form || !form.checkValidity()) {
+                if (form) form.reportValidity();
+                return;
+            }
+
+            const contentFormPresensi = document.getElementById('content-form-presensi');
+            const contentAttendance = document.getElementById('content-attendance');
+            if (contentFormPresensi) contentFormPresensi.classList.remove('active');
+            if (contentAttendance) contentAttendance.classList.add('active');
+
+            const classNameDisplay2 = document.getElementById('class-name-display-2');
+            if (classNameDisplay2) {
+                classNameDisplay2.textContent = `Kelas ${selectedClass}`;
+            }
+
+            const dateElement = document.getElementById('date');
+            const startTimeElement = document.getElementById('start-time');
+            const endTimeElement = document.getElementById('end-time');
+            const attendanceInfoDisplay = document.getElementById('attendance-info-display');
+
+            if (dateElement && startTimeElement && endTimeElement && attendanceInfoDisplay) {
+                const date = new Date(dateElement.value).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+                const startTime = startTimeElement.value;
+                const endTime = endTimeElement.value;
+                attendanceInfoDisplay.textContent = `${date} (${startTime} - ${endTime})`;
+            }
+        });
+    }
+
+    if (backToForm) {
+        backToForm.addEventListener('click', function () {
+            const contentAttendance = document.getElementById('content-attendance');
+            const contentFormPresensi = document.getElementById('content-form-presensi');
+            if (contentAttendance) contentAttendance.classList.remove('active');
+            if (contentFormPresensi) contentFormPresensi.classList.add('active');
+        });
+    }
+
+    if (saveAttendance) {
+        saveAttendance.addEventListener("click", function () {
+            const allStudentsChecked = validateAttendance();
+            if (!allStudentsChecked) {
+                toast.show('error', 'Gagal!', 'Silakan isi keterangan untuk semua siswa.');
+                return;
+            }
+            saveAttendanceDataAndToServer();
+        });
+    }
+
+    async function saveAttendanceDataAndToServer() {
+        const dateElement = document.getElementById('date');
+        const startTimeElement = document.getElementById('start-time');
+        const endTimeElement = document.getElementById('end-time');
+
+        if (!dateElement || !startTimeElement || !endTimeElement) {
+            toast.show('error', 'Error!', 'Form elements not found.');
             return;
         }
 
-        document.getElementById('content-form-presensi').classList.remove('active');
-        document.getElementById('content-attendance').classList.add('active');
+        const attendanceData = {
+            id: Date.now(),
+            class: selectedClass,
+            date: dateElement.value,
+            startTime: startTimeElement.value,
+            endTime: endTimeElement.value,
+            createdAt: new Date(),
+            students: []
+        };
 
-        // Tampilkan nama kelas yang dipilih
-        document.getElementById('class-name-display-2').textContent = `Kelas ${selectedClass}`;
-
-        // Tampilkan informasi presensi
-        const date = new Date(document.getElementById('date').value).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-        const startTime = document.getElementById('start-time').value;
-        const endTime = document.getElementById('end-time').value;
-
-        document.getElementById('attendance-info-display').textContent = `${date} (${startTime} - ${endTime})`;
-
-        // Tampilkan daftar siswa
-        renderStudentList();
-    });
-
-    // Navigasi dari daftar siswa ke form presensi
-    backToForm.addEventListener('click', function () {
-        document.getElementById('content-attendance').classList.remove('active');
-        document.getElementById('content-form-presensi').classList.add('active');
-    });
-
-    // Simpan presensi
-    saveAttendance.addEventListener('click', function () {
-        // Validasi presensi
-        const allStudentsChecked = validateAttendance();
-        if (!allStudentsChecked) {
-            alert('Silakan isi keterangan untuk semua siswa.');
+        const students = classData[selectedClass];
+        if (!students) {
+            console.error(`No student data found for class: ${selectedClass}`);
+            toast.show('error', 'Gagal!', 'Data siswa untuk kelas ini tidak ditemukan.');
             return;
         }
 
-        // Simpan data presensi
-        saveAttendanceData();
+        students.forEach(student => {
+            const radioName = `attendance-${student.id}`;
+            const checkedRadio = document.querySelector(`input[name="${radioName}"]:checked`);
+            if (checkedRadio) {
+                attendanceData.students.push({
+                    id_siswa: student.id, // Changed to id_siswa to match backend expectation
+                    name: student.name,
+                    gender: student.gender,
+                    status: checkedRadio.value
+                });
+            }
+        });
 
-        // Tampilkan pesan sukses
-        document.getElementById('content-attendance').classList.remove('active');
-        document.getElementById('content-success').classList.add('active');
-    });
+        try {
+            const response = await fetch("proses/presensi_siswa.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    id_presensi: attendanceData.id, // Pass id_presensi as well if backend expects it for new entry
+                    kelas: attendanceData.class,
+                    tanggal: attendanceData.date,
+                    jam_mulai: attendanceData.startTime,
+                    jam_selesai: attendanceData.endTime,
+                    students: attendanceData.students // Send the students array directly
+                })
+            });
 
-    // Presensi baru
-    newAttendance.addEventListener('click', function () {
-        document.getElementById('content-success').classList.remove('active');
-        document.getElementById('content-classes').classList.add('active');
+            const result = await response.json();
 
-        // Reset form
-        document.getElementById('attendance-info-form').reset();
+            if (!response.ok || !result.success) { // Check for both HTTP status and success flag from backend
+                throw new Error(result.message || "Server error saat menyimpan.");
+            }
 
-        // Set tanggal hari ini lagi
-        setCurrentDate();
-    });
+            attendanceHistory.unshift(attendanceData);
+            localStorage.setItem('attendanceHistory', JSON.stringify(attendanceHistory));
 
-    // Lihat riwayat presensi
-    viewHistory.addEventListener('click', function () {
-        document.getElementById('content-success').classList.remove('active');
-        document.getElementById('content-history').classList.add('active');
-        document.getElementById('tab-classes').classList.remove('active');
-        document.getElementById('tab-history').classList.add('active');
+            console.log('Data presensi yang disimpan:', attendanceData);
 
-        // Load riwayat presensi
-        loadAttendanceHistory();
-    });
+            const contentAttendance = document.getElementById('content-attendance');
+            const contentSuccess = document.getElementById('content-success');
+            if (contentAttendance) contentAttendance.classList.remove('active');
+            if (contentSuccess) contentSuccess.classList.add('active');
+
+        } catch (error) {
+            console.error("Error saat menyimpan presensi:", error);
+            toast.show('error', 'Gagal!', `Gagal menyimpan presensi: ${error.message}.`);
+        }
+    }
+
+    if (newAttendance) {
+        newAttendance.addEventListener('click', function () {
+            const contentSuccess = document.getElementById('content-success');
+            const contentClasses = document.getElementById('content-classes');
+            if (contentSuccess) contentSuccess.classList.remove('active');
+            if (contentClasses) contentClasses.classList.add('active');
+            const form = document.getElementById('attendance-info-form');
+            if (form) form.reset();
+            setCurrentDate();
+        });
+    }
+
+    if (viewHistory) {
+        viewHistory.addEventListener('click', function () {
+            const contentSuccess = document.getElementById('content-success');
+            const contentHistory = document.getElementById('content-history');
+            if (contentSuccess) contentSuccess.classList.remove('active');
+            if (contentHistory) contentHistory.classList.add('active');
+            const tabClasses = document.getElementById('tab-classes');
+            const tabHistory = document.getElementById('tab-history');
+            if (tabClasses) tabClasses.classList.remove('active');
+            if (tabHistory) tabHistory.classList.add('active');
+            loadAttendanceHistory();
+        });
+    }
 }
 
+
 // Fungsi untuk menampilkan daftar siswa
-function renderStudentList() {
+function loadStudentList(kelas) {
+    const siswaKelas = classData[kelas];
     const studentList = document.getElementById('student-list');
+    if (!studentList) {
+        console.error("Element with ID 'student-list' not found.");
+        return;
+    }
     studentList.innerHTML = '';
 
-    // Ambil data siswa berdasarkan kelas yang dipilih
-    const students = classData[selectedClass];
+    if (!siswaKelas || siswaKelas.length === 0) {
+        studentList.innerHTML = '<tr><td colspan="4" class="text-center text-gray-500">Tidak ada data siswa</td></tr>';
+        console.error('Kelas belum dipilih atau data kelas tidak ditemukan:', kelas);
+        return;
+    }
 
-    // Tampilkan daftar siswa
-    students.forEach((student, index) => {
+    siswaKelas.forEach((siswa, index) => {
         const row = document.createElement('tr');
-        row.className = 'table-row';
-
+        row.setAttribute('data-id', siswa.id);
+        row.className = 'table-row'; // Tambahkan class ini jika diperlukan untuk styling
         row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${student.name}</td>
-                    <td>${student.gender}</td>
-                    <td>
-                        <div class="flex flex-wrap">
-                            <div class="radio-container hadir mr-4">
-                                <input type="radio" id="hadir-${student.id}" name="attendance-${student.id}" value="hadir">
-                                <label for="hadir-${student.id}">
-                                    <div class="radio-circle"></div>
-                                    <span>Hadir</span>
-                                </label>
-                            </div>
-                            <div class="radio-container sakit mr-4">
-                                <input type="radio" id="sakit-${student.id}" name="attendance-${student.id}" value="sakit">
-                                <label for="sakit-${student.id}">
-                                    <div class="radio-circle"></div>
-                                    <span>Sakit</span>
-                                </label>
-                            </div>
-                            <div class="radio-container izin mr-4">
-                                <input type="radio" id="izin-${student.id}" name="attendance-${student.id}" value="izin">
-                                <label for="izin-${student.id}">
-                                    <div class="radio-circle"></div>
-                                    <span>Izin</span>
-                                </label>
-                            </div>
-                            <div class="radio-container alpa">
-                                <input type="radio" id="alpa-${student.id}" name="attendance-${student.id}" value="alpa">
-                                <label for="alpa-${student.id}">
-                                    <div class="radio-circle"></div>
-                                    <span>Alpa</span>
-                                </label>
-                            </div>
-                        </div>
-                    </td>
-                `;
-
+            <td>${index + 1}</td>
+            <td>${siswa.name}</td>
+            <td>${siswa.gender}</td>
+            <td>
+                <div class="flex flex-wrap">
+                    <div class="radio-container hadir mr-4">
+                        <input type="radio" id="hadir-${siswa.id}" name="attendance-${siswa.id}" value="hadir">
+                        <label for="hadir-${siswa.id}">
+                            <div class="radio-circle"></div>
+                            <span>Hadir</span>
+                        </label>
+                    </div>
+                    <div class="radio-container sakit mr-4">
+                        <input type="radio" id="sakit-${siswa.id}" name="attendance-${siswa.id}" value="sakit">
+                        <label for="sakit-${siswa.id}">
+                            <div class="radio-circle"></div>
+                            <span>Sakit</span>
+                        </label>
+                    </div>
+                    <div class="radio-container izin mr-4">
+                        <input type="radio" id="izin-${siswa.id}" name="attendance-${siswa.id}" value="izin">
+                        <label for="izin-${siswa.id}">
+                            <div class="radio-circle"></div>
+                            <span>Izin</span>
+                        </label>
+                    </div>
+                    <div class="radio-container alpa">
+                        <input type="radio" id="alpa-${siswa.id}" name="attendance-${siswa.id}" value="alpa">
+                        <label for="alpa-${siswa.id}">
+                            <div class="radio-circle"></div>
+                            <span>Alpa</span>
+                        </label>
+                    </div>
+                </div>
+            </td>
+        `;
         studentList.appendChild(row);
     });
 }
@@ -329,6 +651,8 @@ function renderStudentList() {
 function validateAttendance() {
     const students = classData[selectedClass];
     let allChecked = true;
+
+    if (!students) return false; // Handle case where students data is not loaded
 
     students.forEach(student => {
         const radioName = `attendance-${student.id}`;
@@ -342,20 +666,34 @@ function validateAttendance() {
     return allChecked;
 }
 
-// Fungsi untuk menyimpan data presensi
+// Fungsi untuk menyimpan data presensi (TANPA TOAST NOTIFICATION) - kept for compatibility, but saveAttendanceDataAndToServer is preferred
 function saveAttendanceData() {
+    const dateElement = document.getElementById('date');
+    const startTimeElement = document.getElementById('start-time');
+    const endTimeElement = document.getElementById('end-time');
+
+    if (!dateElement || !startTimeElement || !endTimeElement) {
+        console.error("Form elements not found in saveAttendanceData.");
+        return;
+    }
+
     const attendanceData = {
         id: Date.now(), // Gunakan timestamp sebagai ID unik
         class: selectedClass,
-        date: document.getElementById('date').value,
-        startTime: document.getElementById('start-time').value,
-        endTime: document.getElementById('end-time').value,
+        date: dateElement.value,
+        startTime: startTimeElement.value,
+        endTime: endTimeElement.value,
         createdAt: new Date(),
         students: []
     };
 
     // Ambil data kehadiran siswa
     const students = classData[selectedClass];
+    if (!students) {
+        console.error(`No student data found for class: ${selectedClass} in saveAttendanceData.`);
+        return;
+    }
+
     students.forEach(student => {
         const radioName = `attendance-${student.id}`;
         const checkedRadio = document.querySelector(`input[name="${radioName}"]:checked`);
@@ -376,83 +714,103 @@ function saveAttendanceData() {
     // Simpan ke localStorage (dalam aplikasi nyata, ini akan dikirim ke server)
     localStorage.setItem('attendanceHistory', JSON.stringify(attendanceHistory));
 
-    console.log('Data presensi yang disimpan:', attendanceData);
+    console.log('Data presensi yang disimpan (lokal):', attendanceData);
 }
 
-// Fungsi untuk memuat data riwayat presensi
-function loadAttendanceHistory() {
-    // Dalam aplikasi nyata, ini akan mengambil data dari server
-    // Untuk demo, kita akan mengambil dari localStorage atau menggunakan data dummy
-    const savedHistory = localStorage.getItem('attendanceHistory');
+// Fungsi untuk memuat data riwayat presensi dari database
+// Fungsi untuk memuat data riwayat presensi dari server, localStorage, atau dummy
+async function loadAttendanceHistory() {
+    try {
+        const response = await fetch('proses/get_riwayat_siswa.php'); // Ganti sesuai endpoint PHP Anda
 
-    if (savedHistory) {
-        attendanceHistory = JSON.parse(savedHistory);
-    } else if (attendanceHistory.length === 0) {
-        // Jika tidak ada data di localStorage dan array kosong, gunakan data dummy
-        attendanceHistory = generateDummyHistory();
+        if (!response.ok) {
+            throw new Error(`Gagal mengambil data dari server. Status: ${response.status}`);
+        }
+
+        const historyData = await response.json();
+        attendanceHistory = historyData;
+        console.log('Riwayat presensi berhasil dimuat dari server.');
+    } catch (error) {
+        console.warn('Gagal memuat dari server. Mencoba localStorage...', error);
+
+        const savedHistory = localStorage.getItem('attendanceHistory');
+        if (savedHistory) {
+            attendanceHistory = JSON.parse(savedHistory);
+            console.log('Riwayat presensi dimuat dari localStorage.');
+        } else {
+            console.warn('Data tidak tersedia di localStorage. Menggunakan data dummy...');
+            attendanceHistory = await generateDummyHistoryFromDatabase(); // Call the async function
+        }
     }
 
-    // Filter data berdasarkan filter yang dipilih
+    // Panggil fungsi filter dan render
     filterAttendanceHistory();
 }
 
+
+
 // Fungsi untuk menghasilkan data dummy riwayat presensi
-function generateDummyHistory() {
-    const dummyHistory = [];
+async function generateDummyHistoryFromDatabase() {
+    try {
+        const response = await fetch('proses/get_absen_siswa.php');
+        if (!response.ok) {
+            throw new Error(`Failed to fetch student absence data. Status: ${response.status}`);
+        }
+        const students = await response.json();
 
-    // Tanggal untuk 10 hari terakhir
-    const dates = [];
-    for (let i = 0; i < 10; i++) {
-        const date = new Date();
-        date.setDate(date.getDate() - i);
-        dates.push(date);
-    }
+        const dummyHistory = [];
+        const dates = [];
 
-    // Buat 10 data dummy
-    for (let i = 0; i < 10; i++) {
-        const date = dates[i];
+        for (let i = 0; i < 10; i++) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            dates.push(date);
+        }
 
-        const attendanceData = {
-            id: Date.now() - i * 86400000, // Timestamp unik untuk setiap data
-            class: '7', // Always class 7
-            date: date.toISOString().split('T')[0],
-            startTime: '07:30',
-            endTime: '09:00',
-            createdAt: date,
-            students: []
-        };
+        for (let i = 0; i < 10; i++) {
+            const date = dates[i];
 
-        // Tambahkan data siswa
-        const students = classData['7'];
-        students.forEach(student => {
-            // Acak status kehadiran
-            const statuses = ['hadir', 'sakit', 'izin', 'alpa'];
-            const randomIndex = Math.floor(Math.random() * 10);
-            let status;
+            const attendanceData = {
+                id: Date.now() - i * 86400000,
+                class: '7',
+                date: date.toISOString().split('T')[0],
+                startTime: '07:30',
+                endTime: '09:00',
+                createdAt: date,
+                students: []
+            };
 
-            if (randomIndex < 7) {
-                status = 'hadir'; // 70% hadir
-            } else if (randomIndex < 8) {
-                status = 'sakit'; // 10% sakit
-            } else if (randomIndex < 9) {
-                status = 'izin'; // 10% izin
-            } else {
-                status = 'alpa'; // 10% alpa
-            }
+            students.forEach(student => {
+                const randomIndex = Math.floor(Math.random() * 10);
+                let status;
 
-            attendanceData.students.push({
-                id: student.id,
-                name: student.name,
-                gender: student.gender,
-                status: status
+                if (randomIndex < 7) {
+                    status = 'hadir';
+                } else if (randomIndex < 8) {
+                    status = 'sakit';
+                } else if (randomIndex < 9) {
+                    status = 'izin';
+                } else {
+                    status = 'alpa';
+                }
+
+                attendanceData.students.push({
+                    id: student.id,
+                    name: student.name,
+                    gender: student.gender,
+                    status: status
+                });
             });
-        });
 
-        dummyHistory.push(attendanceData);
+            dummyHistory.push(attendanceData);
+        }
+        return dummyHistory;
+    } catch (error) {
+        console.error("Error generating dummy history from database:", error);
+        return []; // Return empty array on error
     }
-
-    return dummyHistory;
 }
+
 
 // Fungsi untuk mengatur filter riwayat presensi
 function initializeHistoryFilter() {
@@ -460,17 +818,22 @@ function initializeHistoryFilter() {
     const applyFilter = document.getElementById('apply-filter');
 
     // Set bulan saat ini sebagai default
-    const currentMonth = new Date().getMonth() + 1;
-    monthFilter.value = currentMonth.toString();
+    if (monthFilter) {
+        const currentMonth = new Date().getMonth() + 1;
+        monthFilter.value = currentMonth.toString();
 
-    applyFilter.addEventListener('click', function () {
-        filterAttendanceHistory();
-    });
+        if (applyFilter) {
+            applyFilter.addEventListener('click', function () {
+                filterAttendanceHistory();
+            });
+        }
+    }
 }
 
 // Fungsi untuk memfilter data riwayat presensi
 function filterAttendanceHistory() {
-    const monthFilter = document.getElementById('month-filter').value;
+    const monthFilterElement = document.getElementById('month-filter');
+    const monthFilter = monthFilterElement ? monthFilterElement.value : 'all'; // Default to 'all' if element not found
 
     // Filter berdasarkan bulan
     let filteredData = [...attendanceHistory];
@@ -572,12 +935,19 @@ function renderAttendanceHistory(data) {
 // Fungsi untuk mengupdate pagination
 function updatePagination(totalItems) {
     const paginationContainer = document.getElementById('pagination-container');
+    const paginationInfo = document.getElementById('pagination-info');
+
+    if (!paginationContainer || !paginationInfo) {
+        console.error("Pagination elements not found.");
+        return;
+    }
+
     paginationContainer.innerHTML = '';
 
     const totalPages = Math.ceil(totalItems / itemsPerPage);
 
     // Update info pagination
-    document.getElementById('pagination-info').textContent = totalItems === 0
+    paginationInfo.textContent = totalItems === 0
         ? 'Tidak ada data'
         : `Menampilkan ${(currentPage - 1) * itemsPerPage + 1}-${Math.min(currentPage * itemsPerPage, totalItems)} dari ${totalItems} data`;
 
@@ -591,10 +961,10 @@ function updatePagination(totalItems) {
     prevButton.className = `pagination-item text-gray-500 ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`;
     prevButton.disabled = currentPage === 1;
     prevButton.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-            `;
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+    `;
 
     if (currentPage > 1) {
         prevButton.addEventListener('click', function () {
@@ -602,20 +972,19 @@ function updatePagination(totalItems) {
             filterAttendanceHistory();
         });
     }
-
     paginationContainer.appendChild(prevButton);
 
-    // Tombol halaman
+    // Tombol halaman (simplified for brevity, a loop for page numbers would go here)
     for (let i = 1; i <= totalPages; i++) {
         const pageButton = document.createElement('button');
-        pageButton.className = `pagination-item ${i === currentPage ? 'active' : 'text-gray-700'}`;
+        pageButton.className = `pagination-item ${currentPage === i ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-gray-200'}`;
         pageButton.textContent = i;
-
-        pageButton.addEventListener('click', function () {
-            currentPage = i;
-            filterAttendanceHistory();
-        });
-
+        if (currentPage !== i) {
+            pageButton.addEventListener('click', function () {
+                currentPage = i;
+                filterAttendanceHistory();
+            });
+        }
         paginationContainer.appendChild(pageButton);
     }
 
@@ -624,10 +993,10 @@ function updatePagination(totalItems) {
     nextButton.className = `pagination-item text-gray-500 ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`;
     nextButton.disabled = currentPage === totalPages;
     nextButton.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-            `;
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+    `;
 
     if (currentPage < totalPages) {
         nextButton.addEventListener('click', function () {
@@ -635,7 +1004,6 @@ function updatePagination(totalItems) {
             filterAttendanceHistory();
         });
     }
-
     paginationContainer.appendChild(nextButton);
 }
 
@@ -664,59 +1032,39 @@ function openViewModal(id) {
     const closeBtn = document.getElementById('close-view-modal');
     const closeViewBtn = document.getElementById('close-view-btn');
 
-    // Cari data presensi berdasarkan ID
     const attendanceData = attendanceHistory.find(item => item.id.toString() === id);
-
     if (!attendanceData) {
         alert('Data presensi tidak ditemukan.');
         return;
     }
 
-    // Tampilkan informasi presensi
     document.getElementById('view-class-name').textContent = `Kelas ${attendanceData.class}`;
 
-    // Format tanggal
     const itemDate = new Date(attendanceData.date);
     const formattedDate = itemDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-
     document.getElementById('view-info-display').textContent = `${formattedDate} (${attendanceData.startTime} - ${attendanceData.endTime})`;
 
-    // Tampilkan daftar siswa
     const studentList = document.getElementById('view-student-list');
     studentList.innerHTML = '';
 
     attendanceData.students.forEach((student, index) => {
         const row = document.createElement('tr');
-
         row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${student.name}</td>
-                    <td>${student.gender}</td>
-                    <td>
-                        <span class="status-badge ${student.status}">${capitalizeFirstLetter(student.status)}</span>
-                    </td>
-                `;
-
+            <td>${index + 1}</td>
+            <td>${student.nama_siswa || '-'}</td>
+            <td>${student.jenis_kelamin || '-'}</td>
+            <td><span class="status-badge ${student.status}">${capitalizeFirstLetter(student.status)}</span></td>
+        `;
         studentList.appendChild(row);
     });
 
-    // Tampilkan modal
     modal.style.display = 'block';
 
-    // Tutup modal saat mengklik tombol close
-    closeBtn.onclick = function () {
-        modal.style.display = 'none';
-    };
+    closeBtn.onclick = () => modal.style.display = 'none';
+    closeViewBtn.onclick = () => modal.style.display = 'none';
 
-    closeViewBtn.onclick = function () {
-        modal.style.display = 'none';
-    };
-
-    // Tutup modal saat mengklik di luar modal
-    window.onclick = function (event) {
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        }
+    window.onclick = (event) => {
+        if (event.target === modal) modal.style.display = 'none';
     };
 }
 
@@ -756,34 +1104,34 @@ function openEditModal(id) {
 
         row.innerHTML = `
                     <td>${index + 1}</td>
-                    <td>${student.name}</td>
-                    <td>${student.gender}</td>
+                    <td>${student.nama_siswa}</td>
+                    <td>${student.jenis_kelamin}</td>
                     <td>
                         <div class="flex flex-wrap">
                             <div class="radio-container hadir mr-4">
-                                <input type="radio" id="edit-hadir-${student.id}" name="edit-attendance-${student.id}" value="hadir" ${student.status === 'hadir' ? 'checked' : ''}>
-                                <label for="edit-hadir-${student.id}">
+                                <input type="radio" id="edit-hadir-${student.id_siswa}" name="edit-attendance-${student.id_siswa}" value="hadir" ${student.status === 'hadir' ? 'checked' : ''}>
+                                <label for="edit-hadir-${student.id_siswa}">
                                     <div class="radio-circle"></div>
                                     <span>Hadir</span>
                                 </label>
                             </div>
                             <div class="radio-container sakit mr-4">
-                                <input type="radio" id="edit-sakit-${student.id}" name="edit-attendance-${student.id}" value="sakit" ${student.status === 'sakit' ? 'checked' : ''}>
-                                <label for="edit-sakit-${student.id}">
+                                <input type="radio" id="edit-sakit-${student.id_siswa}" name="edit-attendance-${student.id_siswa}" value="sakit" ${student.status === 'sakit' ? 'checked' : ''}>
+                                <label for="edit-sakit-${student.id_siswa}">
                                     <div class="radio-circle"></div>
                                     <span>Sakit</span>
                                 </label>
                             </div>
                             <div class="radio-container izin mr-4">
-                                <input type="radio" id="edit-izin-${student.id}" name="edit-attendance-${student.id}" value="izin" ${student.status === 'izin' ? 'checked' : ''}>
-                                <label for="edit-izin-${student.id}">
+                                <input type="radio" id="edit-izin-${student.id_siswa}" name="edit-attendance-${student.id_siswa}" value="izin" ${student.status === 'izin' ? 'checked' : ''}>
+                                <label for="edit-izin-${student.id_siswa}">
                                     <div class="radio-circle"></div>
                                     <span>Izin</span>
                                 </label>
                             </div>
                             <div class="radio-container alpa">
-                                <input type="radio" id="edit-alpa-${student.id}" name="edit-attendance-${student.id}" value="alpa" ${student.status === 'alpa' ? 'checked' : ''}>
-                                <label for="edit-alpa-${student.id}">
+                                <input type="radio" id="edit-alpa-${student.id_siswa}" name="edit-attendance-${student.id_siswa}" value="alpa" ${student.status === 'alpa' ? 'checked' : ''}>
+                                <label for="edit-alpa-${student.id_siswa}">
                                     <div class="radio-circle"></div>
                                     <span>Alpa</span>
                                 </label>
@@ -821,55 +1169,117 @@ function openEditModal(id) {
     };
 }
 
-// Fungsi untuk menyimpan perubahan presensi
+
+// Fungsi untuk menampilkan detail presensi (contoh implementasi)
+function displayAttendanceDetail(record) {
+    // Implementasi untuk menampilkan detail presensi di modal atau halaman lain
+    console.log("Menampilkan detail presensi:", record);
+    // Contoh: bisa membuka modal dan mengisi detailnya
+    alert(`Detail Presensi:\nKelas: ${record.class}\nTanggal: ${record.date}\nSiswa Hadir: ${record.students.filter(s => s.status === 'hadir').length}`);
+}
+
+// Fungsi untuk mengedit presensi (contoh implementasi)
+function editAttendance(record) {
+    console.log("Mengedit presensi:", record);
+    // Contoh: mengisi form presensi dengan data yang akan diedit
+    // Anda mungkin perlu membuat form terpisah atau menggunakan form yang ada dengan logika "edit mode"
+    const contentHistory = document.getElementById('content-history');
+    const contentFormPresensi = document.getElementById('content-form-presensi');
+    if (contentHistory) contentHistory.classList.remove('active');
+    if (contentFormPresensi) contentFormPresensi.classList.add('active'); // Kembali ke form presensi
+
+    selectedClass = record.class;
+    const classNameDisplay = document.getElementById('class-name-display');
+    const classNameDisplay2 = document.getElementById('class-name-display-2');
+    if (classNameDisplay) classNameDisplay.textContent = `Kelas ${selectedClass}`;
+    if (classNameDisplay2) classNameDisplay2.textContent = `Kelas ${selectedClass}`;
+
+    const dateElement = document.getElementById('date');
+    const startTimeElement = document.getElementById('start-time');
+    const endTimeElement = document.getElementById('end-time');
+    if (dateElement) dateElement.value = record.date;
+    if (startTimeElement) startTimeElement.value = record.startTime;
+    if (endTimeElement) endTimeElement.value = record.endTime;
+
+
+    loadStudentList(selectedClass); // Reload student list for the class
+
+    // Set radio buttons based on existing attendance data
+    setTimeout(() => { // Give a small delay for loadStudentList to render
+        record.students.forEach(student => {
+            const radio = document.querySelector(`input[name="attendance-${student.id}"][value="${student.status}"]`);
+            if (radio) {
+                radio.checked = true;
+            }
+        });
+    }, 100);
+
+    // Modify save button to call update logic instead of save
+    const saveButton = document.getElementById('save-attendance');
+    if (saveButton) {
+        saveButton.textContent = 'Perbarui Presensi';
+        saveButton.onclick = () => updateAttendanceData(record.id);
+    }
+}
+
 function saveEditedAttendance(id) {
     // Cari data presensi berdasarkan ID
     const index = attendanceHistory.findIndex(item => item.id.toString() === id);
 
     if (index === -1) {
-        alert('Data presensi tidak ditemukan.');
+        toast.show('error', 'Error!', 'Data presensi tidak ditemukan.');
         return;
     }
 
-    // Ambil data presensi
     const attendanceData = attendanceHistory[index];
 
-    // Update status kehadiran siswa
-    attendanceData.students.forEach(student => {
-        const radioName = `edit-attendance-${student.id}`;
-        const checkedRadio = document.querySelector(`input[name="${radioName}"]:checked`);
-
-        if (checkedRadio) {
-            student.status = checkedRadio.value;
-        }
+    // Ambil status terbaru dari form edit
+    const updatedStudents = attendanceData.students.map(student => {
+        const studentId = student.id_siswa;
+        const selectedStatus = document.querySelector(`input[name="edit-attendance-${studentId}"]:checked`);
+        return {
+            id_siswa: studentId,
+            status: selectedStatus ? selectedStatus.value : student.status
+        };
     });
 
-    // Update data di array
-    attendanceHistory[index] = attendanceData;
+    // Kirim ke server pakai fetch POST
+    fetch('proses/update_absen_siswa.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id_presensi: attendanceData.id,
+            students: updatedStudents
+        })
+    })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                toast.show('success', 'Berhasil!', 'Data presensi berhasil diperbarui.');
 
-    // Simpan ke localStorage
-    localStorage.setItem('attendanceHistory', JSON.stringify(attendanceHistory));
+                // Update lokal
+                attendanceData.students.forEach(student => {
+                    const updated = updatedStudents.find(s => s.id_siswa === student.id_siswa);
+                    if (updated) student.status = updated.status;
+                });
 
-    // Refresh tampilan
-    filterAttendanceHistory();
+                attendanceHistory[index] = attendanceData;
+                localStorage.setItem('attendanceHistory', JSON.stringify(attendanceHistory));
+                filterAttendanceHistory(); // Refresh tampilan
 
-    // Tampilkan pesan sukses
-    alert('Data presensi berhasil diperbarui.');
+            } else {
+                 toast.show('error', 'Gagal!', 'Gagal memperbarui presensi di server.');
+            }
+        })
+        .catch(error => {
+            console.error('Gagal mengirim data ke server:', error);
+            toast.show('error', 'Kesalahan!', 'Terjadi kesalahan saat mengirim data.');
+        });
 }
 
 // Fungsi untuk mengkapitalisasi huruf pertama
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
-
-// Jalankan saat halaman dimuat
-window.addEventListener('load', () => {
-    initializeSidebar();
-    initializeTabs();
-    initializeClassSelection();
-    initializeNavigation();
-    initializeHistoryFilter();
-
-    // Set tanggal hari ini sebagai default
-    setCurrentDate();
-});
