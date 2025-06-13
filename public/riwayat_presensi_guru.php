@@ -1,20 +1,23 @@
 <?php
-session_start();
-
 include "config/config.php";
 
-// Cek apakah user sudah login
-if (!isset($_SESSION['guru_id'])) {
+session_start();
+
+
+// Cek apakah user sudah login sebagai guru
+if (empty($_SESSION['guru_id']) || empty($_SESSION['nama_guru'])) {
+    // Redirect ke halaman login jika belum login
     header("Location: login.html");
     exit();
 }
-
 $id_guru = $_SESSION['guru_id'];
+
 
 $query_guru = mysqli_query($conn, "SELECT * FROM guru WHERE id_guru = '$id_guru'");
 $profil_guru = mysqli_fetch_assoc($query_guru);
 
 $nama = $_SESSION['nama_guru'];
+$foto = "1.png";
 
 if (!empty($profil_guru) && !empty($profil_guru['foto_profil'])) {
     $file_path = 'img/guru/' . $profil_guru['foto_profil'];
@@ -23,37 +26,10 @@ if (!empty($profil_guru) && !empty($profil_guru['foto_profil'])) {
     }
 }
 
+
 include "layout/header.php";
 
 ?>
-
-    <!-- Konten Utama -->
-    <div id="main-content" class="main-content">
-        <!-- Navigasi Atas -->
-        <header class="bg-white shadow-sm border-b border-gray-200">
-            <div class="px-5 py-2 flex items-center justify-between">
-                <div class="flex items-center">
-                    <button id="toggle-sidebar"
-                        class="p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h7" />
-                        </svg>
-                    </button>
-                    <h1 class="ml-3 text-lg font-semibold text-gray-800">Riwayat Presensi</h1>
-                </div>
-                <div class="flex items-center">
-                    <div class="flex items-center">
-                        <div class="avatar-ring">
-                            <img class="h-8 w-8 rounded-full object-cover"
-                                src="img/guru/<?= $foto ?>" alt="User avatar">
-                        </div>
-                        <span class="ml-2 text-sm font-medium text-gray-700"><?php echo ($nama) ?></span>
-                    </div>
-                </div>
-            </div>
-        </header>
 
         <!-- Konten Halaman -->
         <main class="p-4 bg-pattern">
@@ -65,11 +41,11 @@ include "layout/header.php";
                         <!-- Filter bulan -->
                         <select id="month-filter"
                             class="border border-gray-300 rounded-md px-3 py-1.5 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
-                            <option value="all" selected>Semua Bulan</option>
+                            <option value="all">Semua Bulan</option>
                             <option value="january">Januari</option>
                             <option value="february">Februari</option>
                             <option value="march">Maret</option>
-                            <option value="april">April</option>
+                            <option value="april" selected>April</option>
                             <option value="may">Mei</option>
                             <option value="june">Juni</option>
                             <option value="july">Juli</option>
@@ -100,7 +76,7 @@ include "layout/header.php";
                 <div class="p-3">
                     <div class="overflow-x-auto">
                         <!-- Tabel data presensi -->
-                        <table class="w-full">
+                        <table id="attendance-table" class="w-full">
                             <thead class="table-header text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 <tr>
                                     <th class="px-4 py-3 text-left">Foto</th>
@@ -148,6 +124,23 @@ include "layout/header.php";
             </div>
         </main>
     </div>
+    <!-- Toast Notification -->
+    <div id="toast-notification" class="fixed top-4 right-4 z-50 toast-enter transition-all duration-300 ease-out">
+        <div class="bg-white rounded-lg shadow-lg border-l-4 p-4 max-w-sm">
+            <div class="flex items-center">
+                <div id="toast-icon" class="mr-3"></div>
+                <div class="flex-1">
+                    <h4 id="toast-title" class="font-semibold text-gray-800"></h4>
+                    <p id="toast-message" class="text-sm text-gray-600"></p>
+                </div>
+                <button id="toast-close" class="ml-2 text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="js/riwayat_presensi_guru.js"></script>
 </body>
 

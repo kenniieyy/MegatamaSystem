@@ -1,12 +1,27 @@
 <?php
 include '../config/config.php'; // Pastikan path ke file config.php benar
-
+session_start();
 header('Content-Type: application/json'); // Memberi tahu browser bahwa respons adalah JSON
+
+// Cek apakah user sudah login
+if (!isset($_SESSION['guru_id'])|| !isset($_SESSION['kelas_wali'])) {
+    header("Location: login.html");
+    exit();
+}
+
+$id_guru = $_SESSION['guru_id'];
+
+$kelas_wali = $_SESSION['kelas_wali'];
 
 $response = []; // Array untuk menyimpan semua data riwayat presensi
 
-// Query untuk mengambil semua entri dari tabel absen
-$query_absen = "SELECT id_absen, kelas, tanggal, jam_mulai, jam_selesai, dibuat_pada FROM absen ORDER BY tanggal DESC, dibuat_pada DESC";
+$query_absen = "
+    SELECT id_absen, id_guru, kelas, tanggal, jam_mulai, jam_selesai, dibuat_pada 
+    FROM absen 
+    WHERE kelas = '$kelas_wali'
+    ORDER BY tanggal DESC, dibuat_pada DESC
+";
+
 $result_absen = mysqli_query($conn, $query_absen);
 
 if ($result_absen) {
@@ -14,7 +29,7 @@ if ($result_absen) {
         $id_presensi = $row_absen['id_absen'];
 
         // Untuk setiap presensi, ambil detail siswa yang absen
-        $query_siswa_absen = "SELECT id_siswa, status FROM absen_siswa WHERE id_presensi = '$id_presensi'";
+        $query_siswa_absen = "SELECT id_siswa, status FROM absen_siswa WHERE id_absen = '$id_presensi'";
         $result_siswa_absen = mysqli_query($conn, $query_siswa_absen);
 
         $students_status = [];
@@ -58,4 +73,3 @@ if ($result_absen) {
 echo json_encode($response);
 
 mysqli_close($conn);
-?>

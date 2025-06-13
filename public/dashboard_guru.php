@@ -2,34 +2,25 @@
 include "config/config.php";
 session_start();
 
-if (!isset($_SESSION['guru_id'])) {
+// Cek apakah user sudah login sebagai guru
+if (empty($_SESSION['guru_id']) || empty($_SESSION['nama_guru']) || empty($_SESSION['nip'])) {
+    // Redirect ke halaman login jika belum login
     header("Location: login.html");
     exit();
 }
 
+
 $nama = $_SESSION['nama_guru'];
 $id_guru = $_SESSION['guru_id'];
+$nip = $_SESSION['nip'];
 $tanggal = date('Y-m-d');
 
 include "proses/chart_guru.php";
 
 $query = mysqli_query($conn, "SELECT * FROM absen_guru WHERE id_guru = '$id_guru' AND tanggal = '$tanggal'");
-$query_guru = mysqli_query($conn, "SELECT * FROM guru WHERE id_guru = '$id_guru'");
 $query1 = "SELECT * FROM aktivitas WHERE id_guru = '$id_guru' ORDER BY waktu DESC LIMIT 5";
 $data_absen = mysqli_fetch_assoc($query);
-$profil_guru = mysqli_fetch_assoc($query_guru);
 $result = $conn->query($query1);
-
-$default_foto = '1.png';
-$foto = $default_foto;
-
-if (!empty($profil_guru) && !empty($profil_guru['foto_profil'])) {
-    $file_path = 'img/guru/' . $profil_guru['foto_profil'];
-    if (file_exists($file_path)) {
-        $foto = htmlspecialchars($profil_guru['foto_profil']);
-    }
-}
-
 
 $status_datang = "Belum Absen Datang";
 $status_pulang = "Belum Absen Pulang";
@@ -46,35 +37,6 @@ if ($data_absen) {
 include "layout/header.php";
 
 ?>
-
-<!-- Main Content -->
-<div id="main-content" class="main-content">
-    <!-- Top Navigation -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
-        <div class="px-5 py-2 flex items-center justify-between">
-            <div class="flex items-center">
-                <button id="toggle-sidebar"
-                    class="p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h7" />
-                    </svg>
-                </button>
-                <h1 class="ml-3 text-lg font-semibold text-gray-800">Dashboard</h1>
-            </div>
-            <div class="flex items-center">
-                <div class="flex items-center">
-                    <div class="avatar-ring">
-                        <img class="h-8 w-8 rounded-full object-cover"
-                            src="img/guru/<?= $foto ?>" alt="User avatar">
-                    </div>
-                    <span class="ml-2 text-sm font-medium text-gray-700"><?php echo ($nama) ?></span>
-                </div>
-            </div>
-        </div>
-    </header>
-
     <!-- Page Content -->
     <main class="p-4 bg-pattern">
         <!-- Welcome Message -->
@@ -102,7 +64,7 @@ include "layout/header.php";
                         </svg>
                     </div>
                     <div>
-                        <p class="text-sm text-gray-600"><?php echo $status_datang; ?></p>
+                        <p class="text-sm font-bold text-gray-800"><?php echo $status_datang; ?></p>
                     </div>
                 </div>
             </div>
@@ -121,7 +83,7 @@ include "layout/header.php";
                         </svg>
                     </div>
                     <div>
-                        <p class="text-sm text-gray-600"><?php echo $status_pulang; ?></p>
+                        <p class="text-sm font-bold text-gray-800"><?php echo $status_pulang; ?></p>
                     </div>
                 </div>
             </div>
@@ -224,57 +186,7 @@ include "layout/header.php";
                 </div>
                 <div class="p-3">
                     <div class="space-y-2">
-                        <?php while ($row = $result->fetch_assoc()): ?>
-                            <?php
-                            $tipe = $row['tipe'];
-
-                            // Warna dan ikon sesuai tipe
-                            if ($tipe === 'datang') {
-                                $bgColor = 'bg-blue-100 ';
-                                $iconColor = 'text-blue-600';
-                            } elseif ($tipe === 'pulang') {
-                                $bgColor = 'bg-green-100';
-                                $iconColor = 'text-green-600';
-                            } else {
-                                $bgColor = 'bg-gray-100';
-                                $iconColor = 'text-gray-600';
-                            }
-
-                            // Icon lonceng SVG
-                            $icon = '
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ' . $iconColor . '" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                                    </svg>';
-
-                            // Format waktu
-                            $waktu = strtotime($row['waktu']);
-                            $jam = date('H:i:s', $waktu);
-
-                            // Tentukan apakah "Hari ini", "Kemarin", atau tanggal
-                            $hariIni = date('Y-m-d');
-                            $kemarin = date('Y-m-d', strtotime('-1 day'));
-                            $tanggalPresensi = date('Y-m-d', $waktu);
-
-                            if ($tanggalPresensi === $hariIni) {
-                                $labelWaktu = "Hari ini, $jam WIB";
-                            } elseif ($tanggalPresensi === $kemarin) {
-                                $labelWaktu = "Kemarin, $jam WIB";
-                            } else {
-                                $labelWaktu = date('d M Y, H:i:s', $waktu) . ' WIB';
-                            }
-                            ?>
-                            <div class="activity-item p-3 flex items-start rounded-lg bg-gray-50 mb-2">
-                                <div class="w-8 h-8 rounded-full <?= $bgColor ?> flex items-center justify-center mr-2 flex-shrink-0">
-                                    <?= $icon ?>
-                                </div>
-                                <div>
-                                    <p class="text-sm font-semibold text-gray-800"><?= htmlspecialchars($row['judul']) ?></p>
-                                    <p class="text-xs text-gray-500"><?= $labelWaktu ?></p>
-                                </div>
-                            </div>
-                        <?php endwhile; ?>
+                        <?php include "proses/aktivitas.php" ?>
                     </div>
                 </div>
             </div>
@@ -284,7 +196,7 @@ include "layout/header.php";
         <div class="card mb-4">
             <div class="card-header flex items-center justify-between">
                 <h3 class="text-base font-medium text-gray-700">Tabel Riwayat Presensi</h3>
-                <a href="riwayat_presensi_guru.html" class="btn-gradient">Lihat Detail</a>
+                <a href="riwayat_presensi_guru.php" class="btn-gradient">Lihat Detail</a>
             </div>
             <div class="p-3">
                 <div class="overflow-x-auto">
@@ -327,6 +239,6 @@ include "layout/header.php";
         window.location.href = url.toString();
     }
 </script>
+</body>
 
-</html>
 </html>

@@ -1,35 +1,43 @@
 <?php
-session_start();
+header('Content-Type: application/json');
 include '../config/config.php';
 
-header('Content-Type: application/json');
+session_start();
 
-$guru_id = $_SESSION['guru_id'] ?? null;
-
-if (!$guru_id) {
-    echo json_encode(['status' => 'error', 'message' => 'Belum login']);
+// Cek jika guru sudah login
+if (!isset($_SESSION['guru_id'])) {
+    echo json_encode(['error' => 'Unauthorized']);
     exit;
 }
 
-// Query ambil data presensi dan NIP
-$sql = "SELECT ag.tanggal, ag.jam_datang, ag.jam_pulang, g.nip 
-        FROM absen_guru ag
-        JOIN guru g ON ag.id_guru = g.id_guru
-        WHERE ag.id_guru = '$guru_id' 
-        ORDER BY ag.tanggal DESC"; // Tambahkan alias agar lebih jelas
+$id_guru = $_SESSION['guru_id'];
 
-$result = $conn->query($sql);
+try {
+    $sql = "SELECT id_guru, tanggal, jam_datang, jam_pulang, foto_datang, foto_pulang 
+FROM absen_guru 
+WHERE id_guru = '$id_guru' 
+ORDER BY tanggal DESC, 
+         GREATEST(IFNULL(jam_datang, '00:00:00'), IFNULL(jam_pulang, '00:00:00')) DESC;";
+    $result = mysqli_query($conn, $sql);
 
-$data = [];
+    if (!$result) {
+        throw new Exception("Query error: " . mysqli_error($conn));
+    }
 
-while ($row = $result->fetch_assoc()) {
-    $data[] = [
-        'date' => date('d-M-Y', strtotime($row['tanggal'])),
-        'datang' => $row['jam_datang'] ?? "-",
-        'pulang' => $row['jam_pulang'] ?? "-",
-        'nip' => $row['nip'] // Tambahkan NIP ke dalam data
-    ];
+    $data = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $data[] = [
+            'nip' => $row['id_guru'],
+            'date' => $row['tanggal'],
+            'datang' => $row['jam_datang'],
+            'pulang' => $row['jam_pulang'],
+            'foto_datang' => $row['foto_datang'],
+            'foto_pulang' => $row['foto_pulang']
+        ];
+    }
+
+    echo json_encode(['status' => 'success', 'data' => $data]);
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
 }
-
-echo json_encode(['status' => 'success', 'data' => $data]);
-?>

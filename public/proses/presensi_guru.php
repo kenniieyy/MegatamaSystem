@@ -41,7 +41,7 @@ if ($password !== $data['password']) {
     http_response_code(401);
     echo json_encode([
         "status" => "error",
-        "message" => "Password salah."
+        "message" => "Pasword tidak sesuai."
     ]);
     exit;
 }
@@ -77,7 +77,6 @@ if ($cek->num_rows > 0) {
         $waktu = date('Y-m-d H:i:s');
 
         $conn->query("INSERT INTO aktivitas (id_guru, judul, tipe, waktu) VALUES ('$guru_id','$judul', '$tipe', '$waktu')");
-
     } else {
         http_response_code(500);
         echo json_encode([
@@ -100,7 +99,6 @@ if ($cek->num_rows > 0) {
         $waktu = date('Y-m-d H:i:s');
 
         $conn->query("INSERT INTO aktivitas (id_guru, judul, tipe, waktu) VALUES ('$guru_id','$judul', '$tipe', '$waktu')");
-
     } else {
         http_response_code(500);
         echo json_encode([
@@ -116,7 +114,8 @@ echo json_encode([
     "status" => "success",
     "message" => $message,
     "presensi" => $presensi,
+    "name" => $data['nama_guru'], // Tambahkan ini
+    "nip" => $data['nip']          // Tambahkan ini
 ]);
 
 $conn->close();
-?>

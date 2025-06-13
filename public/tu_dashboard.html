@@ -4,18 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Yayasan Megatama Jambi</title>
+    <title>Dashboard Admin-Yayasan Megatama Jambi</title>
     <link rel="stylesheet" href="css/final.css">
-    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="/public/js/tu_dashboard.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/public/js/toggle.js"></script>
 </head>
 
 <body class="font-poppins mode-2">
-    <!-- Overlay untuk tampilan mobile -->
+    <!-- Mobile overlay -->
     <div id="overlay" class="overlay"></div>
 
     <!-- Sidebar navigasi -->
@@ -28,7 +26,7 @@
                     <path
                         d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
                 </svg>
-                <h1 class="text-base font-bold ml-3 logo-text">Yayasan Megatama</h1>
+                <h1 class="text-base font-bold ml-3 logo-text">Yayasan <br>Megatama</h1>
             </div>
         </div>
 
@@ -116,30 +114,29 @@
             </nav>
         </div>
 
-        <!-- Tombol logout di bagian bawah sidebar -->
+        <!-- Logout at bottom -->
         <div class="mt-auto p-3 border-t border-blue-800">
-            <a href="login.html" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
-                <div class="menu-icon">
+            <a href="index.html" class="menu-item-admin-tu px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
+                <div class="menu-icon-admin-tu">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
                         viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
                 </div>
-                <span class="menu-text">Logout</span>
+                <span class="menu-text-admin-tu">Logout</span>
             </a>
         </div>
     </div>
 
-    <!-- Konten Utama -->
-    <div id="main-content" class="main-content">
-        <!-- Navigasi Atas dengan Toggle Button -->
+    <!-- Main Content -->
+    <div id="main-content" class="main-content-admin-tu">
+        <!-- Top Navigation -->
         <header class="bg-white shadow-sm border-b border-gray-200">
             <div class="px-5 py-2 flex items-center justify-between">
                 <div class="flex items-center">
-                    <!-- Toggle Sidebar Button -->
                     <button id="toggle-sidebar"
-                        class="p-1 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none">
+                        class="p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -150,223 +147,295 @@
                 </div>
                 <div class="flex items-center">
                     <div class="flex items-center">
-                        <div class="avatar-ring">
+                        <div class="avatar-ring-admin-tu">
                             <img class="h-8 w-8 rounded-full object-cover"
-                                src="https://randomuser.me/api/portraits/men/32.jpg" alt="User avatar">
+                                src="https://randomuser.me/api/portraits/men/32.jpg" alt="Admin avatar">
                         </div>
-                        <span class="ml-2 text-sm font-medium text-gray-700">Admin TU</span>
+                        <span class="ml-2 text-sm font-medium text-gray-700">Admin TU 1</span>
                     </div>
                 </div>
             </div>
         </header>
 
-        <!-- Konten Dashboard -->
+        <!-- Page Content -->
         <main class="p-4 bg-pattern">
-            <div class="space-y-6">
-                <!-- Welcome Card -->
-                <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-6 text-white">
-                    <h2 class="text-2xl font-bold flex items-center">
-                        Welcome Back, Admin TU
-                        <span class="ml-2">👋</span>
-                    </h2>
-                </div>
+            <!-- Welcome Message -->
+            <div class="welcome-card-admin-tu">
+                <h2>Welcome Back, Admin TU 1 👋</h2>
+            </div>
 
-                <!-- Stats Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <!-- Absen Datang -->
-                    <div class="bg-white rounded-xl p-6 shadow-sm border border-blue-200">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm text-gray-600 mb-1">Absen Datang Hari Ini</p>
-                                <p class="text-2xl font-bold text-gray-800">25<span
-                                        class="text-sm text-gray-500 font-normal">/55 Total Guru</span></p>
-                            </div>
-                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-user-clock text-blue-600 text-xl"></i>
-                            </div>
-                        </div>
+            <!-- Status Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                <!-- Status Card 1 -->
+                <div class="card card-gradient-top-admin-tu p-3">
+                    <div class="flex items-center justify-between mb-1">
+                        <h3 class="text-sm font-medium text-gray-500">Absen Datang Hari Ini</h3>
                     </div>
-
-                    <!-- Absen Pulang -->
-                    <div class="bg-white rounded-xl p-6 shadow-sm border border-green-200">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm text-gray-600 mb-1">Absen Pulang Hari Ini</p>
-                                <p class="text-2xl font-bold text-gray-800">Belum Absen Pulang</p>
-                            </div>
-                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-user-check text-green-600 text-xl"></i>
-                            </div>
+                    <div class="flex items-center">
+                        <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary" viewBox="0 0 24 24"
+                                fill="currentColor">
+                                <path
+                                    d="M4 2a2 2 0 0 0-2 2v4h2V4h4V2H4zm16 0h-4v2h4v4h2V4a2 2 0 0 0-2-2zM4 18H2v4a2 2 0 0 0 2 2h4v-2H4v-4zm16 0v4h-4v2h4a2 2 0 0 0 2-2v-4h-2zM12 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 2c-2.33 0-7 1.17-7 3.5V20h14v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+                            </svg>
                         </div>
-                    </div>
-
-                    <!-- Total Siswa -->
-                    <div class="bg-white rounded-xl p-6 shadow-sm border border-orange-200">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm text-gray-600 mb-1">Total Siswa</p>
-                                <p class="text-2xl font-bold text-gray-800">225<span
-                                        class="text-sm text-gray-500 font-normal"> Siswa</span></p>
-                            </div>
-                            <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-users text-orange-600 text-xl"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Ruang Dipinjam -->
-                    <div class="bg-white rounded-xl p-6 shadow-sm border border-red-200">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm text-gray-600 mb-1">Ruang Dipinjam Hari Ini</p>
-                                <p class="text-2xl font-bold text-gray-800">1<span
-                                        class="text-sm text-gray-500 font-normal"> ruangan</span></p>
-                            </div>
-                            <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-door-open text-red-600 text-xl"></i>
-                            </div>
+                        <div>
+                            <p class="text-2xl font-bold text-gray-800">25 <span
+                                    class="text-sm text-gray-500 font-normal">/ 35 Total Guru</span></p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Charts Section -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Peminjaman Ruangan Chart -->
-                    <div class="lg:col-span-2 bg-white rounded-xl p-6 shadow-sm">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-lg font-semibold text-gray-800">Peminjaman Ruangan</h3>
-                            <select
-                                class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option>April</option>
-                                <option>Maret</option>
-                                <option>Februari</option>
+                <!-- Status Card 2 -->
+                <div class="card card-gradient-top-admin-tu success p-3">
+                    <div class="flex items-center justify-between mb-1">
+                        <h3 class="text-sm font-medium text-gray-500">Absen Pulang Hari Ini</h3>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-success" viewBox="0 0 24 24"
+                                fill="currentColor">
+                                <path
+                                    d="M4 2a2 2 0 0 0-2 2v4h2V4h4V2H4zm16 0h-4v2h4v4h2V4a2 2 0 0 0-2-2zM4 18H2v4a2 2 0 0 0 2 2h4v-2H4v-4zm16 0v4h-4v2h4a2 2 0 0 0 2-2v-4h-2zM12 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 2c-2.33 0-7 1.17-7 3.5V20h14v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-gray-800">Belum Absen Pulang</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Card 3 -->
+                <div class="card card-gradient-top-admin-tu warning p-3">
+                    <div class="flex items-center justify-between mb-1">
+                        <h3 class="text-sm font-medium text-gray-500">Total Siswa</h3>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-warning" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-gray-800">225 <span
+                                    class="text-sm text-gray-500 font-normal">Siswa</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Card 4 -->
+                <div class="card card-gradient-top-admin-tu danger p-3">
+                    <div class="flex items-center justify-between mb-1">
+                        <h3 class="text-sm font-medium text-gray-500">Ruang Dipinjam Hari Ini</h3>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-9 h-9 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-danger" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-gray-800">1 <span
+                                    class="text-sm text-gray-500 font-normal">ruangan</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Peminjaman Ruangan dan Aktivitas Terbaru -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-4">
+                <!-- Peminjaman Ruangan -->
+                <div class="lg:col-span-2 card">
+                    <div class="card-header-admin-tu flex items-center justify-between">
+                        <h3 class="text-base font-medium text-gray-700">Peminjaman Ruangan</h3>
+                        <div class="flex space-x-2">
+                            <select id="room-filter"
+                                class="text-xs border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary">
+                                <option value="januari">Januari</option>
+                                <option value="februari">Februari</option>
+                                <option value="maret">Maret</option>
+                                <option value="april">April</option>
+                                <option value="mei" selected>Mei</option>
+                                <option value="juni">Juni</option>
+                                <option value="juli">Juli</option>
+                                <option value="agustus">Agustus</option>
+                                <option value="september">September</option>
+                                <option value="oktober">Oktober</option>
+                                <option value="november">November</option>
+                                <option value="desember">Desember</option>
                             </select>
                         </div>
-                        <div class="h-64">
-                            <canvas id="roomChart" class="w-full h-full"></canvas>
+                    </div>
+                    <div class="p-3">
+                        <div class="chart-container-admin-tu">
+                            <canvas id="room-chart"></canvas>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Aktivitas Terbaru -->
-                    <div class="bg-white rounded-xl p-6 shadow-sm">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-6">Aktivitas Terbaru</h3>
-                        <div class="space-y-4 max-h-80 overflow-y-auto">
-                            <div class="flex items-start space-x-3">
+                <!-- Aktivitas Terbaru -->
+                <div class="card">
+                    <div class="card-header-admin-tu flex items-center justify-between">
+                        <h3 class="text-base font-medium text-gray-700">Aktivitas Terbaru</h3>
+                    </div>
+                    <div class="p-3">
+                        <div class="space-y-2">
+                            <div class="activity-item-admin-tu p-2 flex items-start rounded-lg">
                                 <div
-                                    class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                    <i class="fas fa-user text-orange-600 text-xs"></i>
+                                    class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center mr-2 flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
                                 </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm text-gray-800 font-medium">Siti Nurhaliza Input Presensi Kelas 7
-                                    </p>
-                                    <p class="text-xs text-gray-500">Hari ini, 08:30:18 WIB</p>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-800">Aulia Rahmawati Meminjam Ruangan</p>
+                                    <p class="text-xs text-gray-500">Hari ini, 10:25:11 WIB</p>
                                 </div>
                             </div>
-                            <div class="flex items-start space-x-3">
+                            <div class="activity-item-admin-tu p-2 flex items-start rounded-lg">
                                 <div
-                                    class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                    <i class="fas fa-user text-orange-600 text-xs"></i>
+                                    class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center mr-2 flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
                                 </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm text-gray-800 font-medium">Ahmad Fauzan Input Presensi Kelas 10
-                                    </p>
-                                    <p class="text-xs text-gray-500">Hari ini, 08:30:15 WIB</p>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-800">Rizky Pratama Meminjam Ruangan</p>
+                                    <p class="text-xs text-gray-500">Hari ini, 09:40:30 WIB</p>
                                 </div>
                             </div>
-                            <div class="flex items-start space-x-3">
+                            <div class="activity-item-admin-tu p-2 flex items-start rounded-lg bg-gray-50">
                                 <div
-                                    class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                    <i class="fas fa-user text-orange-600 text-xs"></i>
+                                    class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-2 flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path d="M12 14l9-5-9-5-9 5 9 5z" />
+                                        <path
+                                            d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998a12.078 12.078 0 01.665-6.479L12 14z" />
+                                    </svg>
                                 </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm text-gray-800 font-medium">Olivia Putri Input Presensi Kelas 8</p>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-800">Rina Kartikasari Input Presensi Kelas 8
+                                    </p>
+                                    <p class="text-xs text-gray-500">Hari ini, 09:10:05 WIB</p>
+                                </div>
+                            </div>
+                            <div class="activity-item-admin-tu p-2 flex items-start rounded-lg bg-gray-50">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-2 flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path d="M12 14l9-5-9-5-9 5 9 5z" />
+                                        <path
+                                            d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998a12.078 12.078 0 01.665-6.479L12 14z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-800">Siti Nurhaliza Input Presensi Kelas 7
+                                    </p>
                                     <p class="text-xs text-gray-500">Hari ini, 08:30:10 WIB</p>
                                 </div>
                             </div>
-                            <div class="flex items-start space-x-3">
+                            <div class="activity-item-admin-tu p-2 flex items-start rounded-lg bg-gray-50">
                                 <div
-                                    class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                    <i class="fas fa-user text-orange-600 text-xs"></i>
+                                    class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-2 flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path d="M12 14l9-5-9-5-9 5 9 5z" />
+                                        <path
+                                            d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998a12.078 12.078 0 01.665-6.479L12 14z" />
+                                    </svg>
                                 </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm text-gray-800 font-medium">Ahmad Fauzan Input Presensi Kelas 9</p>
-                                    <p class="text-xs text-gray-500">Hari ini, 11:30:20 WIB</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start space-x-3">
-                                <div
-                                    class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                    <i class="fas fa-user text-orange-600 text-xs"></i>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm text-gray-800 font-medium">Siti Nurhaliza Input Presensi Kelas 12
-                                    </p>
-                                    <p class="text-xs text-gray-500">Hari ini, 10:30:20 WIB</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start space-x-3">
-                                <div
-                                    class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                    <i class="fas fa-user text-orange-600 text-xs"></i>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm text-gray-800 font-medium">Ahmad Fauzan Input Presensi Kelas 10
-                                    </p>
-                                    <p class="text-xs text-gray-500">Hari ini, 11:30:20 WIB</p>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-800">Ahmad Fauzan Input Presensi Kelas 9</p>
+                                    <p class="text-xs text-gray-500">Hari ini, 08:00:15 WIB</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Bottom Charts -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- Kehadiran Guru Chart -->
-                    <div class="bg-white rounded-xl p-6 shadow-sm">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-lg font-semibold text-gray-800">Kehadiran Guru</h3>
-                            <div class="flex space-x-2">
-                                <select
-                                    class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <option>April</option>
-                                    <option>Maret</option>
-                                    <option>Februari</option>
-                                </select>
-                                <button
-                                    class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">Absen
-                                    Datang</button>
-                                <button
-                                    class="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-50 transition-colors">Absen
-                                    Pulang</button>
+            <!-- Kehadiran Guru dan Jumlah Siswa -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-4">
+                <!-- Kehadiran Guru -->
+                <div class="card">
+                    <div class="card-header-admin-tu flex items-center justify-between">
+                        <h3 class="text-base font-medium text-gray-700">Kehadiran Guru</h3>
+                        <div class="flex space-x-2">
+                            <select id="teacher-filter"
+                                class="text-xs border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary">
+                                <option value="januari">Januari</option>
+                                <option value="februari">Februari</option>
+                                <option value="maret">Maret</option>
+                                <option value="april">April</option>
+                                <option value="mei" selected>Mei</option>
+                                <option value="juni">Juni</option>
+                                <option value="juli">Juli</option>
+                                <option value="agustus">Agustus</option>
+                                <option value="september">September</option>
+                                <option value="oktober">Oktober</option>
+                                <option value="november">November</option>
+                                <option value="desember">Desember</option>
+                            </select>
+                            <div class="flex space-x-1">
+                                <button id="tab-teacher-datang" class="tab-button-admin-tu active">Absen Datang</button>
+                                <button id="tab-teacher-pulang" class="tab-button-admin-tu">Absen Pulang</button>
                             </div>
                         </div>
-                        <div class="flex justify-center">
-                            <canvas id="attendanceChart" width="300" height="300"></canvas>
+                    </div>
+                    <div class="p-3">
+                        <!-- Tab content for Absen Datang -->
+                        <div id="content-teacher-datang" class="tab-content-admin-tu active">
+                            <div class="chart-container-small-admin-tu">
+                                <canvas id="teacher-chart-datang"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Tab content for Absen Pulang -->
+                        <div id="content-teacher-pulang" class="tab-content-admin-tu">
+                            <div class="chart-container-small-admin-tu">
+                                <canvas id="teacher-chart-pulang"></canvas>
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Jumlah Siswa Chart -->
-                    <div class="bg-white rounded-xl p-6 shadow-sm">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-lg font-semibold text-gray-800">Jumlah Siswa</h3>
-                            <select
-                                class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option>Kelas 7</option>
-                                <option>Kelas 8</option>
-                                <option>Kelas 9</option>
-                                <option>Kelas 10</option>
-                                <option>Kelas 11</option>
-                                <option>Kelas 12</option>
+                <!-- Jumlah Siswa -->
+                <div class="card">
+                    <div class="card-header-admin-tu flex items-center justify-between">
+                        <h3 class="text-base font-medium text-gray-700">Jumlah Siswa</h3>
+                        <div class="flex space-x-2">
+                            <select id="student-filter"
+                                class="text-xs border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary">
+                                <option value="kelas7" selected>Kelas 7</option>
+                                <option value="kelas8">Kelas 8</option>
+                                <option value="kelas9">Kelas 9</option>
+                                <option value="kelas10">Kelas 10</option>
+                                <option value="kelas11">Kelas 11</option>
+                                <option value="kelas12">Kelas 12</option>
+
                             </select>
                         </div>
-                        <div class="flex justify-center">
-                            <canvas id="studentChart" width="300" height="300"></canvas>
+                    </div>
+                    <div class="p-3">
+                        <div class="chart-container-small-admin-tu">
+                            <canvas id="student-chart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </main>
     </div>
+    <script src="js/tu_dashboard.js"></script>
 </body>
 
 </html>

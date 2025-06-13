@@ -1,11 +1,11 @@
-// Fungsi untuk memeriksa apakah waktu berada dalam rentang tertentu
 function isTimeInRange(timeStr, startHour, endHour) {
-    if (timeStr === "-") return false
+    if (!timeStr || timeStr === "-") return false;
 
-    const timeParts = timeStr.split(":")
-    const hour = Number.parseInt(timeParts[0], 10)
+    const timeParts = timeStr.split(":");
+    if (timeParts.length < 1) return false;
 
-    return hour >= startHour && hour < endHour
+    const hour = Number.parseInt(timeParts[0], 10);
+    return hour >= startHour && hour < endHour;
 }
 
 
@@ -16,37 +16,61 @@ let attendanceData = {
 }
 
 function loadAttendanceFromServer() {
-    return fetch('http://localhost/revisi/public/proses/get_riwayat_guru.php')
-        .then(response => response.json())
+    // RETURN the promise chain here
+    return fetch('proses/get_riwayat_guru.php')
+        .then(response => {
+            if (!response.ok) {
+                // Handle HTTP errors
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(result => {
             if (result.status === 'success') {
-                attendanceData.datang = result.data.map(item => ({
-                    id: Math.random(),
-                    nip: item.nip,
-                    date: item.date,
-                    time: item.datang,
-                    status: item.datang !== '-' ? 'Hadir' : 'Tidak Hadir',
-                    note: item.datang !== '-' ? (isTimeInRange(item.datang, 7, 8) ? 'Tepat Waktu' : 'Terlambat') : 'Absen Tidak Dilakukan'
-                }))
-                attendanceData.pulang = result.data.map(item => ({
-                    id: Math.random(),
-                    nip: item.nip,
-                    date: item.date,
-                    time: item.pulang,
-                    status: item.pulang !== '-' ? 'Hadir' : 'Tidak Hadir',
-                    note: item.pulang !== '-' ? (isTimeInRange(item.pulang, 15, 16) ? 'Tepat Waktu' : 'Terlambat') : 'Absen Tidak Dilakukan'
-                }))
+                attendanceData.datang = result.data
+                    .filter(item => item.datang && item.datang !== "null" && item.datang !== "-")
+                    .map(item => ({
+                        id: Math.random(),
+                        date: item.date,
+                        time: item.datang,
+                        foto_datang: item.foto_datang || null,
+                        foto_pulang: null,
+                        type: 'Datang',
+                        status: item.datang !== '-' ? 'Hadir' : 'Tidak Hadir',
+                        note: item.datang !== '-' ? (isTimeInRange(item.datang, 7, 8) ? 'Tepat Waktu' : 'Terlambat') : 'Absen Tidak Dilakukan'
+                    }))
+                attendanceData.pulang = result.data
+                    .filter(item => item.pulang && item.pulang !== "null" && item.pulang !== "-")
+                    .map(item => ({
+                        id: Math.random(),
+                        date: item.date,
+                        time: item.pulang,
+                        type: 'Pulang',
+                        foto_datang: null,
+                        foto_pulang: item.foto_pulang || null,
+                        status: item.pulang !== '-' ? 'Hadir' : 'Tidak Hadir',
+                        note: item.pulang !== '-' ? (isTimeInRange(item.pulang, 15, 16) ? 'Tepat Waktu' : 'Terlambat') : 'Absen Tidak Dilakukan'
+                    }))
+                renderAttendanceData() // Assuming renderAttendanceData exists and is necessary here
             } else {
-                alert("Gagal memuat data presensi.")
+                alert("Gagal memuat data presensi: " + (result.message || "Unknown error"));
+                // Propagate the error so the .then() in the load handler doesn't execute
+                throw new Error("Server response status not 'success'");
             }
         })
+        .catch(error => {
+            console.error("Error loading attendance data:", error);
+            alert("Terjadi kesalahan saat memuat data presensi. Silakan coba lagi.");
+            // Re-throw the error to ensure the .then() after loadAttendanceFromServer()
+            // doesn't proceed if there's an error.
+            throw error;
+        });
 }
 
-
 // Memperbarui data kehadiran berdasarkan aturan waktu
-function updateAttendanceData() {
+function updateAttendanceData(data) {
     // Memperbarui data absen datang
-    attendanceData.datang.forEach((item) => {
+    data.datang.forEach((item) => {
         if (item.time === "-") {
             item.status = "Tidak Hadir"
             item.note = "Absen Tidak Dilakukan"
@@ -65,7 +89,7 @@ function updateAttendanceData() {
     })
 
     // Memperbarui data absen pulang
-    attendanceData.pulang.forEach((item) => {
+    data.pulang.forEach((item) => {
         if (item.time === "-") {
             item.status = "Tidak Hadir"
             item.note = "Absen Tidak Dilakukan"
@@ -82,36 +106,41 @@ function updateAttendanceData() {
             }
         }
     })
+
+    return data
 }
 
 
-
 function mergeAttendanceData() {
-    const merged = []
+    const merged = [];
 
     attendanceData.datang.forEach(item => {
         merged.push({
-            nip: item.nip,
+            nip: item.nip, // nip might be undefined if not in the original data from server
             date: item.date,
             waktu: item.time,
             status: item.status,
             keterangan: item.note,
-            type: "Datang"
-        })
-    })
+            type: "Datang",
+            foto_datang: item.foto_datang || null,
+            foto_pulang: null
+        });
+    });
 
     attendanceData.pulang.forEach(item => {
         merged.push({
-            nip: item.nip,
+            nip: item.nip, // nip might be undefined if not in the original data from server
             date: item.date,
             waktu: item.time,
             status: item.status,
             keterangan: item.note,
-            type: "Pulang"
-        })
-    })
+            type: "Pulang",
+            foto_datang: null,
+            foto_pulang: item.foto_pulang || null
+        });
+    });
 
-    return merged.sort((a, b) => new Date(b.date) - new Date(a.date))
+    return merged.sort((a, b) => new Date(b.date) - new Date(a.date));
 }
 
 function renderDashboardAttendanceGabungan(limit = 6) {
@@ -122,62 +151,68 @@ function renderDashboardAttendanceGabungan(limit = 6) {
     const slicedData = combinedData.slice(0, limit);
 
     tableBody.innerHTML = "";
+    if (slicedData.length === 0) {
+    const noDataRow = document.createElement("tr");
+    noDataRow.innerHTML = `
+        <td colspan="5" class="px-4 py-3 whitespace-nowrap text-center text-gray-500">
+            Belum ada data riwayat presensi
+        </td>
+    `;
+    tableBody.appendChild(noDataRow);
+    return; // Exit the function as there's no data to render
+}
 
     slicedData.forEach(item => {
-        // Panggil endpoint PHP yang benar untuk ambil foto profil
-        // Menggunakan get_guru.php yang Anda sediakan, karena itu yang mengembalikan info guru berdasarkan NIP
-        fetch(`http://localhost/revisi/public/proses/get_guru.php?nip=${item.nip}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                let fotoProfil;
-                // Pastikan data memiliki properti foto_profil
-                if (data && data.foto_profil) {
-                    fotoProfil = `img/guru/${data.foto_profil}`;
-                } else {
-                    fotoProfil = 'img/guru/1.png'; // default jika tidak ada atau error
-                }
+        let fotoPresensi;
+        if (item.type === "Datang") {
+            fotoPresensi = item.foto_datang ? `img/upload/${item.foto_datang}` : 'img/guru/1.png';
+        } else {
+            fotoPresensi = item.foto_pulang ? `img/upload/${item.foto_pulang}` : 'img/guru/1.png';
+        }
 
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="px-4 py-3 whitespace-nowrap">
-                        <img class="h-8 w-8 rounded-full object-cover" src="${fotoProfil}" alt="User avatar">
-                    </td>
-                    <td class="px-4 py-3 whitespace-nowrap text-gray-500">${item.date}</td>
-                    <td class="px-4 py-3 whitespace-nowrap text-gray-500">${item.waktu}</td>
-                    <td class="px-4 py-3 whitespace-nowrap text-gray-500">${item.status}</td>
-                    <td class="px-4 py-3 whitespace-nowrap">
-                        <span class="badge ${item.badgeClass || ''}">${item.keterangan}</span>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            })
-            .catch(error => {
-                console.error('Error fetching guru photo:', error);
-                // Fallback ke default foto jika ada error saat fetch
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="px-4 py-3 whitespace-nowrap">
-                        <img class="h-8 w-8 rounded-full object-cover" src="img/guru/1.png" alt="User avatar">
-                    </td>
-                    <td class="px-4 py-3 whitespace-nowrap text-gray-500">${item.date}</td>
-                    <td class="px-4 py-3 whitespace-nowrap text-gray-500">${item.waktu}</td>
-                    <td class="px-4 py-3 whitespace-nowrap text-gray-500">${item.status}</td>
-                    <td class="px-4 py-3 whitespace-nowrap">
-                        <span class="badge ${item.badgeClass || ''}">${item.keterangan}</span>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
+        const row = document.createElement('tr');
+
+        let badgeClass = "success"
+        if (item.keterangan === "Terlambat") {
+            badgeClass = "danger"
+        } else if (item.keterangan === "Absen Tidak Dilakukan") {
+            badgeClass = "warning"
+        }
+
+        row.innerHTML = `
+            <td class="px-4 py-3 whitespace-nowrap">
+                <img class="h-8 w-8 rounded-full object-cover" src="${fotoPresensi}" alt="Presensi">
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap text-gray-500">${item.date}</td>
+            <td class="px-4 py-3 whitespace-nowrap text-gray-500">${item.waktu}</td>
+            <td class="px-4 py-3 whitespace-nowrap text-gray-500">${item.status}</td>
+            <td class="px-4 py-3 whitespace-nowrap">
+                <span class="badge ${badgeClass || ''}">${item.keterangan}</span>
+            </td>
+        `;
+        tableBody.appendChild(row);
     });
 }
 
+// Assuming renderAttendanceData is called to display the initial data
+// This function needs to be defined if it's used within loadAttendanceFromServer
+function renderAttendanceData() {
+    // This function should contain the logic to display the loaded attendanceData
+    // For example, if you have another table for separate datang/pulang data, render it here.
+    // If it's solely for dashboard-attendance-data, then renderDashboardAttendanceGabungan should be called.
+    renderDashboardAttendanceGabungan(3); // Call the dashboard rendering after data is loaded
+}
+
+
 window.addEventListener("load", () => {
     loadAttendanceFromServer().then(() => {
-        renderDashboardAttendanceGabungan(3)
-    })
-})
+        // The renderDashboardAttendanceGabungan(3) call is now handled inside renderAttendanceData()
+        // or you can call it directly here if renderAttendanceData() is not meant to do that.
+        // For simplicity and to follow the flow, let's keep it in renderAttendanceData.
+        // If renderAttendanceData doesn't exist or is not used for this,
+        // then you would call renderDashboardAttendanceGabungan(3) here:
+        // renderDashboardAttendanceGabungan(3);
+    }).catch(error => {
+        console.error("Failed to load and render attendance data on window load:", error);
+    });
+});
