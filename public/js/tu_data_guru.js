@@ -1,4 +1,116 @@
+// Toast Notification Class
+class ToastNotification {
+    constructor() {
+        this.toastElement = document.getElementById('toast-notification');
+        this.toastIcon = document.getElementById('toast-icon');
+        this.toastTitle = document.getElementById('toast-title');
+        this.toastMessage = document.getElementById('toast-message');
+        this.toastClose = document.getElementById('toast-close');
+        this.toastContainer = this.toastElement.querySelector('.bg-white');
 
+        this.isVisible = false;
+        this.hideTimeout = null;
+
+        this.setupEventListeners();
+    }
+
+    setupEventListeners() {
+        // Event listener untuk tombol close
+        this.toastClose.addEventListener('click', () => {
+            this.hide();
+        });
+
+        // Auto hide setelah 5 detik
+        this.toastElement.addEventListener('transitionend', (e) => {
+            if (e.target === this.toastElement && this.isVisible) {
+                this.autoHide();
+            }
+        });
+    }
+
+    show(type, title, message) {
+        // Clear timeout sebelumnya jika ada
+        if (this.hideTimeout) {
+            clearTimeout(this.hideTimeout);
+        }
+
+        // Set konten toast
+        this.setContent(type, title, message);
+
+        // Reset classes
+        this.toastElement.classList.remove('toast-exit', 'toast-show');
+        this.toastElement.classList.add('toast-enter');
+
+        // Force reflow untuk memastikan class diterapkan
+        this.toastElement.offsetHeight;
+
+        // Tampilkan toast dengan animasi
+        setTimeout(() => {
+            this.toastElement.classList.remove('toast-enter');
+            this.toastElement.classList.add('toast-show');
+            this.isVisible = true;
+        }, 10);
+    }
+
+    hide() {
+        if (!this.isVisible) return;
+
+        // Clear auto hide timeout
+        if (this.hideTimeout) {
+            clearTimeout(this.hideTimeout);
+        }
+
+        // Sembunyikan dengan animasi
+        this.toastElement.classList.remove('toast-show');
+        this.toastElement.classList.add('toast-exit');
+        this.isVisible = false;
+
+        // Reset ke posisi awal setelah animasi selesai
+        setTimeout(() => {
+            this.toastElement.classList.remove('toast-exit');
+            this.toastElement.classList.add('toast-enter');
+        }, 300);
+    }
+
+    autoHide() {
+        this.hideTimeout = setTimeout(() => {
+            this.hide();
+        }, 5000); // Auto hide setelah 5 detik
+    }
+
+    setContent(type, title, message) {
+        // Reset border color
+        this.toastContainer.className = this.toastContainer.className.replace(/border-l-(green|red|yellow|blue)-500/g, '');
+
+        // Set icon dan warna berdasarkan type
+        switch (type) {
+            case 'success':
+                this.toastIcon.innerHTML = '<i class="fas fa-check-circle text-green-500 text-xl"></i>';
+                this.toastContainer.classList.add('border-l-green-500');
+                break;
+            case 'error':
+                this.toastIcon.innerHTML = '<i class="fas fa-times-circle text-red-500 text-xl"></i>';
+                this.toastContainer.classList.add('border-l-red-500');
+                break;
+            case 'warning':
+                this.toastIcon.innerHTML = '<i class="fas fa-exclamation-triangle text-yellow-500 text-xl"></i>';
+                this.toastContainer.classList.add('border-l-yellow-500');
+                break;
+            case 'info':
+                this.toastIcon.innerHTML = '<i class="fas fa-info-circle text-blue-500 text-xl"></i>';
+                this.toastContainer.classList.add('border-l-blue-500');
+                break;
+            default:
+                this.toastIcon.innerHTML = '<i class="fas fa-info-circle text-gray-500 text-xl"></i>';
+                this.toastContainer.classList.add('border-l-gray-500');
+        }
+
+        this.toastTitle.textContent = title;
+        this.toastMessage.textContent = message;
+    }
+}
+
+// Teacher Data
 let teachersData = [
     { id: 1, name: "Siti Nurhaliza, S.Pd", gender: "Perempuan", nip: "19800412 200903 2 001", subject: "Agama Islam", waliKelas: "Wali Kelas 7", status: "Aktif", photo: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=150&h=150&fit=crop&crop=face" },
     { id: 2, name: "Ahmad Fauzan, M.Pd", gender: "Laki - Laki", nip: "19791105 200701 1 002", subject: "Fisika", waliKelas: "Wali Kelas 9", status: "Non-Aktif", photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" },
@@ -20,11 +132,18 @@ const itemsPerPage = 9;
 let editingId = null;
 let deleteId = null;
 
+// Inisialisasi toast notification
+let toast;
+
 // Initialize page
 document.addEventListener('DOMContentLoaded', function () {
+    // Initialize toast notification
+    toast = new ToastNotification();
+    
     renderTable();
     renderPagination();
     setupSearch();
+    setupForm();
 });
 
 // Render table
@@ -44,9 +163,8 @@ function renderTable() {
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${teacher.nip}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${teacher.subject}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-  ${teacher.waliKelas || 'Bukan Wali Kelas'}
-</td>
-
+                        ${teacher.waliKelas || 'Bukan Wali Kelas'}
+                    </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <span class="px-2 py-1 text-xs font-medium rounded-full ${teacher.status === 'Aktif' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
                             ${teacher.status}
@@ -164,6 +282,11 @@ function closeModal() {
 
 function deleteTeacher(id) {
     deleteId = id;
+    const teacher = teachersData.find(t => t.id === id);
+    
+    // Show warning toast before showing delete modal
+    //toast.show('warning', 'Konfirmasi Hapus', `Apakah Anda yakin ingin menghapus data guru ${teacher.name}?`);
+    
     document.getElementById('deleteModal').classList.remove('hidden');
 }
 
@@ -172,15 +295,26 @@ function closeDeleteModal() {
 }
 
 function confirmDelete() {
-    teachersData = teachersData.filter(t => t.id !== deleteId);
-    filteredData = filteredData.filter(t => t.id !== deleteId);
-    renderTable();
-    renderPagination();
-    closeDeleteModal();
+    const teacherToDelete = teachersData.find(t => t.id === deleteId);
+    const teacherName = teacherToDelete ? teacherToDelete.name : 'Guru';
+    
+    try {
+        teachersData = teachersData.filter(t => t.id !== deleteId);
+        filteredData = filteredData.filter(t => t.id !== deleteId);
+        renderTable();
+        renderPagination();
+        closeDeleteModal();
+        
+        // Show success notification
+        toast.show('success', 'Berhasil Dihapus!', `Data guru berhasil dihapus dari sistem`);
+    } catch (error) {
+        // Show error notification if deletion fails
+        toast.show('error', 'Error!', 'Terjadi kesalahan saat menghapus data guru');
+    }
 }
 
 // Form submission
-document.addEventListener('DOMContentLoaded', function () {
+function setupForm() {
     const form = document.getElementById('teacherForm');
 
     if (form) {
@@ -197,22 +331,31 @@ document.addEventListener('DOMContentLoaded', function () {
                 photo: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=150&h=150&fit=crop&crop=face"
             };
 
-            if (editingId) {
-                const index = teachersData.findIndex(t => t.id === editingId);
-                if (index !== -1) {
-                    teachersData[index] = { ...teachersData[index], ...formData };
+            try {
+                if (editingId) {
+                    // Edit existing teacher
+                    const index = teachersData.findIndex(t => t.id === editingId);
+                    if (index !== -1) {
+                        teachersData[index] = { ...teachersData[index], ...formData };
+                        toast.show('success', 'Berhasil Diperbarui!', `Data guru berhasil diperbarui`);
+                    }
+                } else {
+                    // Add new teacher
+                    const newId = Math.max(...teachersData.map(t => t.id)) + 1;
+                    teachersData.push({ id: newId, ...formData });
+                    toast.show('success', 'Berhasil Ditambahkan!', `Data guru berhasil ditambahkan ke sistem`);
                 }
-            } else {
-                const newId = Math.max(...teachersData.map(t => t.id)) + 1;
-                teachersData.push({ id: newId, ...formData });
-            }
 
-            filteredData = [...teachersData];
-            renderTable();
-            renderPagination();
-            closeModal();
-            console.log('Form Data:', formData);
+                filteredData = [...teachersData];
+                renderTable();
+                renderPagination();
+                closeModal();
+                
+            } catch (error) {
+                // Show error notification if operation fails
+                const action = editingId ? 'memperbarui' : 'menambahkan';
+                toast.show('error', 'Error!', `Terjadi kesalahan saat ${action} data guru`);
+            }
         });
     }
-});
-
+}

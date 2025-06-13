@@ -1,106 +1,112 @@
-// Simulasi peran pengguna - ubah ini untuk menguji skenario yang berbeda
-const currentUser = {
-  name: "Olivia Putri",
-  role: "teacher", // 'homeroom_teacher' or 'teacher'
-  class: "7", // Hanya untuk guru wali kelas
-  avatar: "https://randomuser.me/api/portraits/women/44.jpg",
-}
+// kelulusan_siswa.js
+let studentData = []; // Deklarasikan secara global
 
-// Contoh data siswa kelas 7 (hanya ditampilkan untuk guru wali kelas)
-// Jika Anda ingin mengambil data dari server, Anda perlu mengaktifkan kembali bagian fetch
-// dan mengubah 'const studentData' menjadi 'let studentData'.
-const studentData = [
-  {
-    id: 1,
-    name: "Ahmad Fauzi",
-    gender: "Laki-laki",
-    nis: "2024025",
-    class: "7",
-    phone: "081234567814",
-    status: "pending",
-  },
-  {
-    id: 2,
-    name: "Anisa Putri",
-    gender: "Perempuan",
-    nis: "2024001",
-    class: "7",
-    phone: "081234567890",
-    status: "pending",
-  },
-  {
-    id: 3,
-    name: "Budi Santoso",
-    gender: "Laki-laki",
-    nis: "2024006",
-    class: "7",
-    phone: "081234567895",
-    status: "pending",
-  },
-  {
-    id: 4,
-    name: "Citra Dewi",
-    gender: "Perempuan",
-    nis: "2024015",
-    class: "7",
-    phone: "081234567804",
-    status: "pending",
-  },
-  {
-    id: 5,
-    name: "Deni Kurniawan",
-    gender: "Laki-laki",
-    nis: "2024009",
-    class: "7",
-    phone: "081234567898",
-    status: "pending",
-  },
-  {
-    id: 6,
-    name: "Eka Fitriani",
-    gender: "Perempuan",
-    nis: "2024019",
-    class: "7",
-    phone: "081234567808",
-    status: "pending",
-  },
-  {
-    id: 7,
-    name: "Fajar Ramadhan",
-    gender: "Laki-laki",
-    nis: "2024003",
-    class: "7",
-    phone: "081234567892",
-    status: "pending",
-  },
-  {
-    id: 8,
-    name: "Gita Nuraini",
-    gender: "Perempuan",
-    nis: "2024004",
-    class: "7",
-    phone: "081234567893",
-    status: "pending",
-  },
-  {
-    id: 9,
-    name: "Hadi Prasetyo",
-    gender: "Laki-laki",
-    nis: "2024011",
-    class: "7",
-    phone: "081234567800",
-    status: "pending",
-  },
-  {
-    id: 10,
-    name: "Indah Permata",
-    gender: "Perempuan",
-    nis: "2024027",
-    class: "7",
-    phone: "081234567816",
-    status: "pending",
-  },
-];
+fetch('proses/get_siswa.php')
+  .then(response => response.json())
+  .then(data => {
+    // Periksa apakah data adalah objek dengan kunci kelas, lalu ratakan
+    if (typeof data === 'object' && !Array.isArray(data)) {
+        studentData = Object.values(data).flat();
+    } else if (Array.isArray(data)) {
+        studentData = data; // Jika data sudah berupa array datar
+    } else {
+        console.error('Format data tidak terduga:', data);
+        toast.show('error', 'Gagal Memuat Data', 'Format data siswa tidak sesuai.');
+        return;
+    }
+    console.log("Semua Siswa:", studentData);
+
+    // Filter studentData berdasarkan kelas jika ada filter kelas yang aktif (misalnya untuk guru)
+    // Bagian ini mengasumsikan 'teacherClass' akan ditetapkan secara dinamis setelah login
+    // Sebagai contoh, mari kita asumsikan variabel 'loggedInTeacherClass' ada
+    // let loggedInTeacherClass = '9'; // Contoh: atur ini secara dinamis berdasarkan sesi login
+    // if (loggedInTeacherClass) {
+    //     studentData = studentData.filter(student => student.class === loggedInTeacherClass);
+    //     console.log(`Siswa yang difilter untuk kelas ${loggedInTeacherClass}:`, studentData);
+    // }
+
+    renderStudentData(); // Sekarang renderStudentData dapat mengakses studentData global
+  })
+  .catch(error => {
+    console.error('Error saat mengambil data siswa:', error);
+    toast.show('error', 'Error Jaringan', 'Tidak dapat terhubung ke server untuk memuat data siswa.');
+  });
+
+function renderStudentData() {
+  const tableBody = document.getElementById("student-data")
+  const paginationInfo = document.getElementById("pagination-info")
+  const paginationContainer = document.getElementById("pagination-numbers")
+  const prevButton = document.getElementById("prev-page")
+  const nextButton = document.getElementById("next-page")
+
+  tableBody.innerHTML = ""
+
+  if (studentData.length === 0) {
+    const row = document.createElement("tr")
+    row.innerHTML = `
+            <td colspan="7" class="text-center text-gray-500 py-4">
+                Belum ada data siswa
+            </td>
+        `
+    tableBody.appendChild(row)
+    paginationInfo.textContent = "Tidak ada data"
+    paginationContainer.innerHTML = ""
+    prevButton.style.display = "none"
+    nextButton.style.display = "none"
+    return
+  }
+
+  // Tampilkan pagination jika data ada
+  prevButton.style.display = ""
+  nextButton.style.display = ""
+
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = Math.min(startIndex + itemsPerPage, studentData.length)
+  const paginatedData = studentData.slice(startIndex, endIndex)
+
+  paginationInfo.textContent = `Menampilkan ${startIndex + 1}-${endIndex} dari ${studentData.length} data`
+
+  paginatedData.forEach((student, index) => {
+    const row = document.createElement("tr")
+    row.className = "table-row"
+
+    let statusBadge = ""
+    let actionButtons = ""
+
+    if (student.status === "promote") {
+      statusBadge = `<span class="badge success">Lulus</span>`
+    } else if (student.status === "not_promote") {
+      statusBadge = `<span class="badge danger">Tidak Lulus</span>`
+    } else {
+      actionButtons = `
+                <div class="flex space-x-2">
+                    <button onclick="showConfirmationModal(${student.id}, 'promote')" class="btn-success">
+                        Lulus
+                    </button>
+                    <button onclick="showConfirmationModal(${student.id}, 'not_promote')" class="btn-danger">
+                        Tidak Lulus
+                    </button>
+                </div>
+            `
+    }
+
+    row.innerHTML = `
+            <td class="px-4 py-3 whitespace-nowrap text-gray-500">${startIndex + index + 1}</td>
+            <td class="px-4 py-3 whitespace-nowrap text-gray-500">${student.name}</td>
+            <td class="px-4 py-3 whitespace-nowrap text-gray-500">${student.gender}</td>
+            <td class="px-4 py-3 whitespace-nowrap text-gray-500">${student.nis}</td>
+            <td class="px-4 py-3 whitespace-nowrap text-gray-500">${student.class}</td>
+            <td class="px-4 py-3 whitespace-nowrap text-gray-500">${student.phone}</td>
+            <td class="px-4 py-3 whitespace-nowrap">
+                ${statusBadge}${actionButtons}
+            </td>
+        `
+
+    tableBody.appendChild(row)
+  })
+
+  renderPagination()
+}
 
 // Variabel paginasi
 let currentPage = 1
@@ -258,41 +264,34 @@ function debugSidebar() {
 class ToastNotification {
   constructor() {
     this.toastElement = document.getElementById('toast-notification');
-
-    // PENTING: Periksa apakah elemen toast ditemukan sebelum melanjutkan
+    // Pastikan toastElement ditemukan sebelum mencoba mengkueri anak-anaknya
     if (!this.toastElement) {
         console.error("Elemen HTML dengan ID 'toast-notification' tidak ditemukan. ToastNotification tidak dapat diinisialisasi.");
-        // Atur properti ke null untuk mencegah kesalahan lebih lanjut jika objek masih digunakan
-        this.toastIcon = null;
-        this.toastTitle = null;
-        this.toastMessage = null;
-        this.toastClose = null;
-        this.toastContainer = null;
-        this.isVisible = false;
-        this.hideTimeout = null;
-        return; // Keluar dari konstruktor
+        return; // Keluar dari konstruktor jika elemen null
     }
-
     this.toastIcon = document.getElementById('toast-icon');
     this.toastTitle = document.getElementById('toast-title');
     this.toastMessage = document.getElementById('toast-message');
     this.toastClose = document.getElementById('toast-close');
-    this.toastContainer = this.toastElement.querySelector('.bg-white'); // Sekarang ini aman karena toastElement sudah diperiksa
+    this.toastContainer = this.toastElement.querySelector('.bg-white'); // Baris ini menyebabkan kesalahan
 
     this.isVisible = false;
     this.hideTimeout = null;
 
-    // Hanya siapkan pendengar peristiwa jika elemen-elemen inti ditemukan
-    if (this.toastElement && this.toastClose) {
+    // Hanya siapkan pendengar peristiwa jika toastElement berhasil ditemukan
+    if (this.toastElement) {
       this.setupEventListeners();
     }
   }
 
   setupEventListeners() {
     // Pendengar peristiwa untuk tombol tutup
-    this.toastClose.addEventListener('click', () => {
-      this.hide();
-    });
+    if (this.toastClose) { // Periksa apakah toastClose ada sebelum menambahkan pendengar
+      this.toastClose.addEventListener('click', () => {
+        this.hide();
+      });
+    }
+
 
     // Sembunyikan otomatis setelah 5 detik
     this.toastElement.addEventListener('transitionend', (e) => {
@@ -303,7 +302,7 @@ class ToastNotification {
   }
 
   show(type, title, message) {
-    if (!this.toastElement || !this.toastContainer) { // Cegah menampilkan jika elemen toast tidak diinisialisasi dengan benar
+    if (!this.toastElement) { // Cegah menampilkan jika elemen toast tidak diinisialisasi
         console.error("Elemen notifikasi toast tidak tersedia.");
         return;
     }
@@ -358,7 +357,7 @@ class ToastNotification {
 
   setContent(type, title, message) {
     if (!this.toastContainer || !this.toastIcon || !this.toastTitle || !this.toastMessage) {
-        console.error("Elemen konten toast tidak tersedia. Tidak dapat mengatur konten.");
+        console.error("Elemen konten toast tidak tersedia.");
         return;
     }
     // Atur ulang warna batas
@@ -392,8 +391,8 @@ class ToastNotification {
   }
 }
 
-// Inisialisasi notifikasi toast (deklarasikan di sini, inisialisasi nanti)
-let toast;
+// Inisialisasi notifikasi toast
+const toast = new ToastNotification();
 
 // Tampilkan modal konfirmasi
 function showConfirmationModal(studentId, action) {
@@ -415,7 +414,7 @@ function showConfirmationModal(studentId, action) {
   currentStudentId = studentId
   currentAction = action
 
-  const actionText = action === "promote" ? "naik kelas" : "tidak naik kelas"
+  const actionText = action === "promote" ? "lulus" : "tidak lulus"
   message.textContent = `Apakah Anda yakin ingin menetapkan status ${actionText} untuk siswa ${student.name}?`
 
   confirmButton.onclick = () => confirmAction()
@@ -440,7 +439,7 @@ function showBulkPromotionModal() {
 
   // Jika tidak ada siswa yang tertunda, tampilkan pesan khusus
   if (pendingStudents.length === 0) {
-    message.textContent = "Tidak ada siswa yang perlu dinaikkan kelas."
+    message.textContent = "Tidak ada siswa yang perlu diluluskan."
 
     // Ubah tombol konfirmasi menjadi "Tutup"
     const newConfirmButton = confirmButton.cloneNode(true)
@@ -457,7 +456,7 @@ function showBulkPromotionModal() {
   currentAction = "promote"
   currentStudentId = null
 
-  message.textContent = `Tindakan ini akan menetapkan status "Naik Kelas" untuk ${pendingStudents.length} siswa yang belum diproses.`
+  message.textContent = `Tindakan ini akan menetapkan status "Lulus" untuk ${pendingStudents.length} siswa yang belum diproses.`
 
   // "Hapus pendengar peristiwa lama (jika ada), lalu tambahkan pendengar peristiwa yang baru."
   const newConfirmButton = confirmButton.cloneNode(true)
@@ -473,23 +472,21 @@ function showBulkPromotionModal() {
 // Tutup modal
 function closeModal() {
   const modal = document.getElementById("confirmation-modal")
-  const subMessage = document.getElementById("modal-submessage-naik-kelas")
-
-  if (modal) {
+  if (modal) { // Tambahkan pemeriksaan null untuk modal
     modal.classList.remove("show")
   }
-
   currentStudentId = null
   currentAction = null
   isBulkPromotion = false
 
   // Hapus subpesan
+  const subMessage = document.getElementById("modal-submessage-naik-kelas")
   if (subMessage) {
     subMessage.textContent = ""
   }
 }
 
-// Konfirmasi tindakan individual
+// Konfirmasi tindakan
 function confirmAction() {
   if (currentStudentId && currentAction) {
     const studentIndex = studentData.findIndex((s) => s.id === currentStudentId)
@@ -500,9 +497,9 @@ function confirmAction() {
 
       // Tampilkan notifikasi toast berdasarkan aksi
       if (currentAction === 'promote') {
-        toast.show('success', 'Berhasil!', `${student.name} berhasil dinaikkan kelas!`)
+        toast.show('success', 'Berhasil!', `${student.name} berhasil dinyatakan lulus!`)
       } else if (currentAction === 'not_promote') {
-        toast.show('info', 'Status Diperbarui!', `${student.name} ditetapkan tidak naik kelas.`)
+        toast.show('info', 'Status Diperbarui!', `${student.name} dinyatakan tidak lulus.`)
       }
     }
   }
@@ -523,206 +520,15 @@ function confirmBulkAction() {
     renderStudentData()
 
     // Tampilkan notifikasi toast untuk promosi massal
-    toast.show('success', 'Berhasil!', `${promotedCount} siswa berhasil dinaikkan kelas!`)
+    toast.show('success', 'Berhasil!', `${promotedCount} siswa berhasil diluluskan!`)
   }
   closeModal()
 }
 
-// Render pesan akses ditolak
-function renderAccessDenied() {
-  const container = document.getElementById("content-container")
-  if (!container) {
-    console.error("Elemen 'content-container' tidak ditemukan untuk akses ditolak.")
-    return;
-  }
-
-  container.innerHTML = `
-        <main class="p-4 bg-pattern">
-            <div class="access-denied-container">
-                <div class="access-denied">
-                    <div class="access-denied-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                        </svg>
-                    </div>
-                    <h2>Akses Terbatas</h2>
-                    <p>
-                        Saat ini Anda tidak terdaftar sebagai <strong>Wali Kelas</strong> dalam sistem.<br>
-                        Oleh karena itu, Anda tidak memiliki akses untuk mengelola data kenaikan kelas siswa.
-                    </p>
-                </div>
-            </div>
-        </main>
-    `
-}
-
-// Render tabel data siswa (untuk guru wali kelas)
-function renderStudentTable() {
-  const container = document.getElementById("content-container")
-  if (!container) {
-    console.error("Elemen 'content-container' tidak ditemukan untuk tabel siswa.")
-    return;
-  }
-
-  container.innerHTML = `
-        <main class="p-4 bg-pattern">
-            <!-- Tabel Data Siswa -->
-            <div class="card mb-4">
-                <div class="card-header flex flex-col md:flex-row md:items-center justify-between gap-3">
-                    <h3 class="text-base font-medium text-gray-700">Tabel Data Kenaikan Kelas</h3>
-                    <div class="flex flex-wrap gap-2">
-                        <!-- Promote All Button -->
-                        <button id="btn-promote-all" class="btn-success flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                            </svg>
-                            Naikkan Semua Siswa
-                        </button>
-                        <!-- Export Data Button -->
-                        <button id="btn-export-data" class="btn-gradient flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            Export Data
-                        </button>
-                        <!-- Export PDF Button -->
-                        <button id="btn-export-pdf" class="btn-primary flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            Export PDF
-                        </button>
-                    </div>
-                </div>
-                <div class="p-3">
-                    <div class="overflow-x-auto">
-                        <table id="attendance-table" class="w-full">
-                            <thead class="table-header text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                <tr>
-                                    <th class="px-4 py-3 text-left">No</th>
-                                    <th class="px-4 py-3 text-left">Nama Lengkap</th>
-                                    <th class="px-4 py-3 text-left">Jenis Kelamin</th>
-                                    <th class="px-4 py-3 text-left">NIS</th>
-                                    <th class="px-4 py-3 text-left">Kelas</th>
-                                    <th class="px-4 py-3 text-left">No HP</th>
-                                    <th class="px-4 py-3 text-left">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="student-data" class="bg-white divide-y divide-gray-200 text-sm">
-                                <!-- Data diisi oleh JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Pagination -->
-                    <div class="flex items-center justify-between mt-4">
-                        <div id="pagination-info" class="text-sm text-gray-500">
-                            Menampilkan 1-10 dari ${studentData.length} data
-                        </div>
-                        <div class="flex items-center space-x-1">
-                            <button id="prev-page" class="pagination-item text-gray-500" disabled>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                                </svg>
-                            </button>
-                            <div id="pagination-numbers" class="flex items-center space-x-1">
-                                <!-- Nomor pagination akan diisi oleh JavaScript -->
-                            </div>
-                            <button id="next-page" class="pagination-item text-gray-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    `
-
-  // Render data siswa dan pagination
-  renderStudentData()
-  initializeButtons() // Inisialisasi tombol setelah mereka dirender
-  initializeExportPDF() // Inisialisasi tombol ekspor PDF
-}
-
-// Render data siswa
-function renderStudentData() {
-  const tableBody = document.getElementById("student-data")
-  const paginationInfo = document.getElementById("pagination-info")
-
-  if (!tableBody) return // Guard clause jika elemen tidak ada
-
-  tableBody.innerHTML = ""
-
-  if (studentData.length === 0) {
-    const row = document.createElement("tr")
-    row.innerHTML = `
-            <td colspan="7" class="text-center text-gray-500 py-4">
-                Tidak ada data ditemukan
-            </td>
-        `
-    tableBody.appendChild(row)
-    if (paginationInfo) paginationInfo.textContent = "Tidak ada data"
-    return
-  }
-
-  const startIndex = (currentPage - 1) * itemsPerPage
-  const endIndex = Math.min(startIndex + itemsPerPage, studentData.length)
-  const paginatedData = studentData.slice(startIndex, endIndex)
-
-  if (paginationInfo) {
-    paginationInfo.textContent = `Menampilkan ${startIndex + 1}-${endIndex} dari ${studentData.length} data`
-  }
-
-  paginatedData.forEach((student, index) => {
-    const row = document.createElement("tr")
-    row.className = "table-row"
-
-    let statusBadge = ""
-    let actionButtons = ""
-
-    if (student.status === "promote") {
-      statusBadge = `<span class="badge success">Naik Kelas</span>`
-    } else if (student.status === "not_promote") {
-      statusBadge = `<span class="badge danger">Tidak Naik</span>`
-    } else {
-      actionButtons = `
-                <div class="flex space-x-2">
-                    <button onclick="showConfirmationModal(${student.id}, 'promote')" class="btn-success">
-                        Naik
-                    </button>
-                    <button onclick="showConfirmationModal(${student.id}, 'not_promote')" class="btn-danger">
-                        Tidak Naik
-                    </button>
-                </div>
-            `
-    }
-
-    row.innerHTML = `
-            <td class="px-4 py-3 whitespace-nowrap text-gray-500">${startIndex + index + 1}</td>
-            <td class="px-4 py-3 whitespace-nowrap text-gray-500">${student.name}</td>
-            <td class="px-4 py-3 whitespace-nowrap text-gray-500">${student.gender}</td>
-            <td class="px-4 py-3 whitespace-nowrap text-gray-500">${student.nis}</td>
-            <td class="px-4 py-3 whitespace-nowrap text-gray-500">${student.class}</td>
-            <td class="px-4 py-3 whitespace-nowrap text-gray-500">${student.phone}</td>
-            <td class="px-4 py-3 whitespace-nowrap">
-                ${statusBadge}${actionButtons}
-            </td>
-        `
-
-    tableBody.appendChild(row)
-  })
-
-  renderPagination()
-}
-
-// Render kontrol pagination
+// Render kontrol paginasi
 function renderPagination() {
   const paginationContainer = document.getElementById("pagination-numbers")
   const totalPages = Math.ceil(studentData.length / itemsPerPage)
-
-  if (!paginationContainer) return
 
   paginationContainer.innerHTML = ""
 
@@ -744,41 +550,43 @@ function renderPagination() {
     paginationContainer.appendChild(pageButton)
   }
 
-  // Update pagination buttons
   const prevButton = document.getElementById("prev-page")
   const nextButton = document.getElementById("next-page")
 
-  if (prevButton) {
-    prevButton.disabled = currentPage === 1
-    prevButton.onclick = () => {
-      if (currentPage > 1) {
-        currentPage--
-        renderStudentData()
-      }
-    }
-  }
+  prevButton.disabled = currentPage === 1
+  nextButton.disabled = currentPage === totalPages
 
+  // Pasang kembali pendengar peristiwa setelah mengganti elemen
+  if (prevButton) {
+      prevButton.replaceWith(prevButton.cloneNode(true));
+      document.getElementById("prev-page").addEventListener("click", () => {
+        if (currentPage > 1) {
+          currentPage--
+          renderStudentData()
+        }
+      });
+  }
   if (nextButton) {
-    nextButton.disabled = currentPage === totalPages
-    nextButton.onclick = () => {
-      if (currentPage < totalPages) {
-        currentPage++
-        renderStudentData()
-      }
-    }
+      nextButton.replaceWith(nextButton.cloneNode(true));
+      document.getElementById("next-page").addEventListener("click", () => {
+        if (currentPage < totalPages) {
+          currentPage++
+          renderStudentData()
+        }
+      });
   }
 }
 
 // Inisialisasi fungsi tombol
 function initializeButtons() {
-  const exportButton = document.getElementById("btn-export-data")
+  const exportButton = document.getElementById("btn-export-data") // Tombol ini digunakan untuk simulasi ekspor umum
   const promoteAllButton = document.getElementById("btn-promote-all")
 
   if (exportButton) {
     exportButton.addEventListener("click", () => {
-      // Simulasi export data
+      // Simulasi ekspor data
       setTimeout(() => {
-        if (toast) toast.show('success', 'Berhasil!', 'Data berhasil diekspor (simulasi)!')
+        toast.show('success', 'Berhasil!', 'Data berhasil diekspor (simulasi)!')
       }, 500)
     })
   }
@@ -804,21 +612,12 @@ function initializeExportPDF() {
 
         if (!table) {
             console.error("Tabel dengan ID 'attendance-table' tidak ditemukan.");
-            if (toast) toast.show("error", "Gagal!", "Tabel data tidak ditemukan untuk diekspor.");
+            toast.show("error", "Gagal!", "Tabel data tidak ditemukan untuk diekspor.");
             return;
         }
 
         exportPdfBtn.innerText = "Memproses...";
         exportPdfBtn.disabled = true;
-
-        // Pastikan html2canvas dan jspdf tersedia di window scope
-        if (typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') {
-            console.error("Pustaka html2canvas atau jspdf tidak dimuat. Pastikan Anda menyertakannya di HTML.");
-            if (toast) toast.show("error", "Gagal!", "Pustaka ekspor PDF tidak ditemukan.");
-            exportPdfBtn.innerText = "Export PDF";
-            exportPdfBtn.disabled = false;
-            return;
-        }
 
         const scale = 2; // Tingkatkan skala untuk kualitas yang lebih baik
         html2canvas(table, { scale: scale }).then((canvas) => {
@@ -849,66 +648,31 @@ function initializeExportPDF() {
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = "kenaikan-kelas.pdf";
+            a.download = "kelulusan-kelas.pdf";
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
-            if (toast) toast.show("success", "Berhasil!", "Data berhasil diekspor ke PDF!");
+            toast.show("success", "Berhasil!", "Data berhasil diekspor ke PDF!");
             exportPdfBtn.innerText = "Export PDF";
             exportPdfBtn.disabled = false;
         }).catch((error) => {
             console.error("Gagal membuat PDF:", error);
-            if (toast) toast.show("error", "Gagal!", "Terjadi kesalahan saat membuat PDF.");
+            toast.show("error", "Gagal!", "Terjadi kesalahan saat membuat PDF.");
             exportPdfBtn.innerText = "Export PDF";
             exportPdfBtn.disabled = false;
         });
     });
 }
 
-// Inisialisasi halaman berdasarkan peran pengguna
-function initializePage() {
-  const contentContainer = document.getElementById("content-container");
-  if (!contentContainer) {
-      console.error("Elemen 'content-container' tidak ditemukan. Halaman tidak dapat diinisialisasi.");
-      return;
-  }
-
-  if (currentUser.role === "homeroom_teacher") {
-    renderStudentTable()
-  } else {
-    renderAccessDenied()
-  }
-
-  // Inisialisasi toast notification setelah konten dirender
-  // Ini penting jika elemen toast berada di dalam 'content-container'
-  toast = new ToastNotification();
-
-  // Tombol akan diinisialisasi oleh renderStudentTable jika role adalah homeroom_teacher
-  // Jika role bukan homeroom_teacher, tombol tidak akan ada, jadi tidak perlu inisialisasi di sini.
-  // initializeButtons() dan initializeExportPDF() sudah dipanggil di dalam renderStudentTable().
-}
-
-// Fungsi untuk mensimulasikan perubahan peran (untuk pengujian programmatik)
-function changeUserRole(newRole) {
-  currentUser.role = newRole
-  if (newRole === "homeroom_teacher") {
-    currentUser.class = "7"
-  } else {
-    currentUser.class = null
-  }
-
-  // Reset pagination saat berganti role
-  currentPage = 1
-
-  initializePage()
-}
 
 // Jalankan saat halaman dimuat
 window.addEventListener("load", () => {
   initializeSidebar()
-  initializePage() // Ini sekarang akan menangani inisialisasi toast dan tombol
+  initializeButtons() // Untuk simulasi ekspor umum dan promosi massal
+  initializeExportPDF() // Untuk ekspor PDF
+  renderStudentData()
 })
 
 // Jadikan fungsi tersedia secara global
@@ -917,5 +681,4 @@ window.showBulkPromotionModal = showBulkPromotionModal
 window.closeModal = closeModal
 window.confirmAction = confirmAction
 window.confirmBulkAction = confirmBulkAction
-window.changeUserRole = changeUserRole
-window.ToastNotification = ToastNotification; // Jadikan ToastNotification dapat diakses secara global jika diperlukan
+window.ToastNotification = ToastNotification; 

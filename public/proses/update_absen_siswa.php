@@ -21,7 +21,7 @@ foreach ($students as $student) {
     $id_siswa = $student['id_siswa'];
     $status = $student['status'];
 
-    $query = "UPDATE absen_siswa SET status = ? WHERE id_presensi = ? AND id_siswa = ?";
+    $query = "UPDATE absen_siswa SET status = ? WHERE id_absen = ? AND id_siswa = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param('sii', $status, $id_presensi, $id_siswa);
 

@@ -1,3 +1,34 @@
+<?php
+
+include "config/config.php";
+
+session_start();
+
+
+// Cek apakah user sudah login sebagai guru
+if (empty($_SESSION['guru_id']) || empty($_SESSION['nama_guru'])) {
+    // Redirect ke halaman login jika belum login
+    header("Location: login.html");
+    exit();
+}
+$id_guru = $_SESSION['guru_id'];
+
+
+$query_guru = mysqli_query($conn, "SELECT * FROM guru WHERE id_guru = '$id_guru'");
+$profil_guru = mysqli_fetch_assoc($query_guru);
+
+$nama = $_SESSION['nama_guru'];
+$foto = "1.png";
+
+if (!empty($profil_guru) && !empty($profil_guru['foto_profil'])) {
+    $file_path = 'img/guru/' . $profil_guru['foto_profil'];
+    if (file_exists($file_path)) {
+        $foto = htmlspecialchars($profil_guru['foto_profil']);
+    }
+}
+
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -32,7 +63,7 @@
         <div class="p-3">
             <p class="text-xs text-blue-300 mb-2 logo-text">Menu</p>
             <nav class="space-y-1">
-                <a href="dashboard_guru.html" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
+                <a href="dashboard_guru.php" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
                     <div class="menu-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
@@ -42,7 +73,7 @@
                     </div>
                     <span class="menu-text">Dashboard</span>
                 </a>
-                <a href="riwayat_presensi_guru.html"
+                <a href="riwayat_presensi_guru.php"
                     class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
                     <div class="menu-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
@@ -53,7 +84,7 @@
                     </div>
                     <span class="menu-text">Riwayat Presensi</span>
                 </a>
-                <a href="presensi_siswa.html" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
+                <a href="presensi_siswa.php" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
                     <div class="menu-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
@@ -63,7 +94,7 @@
                     </div>
                     <span class="menu-text">Presensi Siswa</span>
                 </a>
-                <a href="naik_kelas.html" class="menu-item active px-3 py-2 text-sm font-medium rounded-md">
+                <a href="naik_kelas.php" class="menu-item active px-3 py-2 text-sm font-medium rounded-md">
                     <div class="menu-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
@@ -73,7 +104,7 @@
                     </div>
                     <span class="menu-text">Kenaikan Kelas</span>
                 </a>
-                <a href="settings_guru.html" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
+                <a href="settings_guru.php" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
                     <div class="menu-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
@@ -102,7 +133,6 @@
             </a>
         </div>
     </div>
-
     <!-- Main Content -->
     <div id="main-content" class="main-content">
         <!-- Top Navigation -->
@@ -123,9 +153,9 @@
                     <div class="flex items-center">
                         <div class="avatar-ring">
                             <img class="h-8 w-8 rounded-full object-cover"
-                                src="https://randomuser.me/api/portraits/women/44.jpg" alt="User avatar">
+                                src="img/guru/<?= $foto ?>" alt="User avatar">
                         </div>
-                        <span class="ml-2 text-sm font-medium text-gray-700">Olivia Putri</span>
+                        <span class="ml-2 text-sm font-medium text-gray-700"><?= $nama ?></span>
                     </div>
                 </div>
             </div>
@@ -161,6 +191,21 @@
                 </button>
                 <button id="confirm-action" class="btn-gradient">
                     Konfirmasi
+                </button>
+            </div>
+        </div>
+    </div>
+     <!-- Toast Notification -->
+    <div id="toast-notification" class="fixed top-4 right-4 z-50 toast-enter toast-transition">
+        <div class="bg-white rounded-lg shadow-lg border-l-4 p-4 max-w-sm">
+            <div class="flex items-center">
+                <div id="toast-icon" class="mr-3"></div>
+                <div class="flex-1">
+                    <h4 id="toast-title" class="font-semibold text-gray-800"></h4>
+                    <p id="toast-message" class="text-sm text-gray-600"></p>
+                </div>
+                <button id="toast-close" class="ml-2 text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
                 </button>
             </div>
         </div>

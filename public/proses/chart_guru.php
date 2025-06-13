@@ -18,7 +18,7 @@ $terlambat = 0;
 $hadir_hari = [];
 
 // Konfigurasi batas waktu pulang
-$batas_pulang = "16:00:00";
+$batas_pulang = "15:00:00";
 $tepat_pulang = 0;
 $cepat_pulang = 0;
 $tidak_absen_pulang = 0;

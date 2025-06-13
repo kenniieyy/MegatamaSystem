@@ -590,13 +590,15 @@ function initializeNavigation() {
 function loadStudentList(kelas) {
     const siswaKelas = classData[kelas];
     const studentList = document.getElementById('student-list');
+
     if (!studentList) {
         console.error("Element with ID 'student-list' not found.");
         return;
     }
+
     studentList.innerHTML = '';
 
-    if (!siswaKelas || siswaKelas.length === 0) {
+    if (!Array.isArray(siswaKelas) || siswaKelas.length === 0) {
         studentList.innerHTML = '<tr><td colspan="4" class="text-center text-gray-500">Tidak ada data siswa</td></tr>';
         console.error('Kelas belum dipilih atau data kelas tidak ditemukan:', kelas);
         return;
