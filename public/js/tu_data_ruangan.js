@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Mengirim data ke PHP:', data); 
 
     try {
-      const response = await fetch('../src/API/tu_data_ruangan.php?action=get', {
+      const response = await fetch('../src/API/tu_data_ruangan.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'add', ...data }),

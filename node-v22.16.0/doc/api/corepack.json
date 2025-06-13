@@ -1,0 +1,32 @@
+{
+  "type": "module",
+  "source": "doc/api/corepack.md",
+  "introduced_in": "v14.19.0",
+  "meta": {
+    "added": [
+      "v16.9.0",
+      "v14.19.0"
+    ],
+    "changes": []
+  },
+  "stability": 1,
+  "stabilityText": "Experimental",
+  "miscs": [
+    {
+      "textRaw": "Corepack",
+      "name": "Corepack",
+      "introduced_in": "v14.19.0",
+      "type": "misc",
+      "meta": {
+        "added": [
+          "v16.9.0",
+          "v14.19.0"
+        ],
+        "changes": []
+      },
+      "stability": 1,
+      "stabilityText": "Experimental",
+      "desc": "<p>Documentation for this tool can be found on the <a href=\"https://github.com/nodejs/corepack\">Corepack repository</a>.</p>\n<p>Despite Corepack being distributed with default installs of Node.js, the package\nmanagers managed by Corepack are not part of the Node.js distribution, and\nCorepack itself will no longer be distributed with Node.js 25+.</p>"
+    }
+  ]
+}

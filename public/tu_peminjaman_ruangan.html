@@ -258,7 +258,12 @@
                             <form id="reservation-form">
                                 <!-- Jenis Ruangan -->
                                 <div class="mb-4">
-                                    <label for="room-type" class="block text-sm font-medium text-gray-700 mb-1">Jenis
+                                    <select id="room-type" name="room-type"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                                        required>
+                                        <option value="">Pilih Jenis Ruangan</option>
+                                    </select>
+                                    <!-- <label for="room-type" class="block text-sm font-medium text-gray-700 mb-1">Jenis
                                         Ruangan yang Dipinjam</label>
                                     <select id="room-type" name="room-type"
                                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
@@ -275,8 +280,10 @@
                                         <i class="fas fa-exclamation-triangle mr-2"></i>
                                         Ruangan ini sedang digunakan. Silakan pilih ruangan lain atau waktu yang
                                         berbeda.
-                                    </div>
+                                    </div> -->
                                 </div>
+                                
+
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <!-- Tanggal Peminjaman -->
@@ -376,7 +383,12 @@
                                 <div>
                                     <label for="room-filter" class="block text-sm font-medium text-gray-700 mb-1">Jenis
                                         Ruangan</label>
-                                    <select id="room-filter"
+                                    <select id="room-type" name="room-type"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                                        required>
+                                        <option value="">Pilih Jenis Ruangan</option>
+                                    </select>
+                                    <!-- <select id="room-filter"
                                         class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
                                         <option value="all">Semua Ruangan</option>
                                         <option value="lab-komputer">Laboratorium Komputer</option>
@@ -384,7 +396,7 @@
                                         <option value="lab-kimia">Laboratorium Kimia</option>
                                         <option value="lab-biologi">Laboratorium Biologi</option>
                                         <option value="kesenian">Kesenian</option>
-                                    </select>
+                                    </select> -->
                                 </div>
 
                                 <div>

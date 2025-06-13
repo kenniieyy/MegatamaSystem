@@ -1,91 +1,104 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-header("Content-Type: application/json");
+header('Content-Type: application/json');
 
 // Koneksi database
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db = "proyek_ppsi";
+$host = 'localhost';
+$user = 'root';
+$pass = '';
+$dbname = 'proyek_ppsi';
 
-$conn = new mysqli($host, $user, $pass, $db);
+$conn = new mysqli($host, $user, $pass, $dbname);
 if ($conn->connect_error) {
-    echo json_encode(["success" => false, "message" => "Koneksi gagal: " . $conn->connect_error]);
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Koneksi gagal']);
     exit;
 }
 
-$method = $_SERVER['REQUEST_METHOD'];
+// Ambil action dari GET, POST, atau JSON body
+$rawInput = file_get_contents('php://input');
+$decoded = json_decode($rawInput, true);
+$action = $_GET['action'] ?? $_POST['action'] ?? ($decoded['action'] ?? '');
 
-// === Handle GET list ===
-if ($method === 'GET' && isset($_GET["action"]) && $_GET["action"] === "list") {
-    $result = $conn->query("SELECT * FROM peminjaman_ruangan ORDER BY id DESC");
-    if (!$result) {
-        echo json_encode(["success" => false, "message" => "Query gagal: " . $conn->error]);
-        $conn->close();
-        exit;
-    }
-
-    $rows = [];
+// ============ 1. Ambil daftar jenis ruangan ============
+if ($action === 'get_rooms') {
+    $result = $conn->query("SELECT namaRuangan FROM ruangan ORDER BY namaRuangan ASC");
+    $rooms = [];
     while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
+        $rooms[] = $row['namaRuangan'];
     }
-
-    echo json_encode(["success" => true, "data" => $rows]);
-    $conn->close();
+    echo json_encode($rooms);
     exit;
 }
 
-// === Handle POST create new reservation ===
-if ($method === 'POST') {
-    $raw = file_get_contents("php://input");
-    $data = json_decode($raw, true);
+// ============ 2. Simpan data peminjaman ============
+if ($action === 'submit_reservation') {
+    $data = $decoded ?? $_POST;
 
-    if (is_null($data)) {
-        echo json_encode(["success" => false, "message" => "Gagal membaca data JSON. Data mentah: " . $raw]);
-        exit;
-    }
+    $nama = $data['nama_lengkap'] ?? '';
+    $nis = $data['nis'] ?? '';
+    $kelas = $data['kelas'] ?? '';
+    $telepon = $data['telepon'] ?? ''; // key dari JS adalah 'telepon'
+    $jenis_ruangan = $data['jenis_ruangan'] ?? '';
+    $tanggal = $data['tanggal_peminjaman'] ?? '';
+    $deskripsi = $data['deskripsi_kegiatan'] ?? '';
+    $jam_mulai = $data['jam_mulai'] ?? '';
+    $jam_selesai = $data['jam_selesai'] ?? '';
+    $penanggung_jawab = $data['penanggung_jawab'] ?? '';
 
-    // Sanitasi dan trim input
-    $nama = trim($data["nama_lengkap"] ?? "");
-    $nis = trim($data["nis"] ?? "");
-    $kelas = trim($data["kelas"] ?? "");
-    $telepon = trim($data["no_telepon"] ?? "");
-    $ruangan = trim($data["jenis_ruangan"] ?? "");
-    $tanggal = trim($data["tanggal_peminjaman"] ?? "");
-    $deskripsi = trim($data["deskripsi_kegiatan"] ?? "");
-    $jam_mulai = trim($data["jam_mulai"] ?? "");
-    $jam_selesai = trim($data["jam_selesai"] ?? "");
-    $penanggung = trim($data["penanggung_jawab"] ?? "");
-
-    // Cek jika ada data kosong
-    if ($nama === "" || $nis === "" || $kelas === "" || $ruangan === "" || $tanggal === "" || $deskripsi === "" || $jam_mulai === "" || $jam_selesai === "" || $penanggung === "") {
-        echo json_encode(["success" => false, "message" => "Semua field wajib diisi."]);
-        exit;
-    }
-
-    // Prepared statement untuk insert
-    $stmt = $conn->prepare("INSERT INTO peminjaman_ruangan (nama_lengkap, nis, kelas, no_telepon, jenis_ruangan, tanggal_peminjaman, deskripsi_kegiatan, jam_mulai, jam_selesai, penanggung_jawab) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    if (!$stmt) {
-        echo json_encode(["success" => false, "message" => "Prepare statement gagal: " . $conn->error]);
-        exit;
-    }
-
-    $stmt->bind_param("ssssssssss", $nama, $nis, $kelas, $telepon, $ruangan, $tanggal, $deskripsi, $jam_mulai, $jam_selesai, $penanggung);
+    $stmt = $conn->prepare("INSERT INTO peminjaman_ruangan 
+        (nama_lengkap, nis, kelas, no_telepon, jenis_ruangan, tanggal_peminjaman, deskripsi_kegiatan, jam_mulai, jam_selesai, penanggung_jawab, status) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Menunggu Konfirmasi')");
+    $stmt->bind_param("ssssssssss", $nama, $nis, $kelas, $telepon, $jenis_ruangan, $tanggal, $deskripsi, $jam_mulai, $jam_selesai, $penanggung_jawab);
 
     if ($stmt->execute()) {
-        echo json_encode(["success" => true, "message" => "Peminjaman berhasil disimpan."]);
+        echo json_encode(['success' => true]);
     } else {
-        echo json_encode(["success" => false, "message" => "Query gagal: " . $stmt->error]);
+        echo json_encode(['success' => false, 'message' => $stmt->error]);
     }
-
     $stmt->close();
-    $conn->close();
     exit;
 }
 
-// Jika bukan GET list atau POST maka beri respon error
-echo json_encode(["success" => false, "message" => "Metode request tidak diizinkan atau action tidak dikenali."]);
-$conn->close();
-exit;
+// ============ 3. Ambil riwayat peminjaman dengan filter dan pagination ============
+if ($action === 'get_history') {
+    $page = intval($_GET['page'] ?? 1);
+    $limit = 5;
+    $offset = ($page - 1) * $limit;
+
+    $filterRoom = $_GET['room'] ?? '';
+    $filterStatus = $_GET['status'] ?? '';
+    $filterMonth = $_GET['month'] ?? '';
+
+    $where = "1=1";
+    if ($filterRoom !== '') {
+        $where .= " AND jenis_ruangan = '" . $conn->real_escape_string($filterRoom) . "'";
+    }
+    if ($filterStatus !== '') {
+        $where .= " AND status = '" . $conn->real_escape_string($filterStatus) . "'";
+    }
+    if ($filterMonth !== '') {
+        $where .= " AND MONTH(tanggal_peminjaman) = " . intval($filterMonth);
+    }
+
+    $query = "SELECT * FROM peminjaman_ruangan WHERE $where ORDER BY tanggal_peminjaman DESC LIMIT $limit OFFSET $offset";
+    $result = $conn->query($query);
+
+    $items = [];
+    while ($row = $result->fetch_assoc()) {
+        $items[] = $row;
+    }
+
+    $countResult = $conn->query("SELECT COUNT(*) AS total FROM peminjaman_ruangan WHERE $where");
+    $totalRows = $countResult->fetch_assoc()['total'];
+    $totalPages = ceil($totalRows / $limit);
+
+    echo json_encode([
+        'items' => $items,
+        'total_pages' => $totalPages,
+        'offset' => $offset
+    ]);
+    exit;
+}
+
+// ============ Jika action tidak dikenali ============
+echo json_encode(['success' => false, 'message' => 'Action tidak valid']);
