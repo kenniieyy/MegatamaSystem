@@ -277,8 +277,9 @@
                 <!-- Pagination -->
                 <div class="px-6 py-4 flex items-center justify-between border-t border-gray-200">
                     <div class="text-sm text-gray-500">
-                        Menampilkan <span id="currentRange">1-9</span> dari <span id="totalData">24</span> siswa
+                        Menampilkan <span id="currentRange">-</span> dari <span id="totalData">-</span> siswa
                     </div>
+
                     <div class="flex items-center space-x-2">
                         <button id="prevPage"
                             class="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50" disabled>
@@ -403,8 +404,26 @@
         </div>
     </div>
 
+    <!-- MODAL KONFIRMASI HAPUS -->
+        <div id="deleteSiswa" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md text-center">
+            <div class="text-red-500 text-4xl mb-4">
+            <i class="fas fa-trash-alt"></i>
+            </div>
+            <h2 class="text-xl font-bold mb-2">Hapus Data Siswa</h2>
+            <p class="text-gray-600 mb-6">Apakah Anda yakin ingin menghapus siswa ini? Tindakan ini tidak dapat dibatalkan.</p>
+            <div class="flex justify-center space-x-4">
+            <button id="cancelDeleteBtn" class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100 text-gray-700" >
+                Batal
+            </button>
+            <button id="confirmDeleteBtn" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700" >
+                Hapus
+            </button>
+            </div>
+        </div>
+        </div>
 
-    <div id="deleteSiswa" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <!-- <div id="deleteSiswa" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="bg-white rounded-xl max-w-sm w-full p-6">
                 <div class="text-center">
@@ -415,12 +434,12 @@
                     <p class="text-gray-600 mb-6">Apakah Anda yakin ingin menghapus Siswa ini? Tindakan ini tidak
                         dapat dibatalkan.</p>
 
-                    <div class="flex space-x-3">
-                        <button onclick="closeDeleteModal()"
+                    <div id="deleteSiswa" class="flex space-x-3">
+                        <button id="cancelDeleteBtn"
                             class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
                             Batal
                         </button>
-                        <button onclick="confirmDelete()"
+                        <button id="confirmDeleteBtn"
                             class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
                             Hapus
                         </button>
@@ -428,7 +447,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
 
     <!-- Toast Notification -->

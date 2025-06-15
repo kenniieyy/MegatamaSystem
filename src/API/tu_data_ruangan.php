@@ -90,6 +90,29 @@ if ($action === 'get' && $method === 'GET') {
         respond(false, 'Gagal menghapus data: ' . $stmt->error);
     }
 
+//// ==== EDIT DATA RUANGAN ====
+} elseif ($action === 'edit' && $method === 'POST') {
+    $id = (int) ($input['id'] ?? 0);
+    $nama = trim($input['namaRuangan'] ?? '');
+    $lokasi = trim($input['lokasi'] ?? '');
+    $keterangan = trim($input['keterangan'] ?? '');
+
+    if ($id <= 0 || $nama === '' || $lokasi === '') {
+        respond(false, 'ID, Nama Ruangan, dan Lokasi wajib diisi.');
+    }
+
+    $stmt = $conn->prepare("UPDATE ruangan SET namaRuangan = ?, lokasi = ?, keterangan = ? WHERE id = ?");
+    if (!$stmt) {
+        respond(false, 'Prepare gagal: ' . $conn->error);
+    }
+
+    $stmt->bind_param("sssi", $nama, $lokasi, $keterangan, $id);
+    if ($stmt->execute()) {
+        respond(true, 'Data ruangan berhasil diperbarui.');
+    } else {
+        respond(false, 'Gagal memperbarui data: ' . $stmt->error);
+    }
+
 //// ==== AKSI TIDAK DIKENALI ====
 } else {
     respond(false, 'Aksi tidak dikenali atau method tidak sesuai.');

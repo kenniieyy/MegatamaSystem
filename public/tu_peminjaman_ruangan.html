@@ -37,12 +37,9 @@
 </head>
 
 <body class="font-poppins mode-2">
-    <!-- Overlay untuk tampilan mobile -->
     <div id="overlay" class="overlay"></div>
 
-    <!-- Sidebar navigasi -->
     <div id="sidebar" class="sidebar text-white flex flex-col">
-        <!-- Logo aplikasi -->
         <div class="flex items-center p-3 border-b border-blue-800">
             <div class="flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" viewBox="0 0 20 20"
@@ -54,7 +51,6 @@
             </div>
         </div>
 
-        <!-- Menu navigasi -->
         <div class="p-3">
             <p class="text-xs text-blue-300 mb-2 logo-text">Menu</p>
             <nav class="space-y-1">
@@ -137,7 +133,6 @@
             </nav>
         </div>
 
-        <!-- Tombol logout di bagian bawah sidebar -->
         <div class="mt-auto p-3 border-t border-blue-800">
             <a href="login.html" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
                 <div class="menu-icon">
@@ -152,9 +147,7 @@
         </div>
     </div>
 
-    <!-- Konten Utama -->
     <div id="main-content" class="main-content">
-        <!-- Top Header -->
         <header class="bg-white shadow-sm border-b border-gray-200">
             <div class="px-5 py-2 flex items-center justify-between">
                 <div class="flex items-center">
@@ -180,17 +173,14 @@
             </div>
         </header>
 
-        <!-- Page Content -->
         <main class="p-6">
             <div class="max-w-6xl mx-auto">
 
-                <!-- Tab Navigation -->
                 <div class="flex mb-6 space-x-2">
                     <button id="tab-reservation" class="tab-button active">Peminjaman Ruang</button>
                     <button id="tab-history" class="tab-button">Riwayat Peminjaman</button>
                 </div>
 
-                <!-- Tab Content: Formulir Peminjaman -->
                 <div id="content-reservation" class="tab-content active">
                     <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
                         <div class="px-6 py-4 border-b border-gray-200">
@@ -200,32 +190,29 @@
                         <div class="p-6">
                             <form id="identity-form">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                    <!-- Nama Lengkap -->
                                     <div>
                                         <label for="student-name"
                                             class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
-                                        <input type="text" id="student-name" name="student-name"
+                                        <input type="text" id="student-name" name="student_name"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                                             placeholder="Masukkan nama lengkap" required>
                                     </div>
 
-                                    <!-- NIS -->
                                     <div>
                                         <label for="student-nis"
                                             class="block text-sm font-medium text-gray-700 mb-1">Nomor Induk Siswa
                                             (NIS)</label>
-                                        <input type="text" id="student-nis" name="student-nis"
+                                        <input type="text" id="student-nis" name="student_nis"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                                             placeholder="Masukkan NIS" required>
                                     </div>
                                 </div>
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                    <!-- Kelas -->
                                     <div>
                                         <label for="student-class"
                                             class="block text-sm font-medium text-gray-700 mb-1">Kelas</label>
-                                        <select id="student-class" name="student-class"
+                                        <select id="student-class" name="student_class"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                                             required>
                                             <option value="">Pilih Kelas</option>
@@ -238,11 +225,10 @@
                                         </select>
                                     </div>
 
-                                    <!-- No. Telepon (Opsional) -->
                                     <div>
                                         <label for="student-phone"
                                             class="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon <span class="text-gray-400 text-xs">(Opsional)</span></label>
-                                        <input type="tel" id="student-phone" name="student-phone"
+                                        <input type="tel" id="student-phone" name="student_phone"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                                             placeholder="Masukkan nomor telepon">
                                     </div>
@@ -258,83 +244,59 @@
                         </div>
                         <div class="p-6">
                             <form id="reservation-form">
-                                <!-- Jenis Ruangan -->
                                 <div class="mb-4">
-                                    <select id="room-type" name="room-type"
+                                    <select id="room-type" name="room_type"
                                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                                         required>
                                         <option value="">Pilih Jenis Ruangan</option>
                                     </select>
-                                    <!-- <label for="room-type" class="block text-sm font-medium text-gray-700 mb-1">Jenis
-                                        Ruangan yang Dipinjam</label>
-                                    <select id="room-type" name="room-type"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                                        required>
-                                        <option value="">Pilih Jenis Ruangan</option>
-                                        <option value="lab-komputer">Laboratorium Komputer</option>
-                                        <option value="lab-fisika">Laboratorium Fisika</option>
-                                        <option value="lab-kimia">Laboratorium Kimia</option>
-                                        <option value="lab-biologi">Laboratorium Biologi</option>
-                                        <option value="kesenian">Kesenian</option>
-                                    </select>
-                                    <div id="room-status-message"
-                                        class="hidden mt-2 p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm">
-                                        <i class="fas fa-exclamation-triangle mr-2"></i>
-                                        Ruangan ini sedang digunakan. Silakan pilih ruangan lain atau waktu yang
-                                        berbeda.
-                                    </div> -->
                                 </div>
                                 
 
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                    <!-- Tanggal Peminjaman -->
                                     <div>
                                         <label for="reservation-date"
                                             class="block text-sm font-medium text-gray-700 mb-1">Tanggal
                                             Peminjaman</label>
-                                        <input type="date" id="reservation-date" name="reservation-date"
+                                        <input type="date" id="reservation-date" name="reservation_date"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                                             required>
                                     </div>
 
-                                    <!-- Deskripsi Kegiatan -->
                                     <div>
                                         <label for="activity-description"
                                             class="block text-sm font-medium text-gray-700 mb-1">Deskripsi
                                             Kegiatan</label>
-                                        <input type="text" id="activity-description" name="activity-description"
+                                        <input type="text" id="activity-description" name="activity_description"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                                             placeholder="Contoh: Praktikum Kimia - Membuat Es" required>
                                     </div>
                                 </div>
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                    <!-- Waktu Mulai -->
                                     <div>
                                         <label for="start-time"
                                             class="block text-sm font-medium text-gray-700 mb-1">Dari Jam</label>
-                                        <input type="time" id="start-time" name="start-time"
+                                        <input type="time" id="start-time" name="start_time"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                                             required>
                                     </div>
 
-                                    <!-- Waktu Selesai -->
                                     <div>
                                         <label for="end-time"
                                             class="block text-sm font-medium text-gray-700 mb-1">Sampai Jam</label>
-                                        <input type="time" id="end-time" name="end-time"
+                                        <input type="time" id="end-time" name="end_time"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                                             required>
                                     </div>
                                 </div>
 
-                                <!-- Penanggung Jawab Ruangan -->
                                 <div class="mb-4">
                                     <label for="responsible-teacher"
                                         class="block text-sm font-medium text-gray-700 mb-1">Penanggung Jawab
                                         Ruangan</label>
-                                    <input type="text" id="responsible-teacher" name="responsible-teacher"
+                                    <input type="text" id="responsible-teacher" name="responsible_teacher"
                                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                                         placeholder="Masukkan nama guru penanggung jawab" required>
                                 </div>
@@ -349,7 +311,6 @@
                     </div>
                 </div>
 
-                <!-- Success Message -->
                 <div id="content-success" class="tab-content">
                     <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
                         <div class="p-6 text-center">
@@ -374,7 +335,6 @@
                     </div>
                 </div>
 
-                <!-- Tab Content: Riwayat Peminjaman -->
                 <div id="content-history" class="tab-content">
                     <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
                         <div class="px-6 py-4 border-b border-gray-200">
@@ -385,20 +345,11 @@
                                 <div>
                                     <label for="room-filter" class="block text-sm font-medium text-gray-700 mb-1">Jenis
                                         Ruangan</label>
-                                    <select id="room-type" name="room-type"
+                                    <select id="room-filter" name="room-filter"
                                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                                         required>
                                         <option value="">Pilih Jenis Ruangan</option>
                                     </select>
-                                    <!-- <select id="room-filter"
-                                        class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
-                                        <option value="all">Semua Ruangan</option>
-                                        <option value="lab-komputer">Laboratorium Komputer</option>
-                                        <option value="lab-fisika">Laboratorium Fisika</option>
-                                        <option value="lab-kimia">Laboratorium Kimia</option>
-                                        <option value="lab-biologi">Laboratorium Biologi</option>
-                                        <option value="kesenian">Kesenian</option>
-                                    </select> -->
                                 </div>
 
                                 <div>
@@ -473,7 +424,6 @@
                                     </tr>
                                 </thead>
                                 <tbody id="reservation-history" class="bg-white divide-y divide-gray-200">
-                                    <!-- Data riwayat peminjaman akan diisi oleh JavaScript -->
                                     <tr>
                                         <td>${i + 1}</td>
                                         <td>${item.nama_lengkap}</td>
@@ -490,7 +440,6 @@
                             </table>
                         </div>
 
-                        <!-- Pagination -->
                         <div class="px-6 py-4 flex items-center justify-between border-t border-gray-200">
                             <div id="pagination-info" class="text-sm text-gray-500">
                                 Menampilkan 
@@ -502,8 +451,7 @@
                                     <i class="fas fa-chevron-left"></i>
                                 </button>
                                 <div id="pagination-container" class="flex space-x-1">
-                                    <!-- Pagination akan diisi oleh JavaScript -->
-                                </div>
+                                    </div>
                                 <button id="nextPage" class="px-3 py-2 text-sm text-gray-500 hover:text-gray-700">
                                     <i class="fas fa-chevron-right"></i>
                                 </button>
@@ -515,11 +463,10 @@
         </main>
     </div>
 
-    <!-- Modal Detail Peminjaman -->
     <div id="view-modal" class="modal-peminjaman-ruang">
         <div class="modal-content-peminjaman-ruang">
             <div class="modal-header-peminjaman-ruang">
-                <h3 class="text-lg font-semibold text-gray-800">Detail Peminjaman <span id="view-room-name"
+                <h3 class="text-lg font-semibold text-gray-800">Detail Peminjaman <span id="viewRuangan"
                         class="text-blue-600"></span></h3>
                 <span class="close-peminjaman-ruang" id="close-view-modal">&times;</span>
             </div>
@@ -540,39 +487,39 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                         <h4 class="text-sm font-medium text-gray-500 mb-1">Peminjam</h4>
-                        <p id="view-student-name" class="text-base text-gray-800"></p>
+                        <p id="viewNama" class="text-base text-gray-800"></p>
                     </div>
                     <div>
                         <h4 class="text-sm font-medium text-gray-500 mb-1">NIS</h4>
-                        <p id="view-student-nis" class="text-base text-gray-800"></p>
+                        <p id="viewnis" class="text-base text-gray-800"></p>
                     </div>
                     <div>
                         <h4 class="text-sm font-medium text-gray-500 mb-1">Kelas</h4>
-                        <p id="view-student-class" class="text-base text-gray-800"></p>
+                        <p id="viewKelas" class="text-base text-gray-800"></p>
                     </div>
                     <div>
                         <h4 class="text-sm font-medium text-gray-500 mb-1">Nomor Telepon</h4>
-                        <p id="view-student-phone" class="text-base text-gray-800"></p>
+                        <p id="viewTelepon" class="text-base text-gray-800"></p>
                     </div>
                     <div>
                         <h4 class="text-sm font-medium text-gray-500 mb-1">Tanggal Peminjaman</h4>
-                        <p id="view-reservation-date" class="text-base text-gray-800"></p>
+                        <p id="viewTanggal" class="text-base text-gray-800"></p>
                     </div>
                     <div>
                         <h4 class="text-sm font-medium text-gray-500 mb-1">Waktu</h4>
-                        <p id="view-reservation-time" class="text-base text-gray-800"></p>
+                        <p id="viewJam" class="text-base text-gray-800"></p>
                     </div>
                     <div>
                         <h4 class="text-sm font-medium text-gray-500 mb-1">Deskripsi Kegiatan</h4>
-                        <p id="view-activity-description" class="text-base text-gray-800"></p>
+                        <p id="viewDeskripsi" class="text-base text-gray-800"></p>
                     </div>
                     <div>
                         <h4 class="text-sm font-medium text-gray-500 mb-1">Penanggung Jawab</h4>
-                        <p id="view-responsible-teacher" class="text-base text-gray-800"></p>
+                        <p id="viewPenanggung" class="text-base text-gray-800"></p>
                     </div>
                     <div>
-                        <h4 class="text-sm font-medium text-gray-500 mb-1">Status Peminjaman</h4>
-                        <div id="view-status" class="mt-1"></div>
+                        <h4 class="text-sm font-medium text-gray-500 mb-1">Status</h4>
+                        <span id="viewstatus" class="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full"></span>
                     </div>
                 </div>
             </div>
@@ -585,7 +532,6 @@
         </div>
     </div>
 
-    <!-- Modal Edit Peminjaman -->
     <div id="edit-modal" class="modal-peminjaman-ruang">
         <div class="modal-content-peminjaman-ruang">
             <div class="modal-header-peminjaman-ruang">
@@ -594,71 +540,61 @@
             </div>
             <div class="modal-body-peminjaman-ruang">
                 <form id="edit-form">
-                    <input type="hidden" id="edit-id">
+                    <input type="hidden" id="edit-id" name="id"> 
 
-                    <!-- Jenis Ruangan -->
                     <div class="mb-4">
-                        <label for="edit-room-type" class="block text-sm font-medium text-gray-700 mb-1">Jenis Ruangan
+                        <label for="editRuangan" class="block text-sm font-medium text-gray-700 mb-1">Jenis Ruangan
                             yang Dipinjam</label>
-                        <select id="edit-room-type" name="edit-room-type"
+                        <select id="editRuangan" name="jenis_ruangan"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                             required>
                             <option value="">Pilih Jenis Ruangan</option>
-                            <option value="lab-komputer">Laboratorium Komputer</option>
-                            <option value="lab-fisika">Laboratorium Fisika</option>
-                            <option value="lab-kimia">Laboratorium Kimia</option>
-                            <option value="lab-biologi">Laboratorium Biologi</option>
-                            <option value="kesenian">Kesenian</option>
                         </select>
                     </div>
 
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <!-- Tanggal Peminjaman -->
                         <div>
                             <label for="edit-reservation-date"
                                 class="block text-sm font-medium text-gray-700 mb-1">Tanggal Peminjaman</label>
-                            <input type="date" id="edit-reservation-date" name="edit-reservation-date"
+                            <input type="date" id="edit-reservation-date" name="tanggal_peminjaman"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                                 required>
                         </div>
 
-                        <!-- Deskripsi Kegiatan -->
                         <div>
                             <label for="edit-activity-description"
                                 class="block text-sm font-medium text-gray-700 mb-1">Deskripsi Kegiatan</label>
-                            <input type="text" id="edit-activity-description" name="edit-activity-description"
+                            <input type="text" id="edit-activity-description" name="deskripsi_kegiatan"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                                 required>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <!-- Waktu Mulai -->
                         <div>
                             <label for="edit-start-time" class="block text-sm font-medium text-gray-700 mb-1">Dari
                                 Jam</label>
-                            <input type="time" id="edit-start-time" name="edit-start-time"
+                            <input type="time" id="edit-start-time" name="jam_mulai"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                                 required>
                         </div>
 
-                        <!-- Waktu Selesai -->
                         <div>
                             <label for="edit-end-time" class="block text-sm font-medium text-gray-700 mb-1">Sampai
                                 Jam</label>
-                            <input type="time" id="edit-end-time" name="edit-end-time"
+                            <input type="time" id="edit-end-time" name="jam_selesai"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                                 required>
                         </div>
                     </div>
 
-                    <!-- Penanggung Jawab Ruangan -->
                     <div class="mb-4">
                         <label for="edit-responsible-teacher"
                             class="block text-sm font-medium text-gray-700 mb-1">Penanggung Jawab Ruangan</label>
-                        <input type="text" id="edit-responsible-teacher" name="edit-responsible-teacher"
+                        <input type="text" id="edit-responsible-teacher" name="penanggung_jawab"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                            required>
+                            placeholder="Masukkan nama guru penanggung jawab" required>
                     </div>
                 </form>
             </div>
@@ -674,7 +610,6 @@
         </div>
     </div>
 
-    <!-- Modal Hapus Peminjaman - Updated Design -->
     <div id="delete-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="bg-white rounded-xl max-w-sm w-full p-6">
@@ -700,7 +635,6 @@
         </div>
     </div>
 
-    <!-- Toast Notification -->
     <div id="toast-notification" class="fixed top-4 right-4 z-50 toast-enter toast-transition">
         <div class="bg-white rounded-lg shadow-lg border-l-4 p-4 max-w-sm">
             <div class="flex items-center">
