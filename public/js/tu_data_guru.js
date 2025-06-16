@@ -112,7 +112,7 @@ class ToastNotification {
 
 // Teacher Data
 let teachersData = [
-    { id: 1, name: "Siti Nurhaliza, S.Pd", gender: "Perempuan", nip: "19800412 200903 2 001", subject: "Agama Islam", waliKelas: "Wali Kelas 7", status: "Aktif", photo: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=150&h=150&fit=crop&crop=face" },
+    { id: 1, name: "Ahmad Dhani Setiawan, M.Kom", gender: "Perempuan", nip: "19800412 200903 2 001", subject: "Agama Islam", waliKelas: "Wali Kelas 7", status: "Aktif", photo: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=150&h=150&fit=crop&crop=face" },
     { id: 2, name: "Ahmad Fauzan, M.Pd", gender: "Laki - Laki", nip: "19791105 200701 1 002", subject: "Fisika", waliKelas: "Wali Kelas 9", status: "Non-Aktif", photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" },
     { id: 3, name: "Rina Kartikasari, S.Pd", gender: "Perempuan", nip: "19870217 201001 2 003", subject: "IPS", waliKelas: "Wali Kelas 8", status: "Aktif", photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face" },
     { id: 4, name: "Dedi Hartono, S.Pd", gender: "Laki - Laki", nip: "19750503 199903 1 004", subject: "Biologi", waliKelas: "Wali Kelas 12", status: "Non-Aktif", photo: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" },
@@ -145,6 +145,52 @@ document.addEventListener('DOMContentLoaded', function () {
     setupSearch();
     setupForm();
 });
+
+// Fungsi untuk validasi NIP/UID
+function validateNIP(nip, excludeId = null) {
+    // Hapus spasi dan normalize input
+    const normalizedNIP = nip.replace(/\s+/g, ' ').trim();
+    
+    // Cek apakah NIP sudah ada (kecuali untuk data yang sedang diedit)
+    const existingTeacher = teachersData.find(teacher => 
+        teacher.nip === normalizedNIP && teacher.id !== excludeId
+    );
+    
+    return !existingTeacher;
+}
+
+// Fungsi untuk menampilkan error pada field NIP
+function showNIPError(message) {
+    const nipField = document.getElementById('teacherNIP');
+    const errorElement = document.getElementById('nipError') || createErrorElement('nipError');
+    
+    nipField.classList.add('border-red-500');
+    errorElement.textContent = message;
+    errorElement.classList.remove('hidden');
+    
+    if (!document.getElementById('nipError')) {
+        nipField.parentNode.appendChild(errorElement);
+    }
+}
+
+// Fungsi untuk menghapus error pada field NIP
+function clearNIPError() {
+    const nipField = document.getElementById('teacherNIP');
+    const errorElement = document.getElementById('nipError');
+    
+    nipField.classList.remove('border-red-500');
+    if (errorElement) {
+        errorElement.classList.add('hidden');
+    }
+}
+
+// Fungsi untuk membuat element error
+function createErrorElement(id) {
+    const errorElement = document.createElement('div');
+    errorElement.id = id;
+    errorElement.className = 'text-red-500 text-sm mt-1 hidden';
+    return errorElement;
+}
 
 // Render table
 function renderTable() {
@@ -258,6 +304,7 @@ function openAddModal() {
     document.getElementById('modalTitle').textContent = 'Tambah Data Guru';
     document.getElementById('teacherForm').reset();
     document.getElementById('teacherWaliKelas').value = "";
+    clearNIPError(); // Clear any previous error
     document.getElementById('teacherModal').classList.remove('hidden');
 }
 
@@ -272,11 +319,13 @@ function editTeacher(id) {
     document.getElementById('teacherSubject').value = teacher.subject;
     document.getElementById('teacherWaliKelas').value = teacher.waliKelas || "";
     document.getElementById('teacherStatus').value = teacher.status;
-
+    
+    clearNIPError(); // Clear any previous error
     document.getElementById('teacherModal').classList.remove('hidden');
 }
 
 function closeModal() {
+    clearNIPError(); // Clear error when closing modal
     document.getElementById('teacherModal').classList.add('hidden');
 }
 
@@ -316,20 +365,55 @@ function confirmDelete() {
 // Form submission
 function setupForm() {
     const form = document.getElementById('teacherForm');
+    const nipField = document.getElementById('teacherNIP');
+
+    // Real-time validation untuk NIP
+    if (nipField) {
+        nipField.addEventListener('blur', function() {
+            const nipValue = this.value.trim();
+            if (nipValue) {
+                if (!validateNIP(nipValue, editingId)) {
+                    showNIPError('NIP/UID sudah terdaftar, silakan gunakan NIP/UID yang berbeda');
+                } else {
+                    clearNIPError();
+                }
+            }
+        });
+
+        nipField.addEventListener('input', function() {
+            // Clear error saat user mulai mengetik
+            if (this.value.trim()) {
+                clearNIPError();
+            }
+        });
+    }
 
     if (form) {
         form.addEventListener('submit', function (e) {
             e.preventDefault();
 
             const formData = {
-                name: document.getElementById('teacherName').value,
+                name: document.getElementById('teacherName').value.trim(),
                 gender: document.getElementById('teacherGender').value,
-                nip: document.getElementById('teacherNIP').value,
-                subject: document.getElementById('teacherSubject').value,
+                nip: document.getElementById('teacherNIP').value.trim(),
+                subject: document.getElementById('teacherSubject').value.trim(),
                 waliKelas: document.getElementById('teacherWaliKelas').value,
                 status: document.getElementById('teacherStatus').value,
                 photo: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=150&h=150&fit=crop&crop=face"
             };
+
+            // Validasi NIP sebelum submit
+            if (!validateNIP(formData.nip, editingId)) {
+                showNIPError('NIP/UID sudah terdaftar, silakan isi NIP/UID yang berbeda');
+                toast.show('error', 'Validasi Error!', 'NIP/UID sudah terdaftar dalam sistem');
+                return;
+            }
+
+            // Validasi field required lainnya
+            if (!formData.name || !formData.nip || !formData.subject) {
+                toast.show('error', 'Validasi Error!', 'Mohon lengkapi semua field yang wajib diisi');
+                return;
+            }
 
             try {
                 if (editingId) {
