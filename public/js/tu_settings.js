@@ -120,58 +120,18 @@ class ToastNotification {
 
 // Inisialisasi toast notification
 let toast
+let hasPhotoChanged = false // Flag untuk melacak perubahan foto
 
 document.addEventListener("DOMContentLoaded", () => {
   // Inisialisasi toast
   toast = new ToastNotification()
 
-  // Inisialisasi semua event listeners
-  initializePasswordToggle()
+  // Inisialisasi event listeners yang masih digunakan
   initializePhotoUpload()
   initializeFormValidation()
 })
 
-// Fungsi untuk toggle password visibility
-function initializePasswordToggle() {
-  const passwordFields = [
-    { fieldId: "current-password", toggleId: "toggle-current-password" },
-    { fieldId: "new-password", toggleId: "toggle-new-password" },
-    { fieldId: "confirm-password", toggleId: "toggle-confirm-password" },
-  ]
-
-  passwordFields.forEach((field) => {
-    const passwordInput = document.getElementById(field.fieldId)
-    const toggleButton = document.getElementById(field.toggleId)
-
-    if (passwordInput && toggleButton) {
-      toggleButton.addEventListener("click", () => {
-        togglePasswordVisibility(passwordInput, toggleButton)
-      })
-    }
-  })
-}
-
-function togglePasswordVisibility(input, button) {
-  const isPassword = input.type === "password"
-  input.type = isPassword ? "text" : "password"
-
-  // Update icon
-  const icon = button.querySelector("svg")
-  if (isPassword) {
-    // Show eye-slash icon when password is visible
-    icon.innerHTML = `
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
-        `
-  } else {
-    // Show eye icon when password is hidden
-    icon.innerHTML = `
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-        `
-  }
-}
-
-// Fungsi untuk upload foto profil
+// Fungsi untuk upload foto profil - TANPA TOAST
 function initializePhotoUpload() {
   const photoUpload = document.getElementById("photo-upload")
   const profilePhoto = document.querySelector(".profile-photo")
@@ -194,11 +154,12 @@ function initializePhotoUpload() {
           return
         }
 
-        // Preview foto
+        // Preview foto TANPA menampilkan toast
         const reader = new FileReader()
         reader.onload = (e) => {
           profilePhoto.src = e.target.result
-          toast.show("success", "Foto Berhasil Diupload", "Foto profil Anda telah diperbarui.")
+          hasPhotoChanged = true // Set flag bahwa foto telah berubah
+          // TOAST DIHAPUS - tidak ada notifikasi saat foto diubah
         }
         reader.readAsDataURL(file)
       }
@@ -206,7 +167,7 @@ function initializePhotoUpload() {
   }
 }
 
-// Fungsi untuk validasi form
+// Fungsi untuk validasi form (disederhanakan untuk foto profil saja)
 function initializeFormValidation() {
   const form = document.getElementById("profile-form")
 
@@ -214,58 +175,20 @@ function initializeFormValidation() {
     form.addEventListener("submit", (e) => {
       e.preventDefault()
 
-      // Validasi form
+      // Validasi form sederhana - hanya untuk foto profil
       if (validateForm()) {
         // Simulasi pengiriman data
         submitForm()
       }
     })
-
-    // Real-time validation untuk password confirmation
-    const newPassword = document.getElementById("new-password")
-    const confirmPassword = document.getElementById("confirm-password")
-
-    if (newPassword && confirmPassword) {
-      confirmPassword.addEventListener("input", () => {
-        validatePasswordMatch()
-      })
-
-      newPassword.addEventListener("input", () => {
-        validatePasswordMatch()
-      })
-    }
   }
 }
 
 function validateForm() {
-  let isValid = true
+  const isValid = true
   const errors = []
 
-  // Validasi username
-  const username = document.getElementById("username").value.trim()
-  if (username.length < 3) {
-    errors.push("Username minimal 3 karakter")
-    isValid = false
-  }
-
-  // Validasi password baru jika diisi
-  const newPassword = document.getElementById("new-password").value
-  const confirmPassword = document.getElementById("confirm-password").value
-
-  if (newPassword) {
-    // Validasi kekuatan password
-    if (newPassword.length < 6) {
-      errors.push("Password baru minimal 6 karakter")
-      isValid = false
-    }
-
-    // Validasi konfirmasi password
-    if (newPassword !== confirmPassword) {
-      errors.push("Konfirmasi password tidak cocok")
-      isValid = false
-    }
-  }
-
+  // Validasi sederhana - form selalu valid karena hanya untuk foto profil
   // Jika ada error, tampilkan toast
   if (!isValid) {
     toast.show("error", "Validasi Gagal", errors.join(", "))
@@ -274,27 +197,12 @@ function validateForm() {
   return isValid
 }
 
-function validatePasswordMatch() {
-  const newPassword = document.getElementById("new-password").value
-  const confirmPassword = document.getElementById("confirm-password").value
-  const confirmInput = document.getElementById("confirm-password")
-
-  if (confirmPassword && newPassword !== confirmPassword) {
-    confirmInput.style.borderColor = "#ef4444"
-    confirmInput.style.boxShadow = "0 0 0 3px rgba(239, 68, 68, 0.1)"
-  } else {
-    confirmInput.style.borderColor = "#d1d5db"
-    confirmInput.style.boxShadow = "none"
-  }
-}
-
 function submitForm() {
   // Tampilkan loading state
   const submitButton = document.querySelector('button[type="submit"]')
   const originalText = submitButton.textContent
-  submitButton.textContent = 'Menyimpan...';
-    submitButton.disabled = true;
-  
+  submitButton.textContent = "Menyimpan..."
+  submitButton.disabled = true
 
   // Simulasi pengiriman data ke server
   setTimeout(() => {
@@ -303,14 +211,16 @@ function submitForm() {
     submitButton.disabled = false
 
     // Simulasi berhasil
-    const success = Math.random() > 0.2 // 80% kemungkinan berhasil
+    const success = Math.random() > 0.2
 
     if (success) {
-      toast.show("success", "Berhasil", "Profil berhasil diperbarui!")
-
-      // Reset password fields
-      document.getElementById("new-password").value = ""
-      document.getElementById("confirm-password").value = ""
+      // Toast hanya muncul saat klik tombol simpan
+      if (hasPhotoChanged) {
+        toast.show("success", "Berhasil", "Foto profil berhasil diperbarui!")
+        hasPhotoChanged = false // Reset flag setelah berhasil disimpan
+      } else {
+        toast.show("success", "Berhasil", "Foto profil telah disimpan!")
+      }
     } else {
       toast.show("error", "Gagal Menyimpan", "Terjadi kesalahan saat menyimpan data. Silakan coba lagi.")
     }
@@ -329,14 +239,13 @@ function formatFileName(fileName) {
   return truncatedName + "." + extension
 }
 
-// Fungsi untuk reset form
+// Fungsi untuk reset form (disederhanakan)
 function resetForm() {
   const form = document.getElementById("profile-form")
   if (form) {
-    form.reset()
-    // Reset ke nilai default
+    // Reset ke nilai default - hanya username yang readonly
     document.getElementById("username").value = "admin_tu"
-    document.getElementById("current-password").value = "••••••••"
+    hasPhotoChanged = false // Reset flag foto
   }
 }
 
