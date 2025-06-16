@@ -1,4 +1,5 @@
-// Mengatur sidebar
+// ===== FUNGSI SIDEBAR =====
+// Mengatur sidebar responsif untuk desktop dan mobile
 // function initializeSidebar() {
 //   const toggleButton = document.getElementById("toggle-sidebar")
 //   const sidebar = document.getElementById("sidebar")
@@ -18,7 +19,7 @@
 //   })
 // }
 
-// Toggle sidebar functionality
+// Toggle sidebar functionality - Versi yang lebih robust
 function initializeSidebar() {
   const toggleBtn = document.getElementById("toggle-sidebar")
   const sidebar = document.getElementById("sidebar")
@@ -163,7 +164,8 @@ function debugSidebar() {
   console.log("Sidebar computed transform:", window.getComputedStyle(sidebar).transform)
 }
 
-//LOGIC UNTUK TOAST NOTIFICATION
+// ===== TOAST NOTIFICATION SYSTEM =====
+// Class untuk mengelola notifikasi toast dengan animasi
 class ToastNotification {
   constructor() {
     this.toastElement = document.getElementById("toast-notification")
@@ -278,7 +280,8 @@ class ToastNotification {
 // Inisialisasi toast notification
 const toast = new ToastNotification()
 
-// Data bulan
+// ===== DATA CONSTANTS =====
+// Data bulan untuk konversi dan filtering
 const months = [
   { value: "januari", label: "Januari", index: 0 },
   { value: "februari", label: "Februari", index: 1 },
@@ -294,250 +297,48 @@ const months = [
   { value: "desember", label: "Desember", index: 11 },
 ]
 
-//data dummy guru
+// Data guru - MENGIKUTI DATA DARI tu_data_guru.js
 const dummyGuru = [
-  {
-    id: 1,
-    name: "Siti Nurhaliza, S.Pd",
-    gender: "Perempuan",
-    nip: "19800412 200903 2 001",
-    subject: "Agama Islam",
-    waliKelas: "Wali Kelas 7",
-    status: "Aktif",
-    photo: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=150&h=150&fit=crop&crop=face",
-  },
-  {
-    id: 2,
-    name: "Ahmad Fauzan, M.Pd",
-    gender: "Laki - Laki",
-    nip: "19791105 200701 1 002",
-    subject: "Fisika",
-    waliKelas: "Wali Kelas 9",
-    status: "Non-Aktif",
-    photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-  },
-  {
-    id: 3,
-    name: "Rina Kartikasari, S.Pd",
-    gender: "Perempuan",
-    nip: "19870217 201001 2 003",
-    subject: "IPS",
-    waliKelas: "Wali Kelas 8",
-    status: "Aktif",
-    photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-  },
-  {
-    id: 4,
-    name: "Dedi Hartono, S.Pd",
-    gender: "Laki - Laki",
-    nip: "19750503 199903 1 004",
-    subject: "Biologi",
-    waliKelas: "Wali Kelas 12",
-    status: "Non-Aktif",
-    photo: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-  },
-  {
-    id: 5,
-    name: "Yuliana Maharani, M.Pd",
-    gender: "Perempuan",
-    nip: "19860526 201102 2 005",
-    subject: "Bahasa Inggris",
-    waliKelas: "",
-    status: "Aktif",
-    photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face",
-  },
-  {
-    id: 6,
-    name: "Lestari Widyaningrum, S.Pd",
-    gender: "Perempuan",
-    nip: "19820115 200503 1 006",
-    subject: "Bahasa Indonesia",
-    waliKelas: "Wali Kelas 11",
-    status: "Non-Aktif",
-    photo: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&h=150&fit=crop&crop=face",
-  },
-  {
-    id: 7,
-    name: "Olivia Putri, S.Pd",
-    gender: "Perempuan",
-    nip: "19881122 201203 2 007",
-    subject: "Matematika",
-    waliKelas: "Wali Kelas 10",
-    status: "Aktif",
-    photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
-  },
-  {
-    id: 8,
-    name: "Andi Seputra, S.Sn",
-    gender: "Laki - Laki",
-    nip: "19891201 201104 1 008",
-    subject: "Sejarah",
-    waliKelas: "",
-    status: "Non-Aktif",
-    photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
-  },
-  {
-    id: 9,
-    name: "Teguh Prasetyo, S.Pd",
-    gender: "Laki - Laki",
-    nip: "19760808 200001 2 009",
-    subject: "Agama Islam",
-    waliKelas: "",
-    status: "Non-Aktif",
-    photo: "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?w=150&h=150&fit=crop&crop=face",
-  },
-  {
-    id: 10,
-    name: "Dewi Lestari, S.Pd",
-    gender: "Perempuan",
-    nip: "19830614 201001 2 003",
-    subject: "Bahasa Indonesia",
-    waliKelas: "",
-    status: "Aktif",
-    photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face",
-  },
-  {
-    id: 11,
-    name: "Budi Santoso, M.T",
-    gender: "Laki-laki",
-    nip: "19810203 200702 1 004",
-    subject: "Matematika",
-    waliKelas: "",
-    status: "Non-Aktif",
-    photo: "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=150&h=150&fit=crop&crop=face",
-  },
-  {
-    id: 12,
-    name: "Rina Marlina, S.Kom",
-    gender: "Perempuan",
-    nip: "19890517 201203 2 005",
-    subject: "IPS",
-    waliKelas: "",
-    status: "Aktif",
-    photo: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=150&h=150&fit=crop&crop=face",
-  },
+  { id: 1, name: "Siti Nurhaliza, S.Pd", gender: "Perempuan", nip: "19800412 200903 2 001", subject: "Agama Islam", waliKelas: "Wali Kelas 7", status: "Aktif", photo: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=150&h=150&fit=crop&crop=face" },
+  { id: 2, name: "Ahmad Fauzan, M.Pd", gender: "Laki - Laki", nip: "19791105 200701 1 002", subject: "Fisika", waliKelas: "Wali Kelas 9", status: "Non-Aktif", photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" },
+  { id: 3, name: "Rina Kartikasari, S.Pd", gender: "Perempuan", nip: "19870217 201001 2 003", subject: "IPS", waliKelas: "Wali Kelas 8", status: "Aktif", photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face" },
+  { id: 4, name: "Dedi Hartono, S.Pd", gender: "Laki - Laki", nip: "19750503 199903 1 004", subject: "Biologi", waliKelas: "Wali Kelas 12", status: "Non-Aktif", photo: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" },
+  { id: 5, name: "Yuliana Maharani, M.Pd", gender: "Perempuan", nip: "19860526 201102 2 005", subject: "Bahasa Inggris", waliKelas: "", status: "Aktif", photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face" },
+  { id: 6, name: "Lestari Widyaningrum, S.Pd", gender: "Perempuan", nip: "19820115 200503 1 006", subject: "Bahasa Indonesia", waliKelas: "Wali Kelas 11", status: "Non-Aktif", photo: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&h=150&fit=crop&crop=face" },
+  { id: 7, name: "Olivia Putri, S.Pd", gender: "Perempuan", nip: "19881122 201203 2 007", subject: "Matematika", waliKelas: "Wali Kelas 10", status: "Aktif", photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face" },
+  { id: 8, name: "Andi Seputra, S.Sn", gender: "Laki - Laki", nip: "19891201 201104 1 008", subject: "Sejarah", waliKelas: "", status: "Non-Aktif", photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face" },
+  { id: 9, name: "Teguh Prasetyo, S.Pd", gender: "Laki - Laki", nip: "19760808 200001 2 009", subject: "Agama Islam", waliKelas: "", status: "Non-Aktif", photo: "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?w=150&h=150&fit=crop&crop=face" },
+  { id: 10, name: "Dewi Lestari, S.Pd", gender: "Perempuan", nip: "19830614 201001 2 003", subject: "Bahasa Indonesia", waliKelas: "", status: "Aktif", photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face" },
+  { id: 11, name: "Budi Santoso, M.T", gender: "Laki-laki", nip: "19810203 200702 1 004", subject: "Matematika", waliKelas: "", status: "Non-Aktif", photo: "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=150&h=150&fit=crop&crop=face" },
+  { id: 12, name: "Rina Marlina, S.Kom", gender: "Perempuan", nip: "19890517 201203 2 005", subject: "IPS", waliKelas: "", status: "Aktif", photo: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=150&h=150&fit=crop&crop=face" }
 ]
 
-//data dummy siswa
+// Data siswa - MENGIKUTI DATA DARI tu_data_siswa.js
 const dummySiswa = [
-  {
-    id: 1,
-    name: "Rizky Pratama",
-    jenis_kelamin: "Laki - Laki",
-    nis: "2301456781",
-    kelas: "9",
-    noHp: "081234567890",
-    status: "Aktif",
-  },
-  {
-    id: 2,
-    name: "Salsabila Azzahra",
-    jenis_kelamin: "Perempuan",
-    nis: "2301456782",
-    kelas: "12",
-    noHp: "082156781234",
-    status: "Lulus",
-  },
-  {
-    id: 3,
-    name: "Dimas Arya Nugroho",
-    jenis_kelamin: "Laki - Laki",
-    nis: "2301456783",
-    kelas: "9",
-    noHp: "085723456789",
-    status: "Lulus",
-  },
-  {
-    id: 4,
-    name: "Aulia Rahmawati",
-    jenis_kelamin: "Perempuan",
-    nis: "2301456784",
-    kelas: "7",
-    noHp: "081398765432",
-    status: "Non-Aktif",
-  },
-  {
-    id: 5,
-    name: "Fadlan Nur Ramadhan",
-    jenis_kelamin: "Laki - Laki",
-    nis: "2301456785",
-    kelas: "11",
-    noHp: "082287654321",
-    status: "Aktif",
-  },
-  {
-    id: 6,
-    name: "Nabila Khairunnisa",
-    jenis_kelamin: "Perempuan",
-    nis: "2301456786",
-    kelas: "10",
-    noHp: "089012345678",
-    status: "Non-Aktif",
-  },
-  {
-    id: 7,
-    name: "Alif Maulana",
-    jenis_kelamin: "Laki - Laki",
-    nis: "2301456787",
-    kelas: "10",
-    noHp: "083122334455",
-    status: "Aktif",
-  },
-  {
-    id: 8,
-    name: "Zahra Melani Putri",
-    jenis_kelamin: "Perempuan",
-    nis: "2301456788",
-    kelas: "7",
-    noHp: "085377889900",
-    status: "Non-Aktif",
-  },
-  {
-    id: 9,
-    name: "Yoga Pradipta",
-    jenis_kelamin: "Laki - Laki",
-    nis: "2301456789",
-    kelas: "12",
-    noHp: "087766554433",
-    status: "Non-Aktif",
-  },
-  {
-    id: 10,
-    name: "Aisyah Nur Azizah",
-    jenis_kelamin: "Perempuan",
-    nis: "2301456790",
-    kelas: "8",
-    noHp: "081299887766",
-    status: "Aktif",
-  },
-  {
-    id: 11,
-    name: "Bayu Setiawan",
-    jenis_kelamin: "Laki - Laki",
-    nis: "2301456791",
-    kelas: "9",
-    noHp: "082334455667",
-    status: "Aktif",
-  },
-  {
-    id: 12,
-    name: "Citra Dewi",
-    jenis_kelamin: "Perempuan",
-    nis: "2301456792",
-    kelas: "11",
-    noHp: "085566778899",
-    status: "Lulus",
-  },
+  { id: 1, name: "Rizky Pratama", jenis_kelamin: "Laki - Laki", nis: "2301456781", kelas: "9", noHp: "081234567890", status: "Aktif" },
+  { id: 2, name: "Salsabila Azzahra", jenis_kelamin: "Perempuan", nis: "2301456782", kelas: "12", noHp: "082156781234", status: "Lulus" },
+  { id: 3, name: "Dimas Arya Nugroho", jenis_kelamin: "Laki - Laki", nis: "2301456783", kelas: "9", noHp: "085723456789", status: "Lulus" },
+  { id: 4, name: "Aulia Rahmawati", jenis_kelamin: "Perempuan", nis: "2301456784", kelas: "7", noHp: "081398765432", status: "Non-Aktif" },
+  { id: 5, name: "Fadlan Nur Ramadhan", jenis_kelamin: "Laki - Laki", nis: "2301456785", kelas: "11", noHp: "082287654321", status: "Aktif" },
+  { id: 6, name: "Nabila Khairunnisa", jenis_kelamin: "Perempuan", nis: "2301456786", kelas: "10", noHp: "089012345678", status: "Non-Aktif" },
+  { id: 7, name: "Alif Maulana", jenis_kelamin: "Laki - Laki", nis: "2301456787", kelas: "10", noHp: "083122334455", status: "Aktif" },
+  { id: 8, name: "Zahra Melani Putri", jenis_kelamin: "Perempuan", nis: "2301456788", kelas: "7", noHp: "085377889900", status: "Non-Aktif" },
+  { id: 9, name: "Yoga Pradipta", jenis_kelamin: "Laki - Laki", nis: "2301456789", kelas: "12", noHp: "087766554433", status: "Non-Aktif" },
+  { id: 10, name: "Aisyah Nur Azizah", jenis_kelamin: "Perempuan", nis: "2301456790", kelas: "8", noHp: "081299887766", status: "Aktif" },
+  { id: 11, name: "Bayu Setiawan", jenis_kelamin: "Laki - Laki", nis: "2301456791", kelas: "9", noHp: "082334455667", status: "Aktif" },
+  { id: 12, name: "Citra Dewi", jenis_kelamin: "Perempuan", nis: "2301456792", kelas: "11", noHp: "085566778899", status: "Lulus" }
 ]
 
-// Variabel untuk paginasi dan state
+// ===== GLOBAL VARIABLES =====
+// Variabel untuk paginasi dan state aplikasi
 let currentPage = 1
 const itemsPerPage = 9
-let currentAttendanceType = "datang"
-let currentMonth = "april"
-let filteredData = []
+let currentAttendanceType = "datang" // datang atau pulang
+let currentMonth = "april" // bulan yang sedang dipilih
+let filteredData = [] // data yang sudah difilter
 
-// Get status badge class - untuk siswa
+// ===== UTILITY FUNCTIONS =====
+// Fungsi untuk mendapatkan badge status siswa
 function getStatusBadge(status) {
   switch (status.toLowerCase()) {
     case "hadir":
@@ -553,7 +354,7 @@ function getStatusBadge(status) {
   }
 }
 
-// Get keterangan badge class untuk guru - mengikuti model status siswa
+// Fungsi untuk mendapatkan badge keterangan guru
 function getKeteranganBadge(keterangan) {
   switch (keterangan) {
     case "Tepat Waktu":
@@ -565,7 +366,7 @@ function getKeteranganBadge(keterangan) {
   }
 }
 
-// Fungsi bantu untuk dapatkan label bulan dari value
+// Fungsi bantu untuk mendapatkan label bulan dari value
 function getMonthLabel(value) {
   const m = months.find((m) => m.value === value)
   return m ? m.label : ""
@@ -583,7 +384,11 @@ function formatTanggal(day, monthValue, year) {
   return `${String(day).padStart(2, "0")}-${label}-${year}`
 }
 
+// ===== FILTER TANGGAL HARIAN - TIDAK JADI DIPAKAI =====
 // Fungsi untuk mengkonversi format tanggal dari input date ke format internal
+// Fitur ini sebenarnya untuk memungkinkan filtering berdasarkan tanggal spesifik
+// Namun karena tidak jadi digunakan, fungsi ini bisa diabaikan
+// Tetap dipertahankan untuk kemungkinan penggunaan di masa depan
 function convertDateInputToInternal(dateInput) {
   if (!dateInput) return null
 
@@ -599,34 +404,40 @@ function convertDateInputToInternal(dateInput) {
   }
 }
 
+// ===== DATA GENERATORS =====
 // Generator data guru untuk bulan dan tahun tertentu
 function generateGuruData() {
   const monthIndex = getMonthIndex(currentMonth)
   const tanggalInput = document.getElementById("tanggal")
   let year = new Date().getFullYear()
 
+  // FILTER TANGGAL HARIAN - TIDAK JADI DIPAKAI
   // Jika ada input tanggal, ambil tahun dari sana
-  if (tanggalInput && tanggalInput.value) {
-    const dateInfo = convertDateInputToInternal(tanggalInput.value)
-    if (dateInfo) {
-      year = dateInfo.year
-      // Update currentMonth jika user memilih tanggal spesifik
-      currentMonth = dateInfo.month
-    }
-  }
+  // Fitur ini memungkinkan user memilih tanggal spesifik untuk filtering
+  // Namun karena tidak jadi digunakan, bagian ini bisa diabaikan
+  // if (tanggalInput && tanggalInput.value) {
+  //   const dateInfo = convertDateInputToInternal(tanggalInput.value)
+  //   if (dateInfo) {
+  //     year = dateInfo.year
+  //     // Update currentMonth jika user memilih tanggal spesifik
+  //     currentMonth = dateInfo.month
+  //   }
+  // }
 
   const daysInMonth = new Date(year, monthIndex + 1, 0).getDate()
   const data = []
 
+  // Generate data untuk setiap guru di setiap hari dalam bulan
   dummyGuru.forEach((teacher) => {
     for (let d = 1; d <= daysInMonth; d++) {
       const date = formatTanggal(d, currentMonth, year)
-      const isPresent = Math.random() > 0.15
+      const isPresent = Math.random() > 0.15 // 85% kemungkinan hadir
       let time = "-",
         status = "",
         note = ""
 
       if (isPresent) {
+        // Generate waktu absen random
         const hour = Math.floor(Math.random() * 2) + (currentAttendanceType === "datang" ? 7 : 15)
         const minute = Math.floor(Math.random() * 60)
         time = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:00`
@@ -662,22 +473,27 @@ function generateSiswaData() {
   const tanggalInput = document.getElementById("tanggal")
   let year = new Date().getFullYear()
 
+  // FILTER TANGGAL HARIAN - TIDAK JADI DIPAKAI
   // Jika ada input tanggal, ambil tahun dari sana
-  if (tanggalInput && tanggalInput.value) {
-    const dateInfo = convertDateInputToInternal(tanggalInput.value)
-    if (dateInfo) {
-      year = dateInfo.year
-      // Update currentMonth jika user memilih tanggal spesifik
-      currentMonth = dateInfo.month
-    }
-  }
+  // Fitur ini memungkinkan user memilih tanggal spesifik untuk filtering
+  // Namun karena tidak jadi digunakan, bagian ini bisa diabaikan
+  // if (tanggalInput && tanggalInput.value) {
+  //   const dateInfo = convertDateInputToInternal(tanggalInput.value)
+  //   if (dateInfo) {
+  //     year = dateInfo.year
+  //     // Update currentMonth jika user memilih tanggal spesifik
+  //     currentMonth = dateInfo.month
+  //   }
+  // }
 
   const daysInMonth = new Date(year, monthIndex + 1, 0).getDate()
   const data = []
 
+  // Generate data untuk setiap siswa di setiap hari dalam bulan
   dummySiswa.forEach((siswa) => {
     for (let d = 1; d <= daysInMonth; d++) {
       const tanggal = formatTanggal(d, currentMonth, year)
+      // 85% kemungkinan hadir, 15% kemungkinan tidak hadir dengan status random
       const status = Math.random() < 0.85 ? "Hadir" : ["Izin", "Sakit", "Alpa"][Math.floor(Math.random() * 3)]
 
       data.push({
@@ -694,7 +510,8 @@ function generateSiswaData() {
   return data
 }
 
-// Fungsi search yang diperbaiki
+// ===== SEARCH AND FILTER FUNCTIONS =====
+// Fungsi search yang diperbaiki untuk mencari berdasarkan nama dan NIS
 function performSearch(data, searchTerm) {
   if (!searchTerm || searchTerm.length < 2) {
     return data // Return all data if search term is too short
@@ -713,7 +530,7 @@ function performSearch(data, searchTerm) {
   })
 }
 
-// Fungsi untuk mengupdate opsi status berdasarkan tipe
+// Fungsi untuk mengupdate opsi status berdasarkan tipe (guru/siswa)
 function updateStatusOptions() {
   const tipe = document.getElementById("tipe").value
   const statusSelect = document.getElementById("status")
@@ -783,7 +600,8 @@ function updateFilterVisibility() {
   updateStatusOptions()
 }
 
-// Render table - mengikuti model data siswa
+// ===== TABLE RENDERING =====
+// Fungsi utama untuk render tabel dengan semua filter
 function renderTable() {
   const tbody = document.getElementById("attendance-data")
   const tipe = document.getElementById("tipe").value
@@ -801,6 +619,7 @@ function renderTable() {
     currentMonth = monthFilter.value
   }
 
+  // Generate data berdasarkan tipe
   let data = tipe === "guru" ? generateGuruData() : generateSiswaData()
 
   // Apply search filter first
@@ -816,20 +635,23 @@ function renderTable() {
     data = data.filter((item) => item.kelas === kelasFilter)
   }
 
+  // FILTER TANGGAL HARIAN - TIDAK JADI DIPAKAI
   // Filter berdasarkan tanggal spesifik
-  if (tanggalFilter) {
-    const dateInfo = convertDateInputToInternal(tanggalFilter)
-    if (dateInfo) {
-      data = data.filter((item) => {
-        return item.day === dateInfo.day && item.month === dateInfo.month && item.year === dateInfo.year
-      })
+  // Fitur ini memungkinkan filtering berdasarkan hari tertentu
+  // Namun karena tidak jadi digunakan, bagian ini dikomentar
+  // if (tanggalFilter) {
+  //   const dateInfo = convertDateInputToInternal(tanggalFilter)
+  //   if (dateInfo) {
+  //     data = data.filter((item) => {
+  //       return item.day === dateInfo.day && item.month === dateInfo.month && item.year === dateInfo.year
+  //     })
 
-      // Update month filter untuk konsistensi UI
-      if (monthFilter) {
-        monthFilter.value = dateInfo.month
-      }
-    }
-  }
+  //     // Update month filter untuk konsistensi UI
+  //     if (monthFilter) {
+  //       monthFilter.value = dateInfo.month
+  //     }
+  //   }
+  // }
 
   // Update filteredData untuk pagination
   filteredData = data
@@ -876,7 +698,8 @@ function renderTable() {
   updatePagination()
 }
 
-// Update pagination - dengan logika yang lebih baik untuk data banyak
+// ===== PAGINATION FUNCTIONS =====
+// Update pagination dengan logika yang lebih baik untuk data banyak
 function updatePagination() {
   const totalPages = Math.ceil(filteredData.length / itemsPerPage)
   const paginationContainer = document.querySelector(
@@ -994,7 +817,8 @@ function createEllipsis(container) {
   container.appendChild(ellipsis)
 }
 
-// Filter functions
+// ===== FILTER FUNCTIONS =====
+// Fungsi untuk apply semua filter
 function applyFilters() {
   currentPage = 1
   renderTable()
@@ -1013,7 +837,8 @@ function debounce(func, wait) {
   }
 }
 
-// Event listeners
+// ===== EVENT LISTENERS =====
+// Event listeners utama untuk semua interaksi
 document.addEventListener("DOMContentLoaded", () => {
   // Initialize sidebar
   initializeSidebar()
@@ -1028,7 +853,7 @@ document.addEventListener("DOMContentLoaded", () => {
     monthSelect.value = currentMonth
   }
 
-  // Event listeners untuk tombol absen
+  // Event listeners untuk tombol absen datang/pulang
   document.getElementById("btn-absen-datang").addEventListener("click", () => {
     document.getElementById("btn-absen-datang").classList.add("active")
     document.getElementById("btn-absen-pulang").classList.remove("active")
@@ -1059,16 +884,20 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("month-filter").addEventListener("change", (e) => {
     currentMonth = e.target.value
     currentPage = 1
+    // FILTER TANGGAL HARIAN - TIDAK JADI DIPAKAI
     // Clear tanggal filter ketika bulan berubah
-    const tanggalInput = document.getElementById("tanggal")
-    if (tanggalInput) {
-      tanggalInput.value = ""
-    }
+    // const tanggalInput = document.getElementById("tanggal")
+    // if (tanggalInput) {
+    //   tanggalInput.value = ""
+    // }
     renderTable()
   })
 
+  // FILTER TANGGAL HARIAN - TIDAK JADI DIPAKAI
   // Event listener untuk filter tanggal
-  document.getElementById("tanggal").addEventListener("change", applyFilters)
+  // Fitur ini memungkinkan filtering berdasarkan tanggal spesifik
+  // Namun karena tidak jadi digunakan, event listener ini dikomentar
+  // document.getElementById("tanggal").addEventListener("change", applyFilters)
 
   // Event listener untuk input pencarian nama dengan debounce
   const searchInput = document.getElementById("search-name")
@@ -1103,6 +932,7 @@ document.addEventListener("DOMContentLoaded", () => {
   renderTable()
 })
 
+// ===== HEADER FUNCTIONS =====
 // Fungsi untuk mengupdate header berdasarkan tipe absensi
 function updateHeader() {
   const tipe = document.getElementById("tipe").value
