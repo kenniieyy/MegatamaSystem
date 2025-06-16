@@ -18,6 +18,7 @@ let currentPage = 1;
 const itemsPerPage = 9;
 let filteredData = [...siswaData];
 let editId = null;
+let deleteId = null;
 
 // DOM Elements
 const sidebar = document.getElementById('sidebar');
@@ -30,6 +31,82 @@ const tambahSiswaBtn = document.getElementById('tambahSiswaBtn');
 // Modal elements
 const naikkanKelasModal = document.getElementById('naikkanKelasModal');
 const tambahSiswaModal = document.getElementById('tambahSiswaModal');
+
+// Fungsi untuk validasi NIS
+function validateNIS(nis, excludeId = null) {
+    // Hapus spasi dan normalize input
+    const normalizedNIS = nis.replace(/\s+/g, '').trim();
+    
+    // Cek apakah NIS sudah ada (kecuali untuk data yang sedang diedit)
+    const existingStudent = siswaData.find(siswa => 
+        siswa.nis === normalizedNIS && siswa.id !== excludeId
+    );
+    
+    return !existingStudent;
+}
+
+// Fungsi untuk menampilkan error pada field NIS
+function showNISError(message) {
+    const nisField = document.querySelector('input[name="nis"]');
+    const errorElement = document.getElementById('nisError') || createErrorElement('nisError');
+    
+    if (nisField) {
+        nisField.classList.add('border-red-500');
+        errorElement.textContent = message;
+        errorElement.classList.remove('hidden');
+        
+        if (!document.getElementById('nisError')) {
+            nisField.parentNode.appendChild(errorElement);
+        }
+    }
+}
+
+// Fungsi untuk menghapus error pada field NIS
+function clearNISError() {
+    const nisField = document.querySelector('input[name="nis"]');
+    const errorElement = document.getElementById('nisError');
+    
+    if (nisField) {
+        nisField.classList.remove('border-red-500');
+    }
+    if (errorElement) {
+        errorElement.classList.add('hidden');
+    }
+}
+
+// Fungsi untuk membuat element error
+function createErrorElement(id) {
+    const errorElement = document.createElement('div');
+    errorElement.id = id;
+    errorElement.className = 'text-red-500 text-sm mt-1 hidden';
+    return errorElement;
+}
+
+// Fungsi untuk setup validasi real-time NIS
+function setupNISValidation() {
+    const nisField = document.querySelector('input[name="nis"]');
+    
+    if (nisField) {
+        // Validasi saat user keluar dari field NIS
+        nisField.addEventListener('blur', function() {
+            const nisValue = this.value.trim();
+            if (nisValue) {
+                if (!validateNIS(nisValue, editId)) {
+                    showNISError('NIS sudah terdaftar, silakan gunakan NIS yang berbeda');
+                } else {
+                    clearNISError();
+                }
+            }
+        });
+
+        // Clear error saat user mulai mengetik
+        nisField.addEventListener('input', function() {
+            if (this.value.trim()) {
+                clearNISError();
+            }
+        });
+    }
+}
 
 // Get status badge class
 function getStatusBadge(status) {
@@ -143,11 +220,23 @@ document.getElementById('nextPage').addEventListener('click', () => {
 function showModal(modalId) {
     document.getElementById(modalId).classList.remove('hidden');
     document.body.style.overflow = 'hidden';
+    
+    // Setup validasi NIS setelah modal ditampilkan
+    if (modalId === 'tambahSiswaModal') {
+        setTimeout(() => {
+            setupNISValidation();
+        }, 100);
+    }
 }
 
 function hideModal(modalId) {
     document.getElementById(modalId).classList.add('hidden');
     document.body.style.overflow = 'auto';
+    
+    // Clear error saat modal ditutup
+    if (modalId === 'tambahSiswaModal') {
+        clearNISError();
+    }
 }
 
 // Naikkan Kelas Modal
@@ -160,7 +249,12 @@ function hideModal(modalId) {
 // });
 
 // Tambah Siswa Modal
-tambahSiswaBtn.addEventListener('click', () => showModal('tambahSiswaModal'));
+tambahSiswaBtn.addEventListener('click', () => {
+    editId = null; // Reset edit ID
+    clearNISError(); // Clear any previous error
+    showModal('tambahSiswaModal');
+});
+
 document.getElementById('closeTambahModal').addEventListener('click', () => hideModal('tambahSiswaModal'));
 document.getElementById('cancelTambahSiswa').addEventListener('click', () => hideModal('tambahSiswaModal'));
 
@@ -177,23 +271,62 @@ document.getElementById('tambahSiswaForm').addEventListener('submit', (e) => {
         status: formData.get('status')
     };
 
-    if (editId !== null) {
-        // Edit mode
-        const index = siswaData.findIndex(s => s.id === editId);
-        if (index !== -1) {
-            siswaData[index] = { ...siswaData[index], ...siswaBaru };
+    // Validasi NIS sebelum submit
+    if (!validateNIS(siswaBaru.nis, editId)) {
+        showNISError('NIS sudah terdaftar, silakan gunakan NIS yang berbeda');
+        if (typeof toast !== 'undefined') {
+            toast.show('error', 'Validasi Error!', 'NIS sudah terdaftar dalam sistem');
         }
-        editId = null;
-        toast.show('success', 'Berhasil!', 'Data Siswa berhasil di edit!');
-    } else {
-        // Tambah baru
-        siswaData.push({ id: siswaData.length + 1, ...siswaBaru });
-        toast.show('success', 'Berhasil!', 'Siswa berhasil ditambahkan!');
+        return;
     }
 
-    e.target.reset();
-    hideModal('tambahSiswaModal');
-    applyFilters();
+    // Validasi field required lainnya
+    if (!siswaBaru.namaLengkap || !siswaBaru.nis || !siswaBaru.kelas) {
+        if (typeof toast !== 'undefined') {
+            toast.show('error', 'Validasi Error!', 'Mohon lengkapi semua field yang wajib diisi');
+        }
+        return;
+    }
+
+    // Validasi format NIS (contoh: harus 10 digit)
+    if (siswaBaru.nis.length !== 10 || !/^\d+$/.test(siswaBaru.nis)) {
+        showNISError('NIS harus berupa 10 digit angka');
+        if (typeof toast !== 'undefined') {
+            toast.show('error', 'Validasi Error!', 'Format NIS tidak valid (harus 10 digit angka)');
+        }
+        return;
+    }
+
+    try {
+        if (editId !== null) {
+            // Edit mode
+            const index = siswaData.findIndex(s => s.id === editId);
+            if (index !== -1) {
+                siswaData[index] = { ...siswaData[index], ...siswaBaru };
+            }
+            editId = null;
+            if (typeof toast !== 'undefined') {
+                toast.show('success', 'Berhasil!', 'Data Siswa berhasil diperbarui!');
+            }
+        } else {
+            // Tambah baru
+            const newId = Math.max(...siswaData.map(s => s.id)) + 1;
+            siswaData.push({ id: newId, ...siswaBaru });
+            if (typeof toast !== 'undefined') {
+                toast.show('success', 'Berhasil!', 'Siswa berhasil ditambahkan!');
+            }
+        }
+
+        e.target.reset();
+        hideModal('tambahSiswaModal');
+        applyFilters();
+        
+    } catch (error) {
+        const action = editId ? 'memperbarui' : 'menambahkan';
+        if (typeof toast !== 'undefined') {
+            toast.show('error', 'Error!', `Terjadi kesalahan saat ${action} data siswa`);
+        }
+    }
 });
 
 // CRUD functions
@@ -202,6 +335,7 @@ function editSiswa(id) {
     if (!siswa) return;
 
     editId = id;
+    clearNISError(); // Clear any previous error
 
     const form = document.getElementById('tambahSiswaForm');
     form.namaLengkap.value = siswa.namaLengkap;
@@ -214,8 +348,6 @@ function editSiswa(id) {
     showModal('tambahSiswaModal');
 }
 
-let deleteId = null; // Variable untuk menyimpan ID yang akan dihapus
-
 function deleteSiswa(id) {
     deleteId = id; // Simpan ID
     document.getElementById('deleteSiswa').classList.remove('hidden');
@@ -223,12 +355,25 @@ function deleteSiswa(id) {
 
 function confirmDelete() {
     if (deleteId !== null) {
-        siswaData = siswaData.filter(s => s.id !== deleteId);
-        applyFilters();
-        toast.show('success', 'Berhasil!', `Data Siswa berhasil dihapus!`);
+        const siswaToDelete = siswaData.find(s => s.id === deleteId);
+        const siswaName = siswaToDelete ? siswaToDelete.namaLengkap : 'Siswa';
+        
+        try {
+            siswaData = siswaData.filter(s => s.id !== deleteId);
+            applyFilters();
+            
+            if (typeof toast !== 'undefined') {
+                toast.show('success', 'Berhasil!', `Data siswa berhasil dihapus dari sistem`);
+            }
 
-        // Tutup modal dan reset ID
-        closeDeleteModal();
+            // Tutup modal dan reset ID
+            closeDeleteModal();
+            
+        } catch (error) {
+            if (typeof toast !== 'undefined') {
+                toast.show('error', 'Error!', 'Terjadi kesalahan saat menghapus data siswa');
+            }
+        }
     }
 }
 
