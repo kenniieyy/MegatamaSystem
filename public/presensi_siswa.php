@@ -1,6 +1,6 @@
 <?php
 
-include "config/config.php";
+include "../src/config/config.php";
 
 session_start();
 
@@ -16,35 +16,31 @@ $id_guru = $_SESSION['guru_id'];
 $query = "SELECT kelas, COUNT(*) as jumlah_siswa FROM siswa GROUP BY kelas";
 $result = mysqli_query($conn, $query);
 
-// 1. Ambil id_bidang dari guru_bidang_tugas berdasarkan id_guru
-$id_bidang_query = mysqli_query($conn, "SELECT id_bidang FROM guru_bidang_tugas WHERE id_guru = '$id_guru'");
-$assigned_class_number = null; // Inisialisasi
-$is_wali_kelas = false; // Flag untuk menandai apakah guru ini adalah wali kelas
+$assigned_class_number = null; // Initialize
+$is_wali_kelas = false; // Flag to indicate if the teacher is a homeroom teacher
 
-if ($id_bidang_query && mysqli_num_rows($id_bidang_query) > 0) {
-    $id_bidang_row = mysqli_fetch_assoc($id_bidang_query);
-    $id_bidang_wali = $id_bidang_row['id_bidang']; // Ini adalah id_bidang
+if (isset($conn)) {
+    // Directly get the 'wali_kelas' from the 'guru' table
+    $id_guru_escaped = mysqli_real_escape_string($conn, $id_guru); // Escape input for security
+    $wali_kelas_query = mysqli_query($conn, "SELECT wali_kelas FROM guru WHERE id_guru = '$id_guru_escaped'");
 
-    // 2. Gunakan id_bidang untuk mendapatkan nama_bidang dari tabel bidang_tugas
-    $nama_bidang_query = mysqli_query($conn, "SELECT nama_bidang FROM bidang_tugas WHERE id_bidang = '$id_bidang_wali'");
-    if ($nama_bidang_query && mysqli_num_rows($nama_bidang_query) > 0) {
-        $nama_bidang_row = mysqli_fetch_assoc($nama_bidang_query);
-        $nama_bidang = $nama_bidang_row['nama_bidang']; // Contoh: "Wali Kelas 8" atau "Bahasa Indonesia"
+    if ($wali_kelas_query && mysqli_num_rows($wali_kelas_query) > 0) {
+        $wali_kelas_row = mysqli_fetch_assoc($wali_kelas_query);
+        $wali_kelas_value = $wali_kelas_row['wali_kelas']; // e.g., "Kelas 10", "Kelas 11", or NULL
 
-        // 3. Ekstrak nomor kelas dari nama_bidang jika itu adalah Wali Kelas
-        if (preg_match('/Wali Kelas (\d+)/', $nama_bidang, $matches)) {
-            $assigned_class_number = (int)$matches[1]; // Ini akan menjadi 7, 8, 9, dst.
-            $is_wali_kelas = true; // Set flag menjadi true jika ditemukan sebagai wali kelas
+        if ($wali_kelas_value !== NULL && $wali_kelas_value !== '') {
+            $is_wali_kelas = true; // Set flag to true if wali_kelas has a value
+
+            if (preg_match('/Kelas\s*(\d+)/i', $wali_kelas_value, $matches)) {
+                $assigned_class_number = (int) $matches[1]; // Convert to integer
+            }
+            
         }
     }
 }
 
-// Jika guru bukan wali kelas, arahkan ke halaman 'tidak diizinkan'
 if (!$is_wali_kelas) {
-    // Karena presensi_siswa_tidak_diizinkan.html adalah halaman HTML lengkap, kita redirect.
-    // Jika Anda ingin menampilkan pesan di halaman ini tanpa redirect, Anda bisa:
-    // 1. Include atau tampilkan sebagian dari konten presensi_siswa_tidak_diizinkan.html
-    // 2. Atau tampilkan pesan kustom PHP/HTML di sini.
+
     header("Location: presensi_siswa_tidak_diizinkan.php"); //
     exit();
 }

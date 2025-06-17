@@ -2,7 +2,7 @@
 
 let teacherData = [];
 
-fetch('proses/get_guru.php')
+fetch('../src/API/get_guru.php')
     .then(res => res.json())
     .then(data => {
         teacherData = data;
@@ -73,7 +73,7 @@ function validateTeacher() {
     const password = document.getElementById('password-guru').value;
     const id = identityInput.split(' - ')[0];
 
-    fetch('proses/login_guru.php', {
+    fetch('../src/API/login_guru.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: `id=${encodeURIComponent(id)}&password=${encodeURIComponent(password)}`

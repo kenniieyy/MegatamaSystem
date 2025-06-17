@@ -282,6 +282,162 @@ function updateProfileDisplay(fullname, subject, status) {
     }
 }
 
+// Combobox functionality
+function initializeCombobox() {
+    const subjectInput = document.getElementById('subject-input');
+    const subjectHidden = document.getElementById('subject');
+    const subjectDropdown = document.getElementById('subject-dropdown');
+    const addNewSubject = document.getElementById('add-new-subject');
+    const newSubjectText = document.getElementById('new-subject-text');
+
+    if (!subjectInput || !subjectHidden || !subjectDropdown || !addNewSubject || !newSubjectText) {
+        console.error("Combobox elements not found. Initialization stopped.", {
+            subjectInput: !!subjectInput,
+            subjectHidden: !!subjectHidden,
+            subjectDropdown: !!subjectDropdown,
+            addNewSubject: !!addNewSubject,
+            newSubjectText: !!newSubjectText
+        });
+        return;
+    }
+
+    // Store original options for filtering
+    const originalOptions = Array.from(subjectDropdown.querySelectorAll('.combobox-option')).map(option => ({
+        element: option,
+        value: option.getAttribute('data-value')
+    }));
+
+    // Show dropdown on input focus
+    subjectInput.addEventListener('focus', function () {
+        subjectDropdown.classList.add('show');
+        filterOptions(); // Filter immediately on focus
+    });
+
+    // Hide dropdown on click outside
+    document.addEventListener('click', function (e) {
+        if (!subjectInput.contains(e.target) && !subjectDropdown.contains(e.target)) {
+            subjectDropdown.classList.remove('show');
+        }
+    });
+
+    // Filter options based on input
+    subjectInput.addEventListener('input', function () {
+        const value = this.value.trim().toLowerCase();
+        let exactMatch = false;
+
+        originalOptions.forEach(option => {
+            const optionValue = option.value.toLowerCase();
+            if (optionValue.includes(value)) {
+                option.element.style.display = 'block';
+                if (optionValue === value) {
+                    exactMatch = true;
+                }
+            } else {
+                option.element.style.display = 'none';
+            }
+        });
+
+        // Show/hide "Add new" option
+        if (value && !exactMatch) {
+            newSubjectText.textContent = this.value.trim();
+            addNewSubject.classList.add('show');
+        } else {
+            addNewSubject.classList.remove('show');
+        }
+
+        // Update hidden input value
+        subjectHidden.value = this.value; // Keep hidden input updated with current text input
+    });
+
+    // Select option on click
+    subjectDropdown.addEventListener('click', function (e) {
+        const option = e.target.closest('.combobox-option');
+        if (option) {
+            selectOption(option);
+        } else if (e.target.closest('#add-new-subject')) { // Handle "Add new" click
+            const newSubject = subjectInput.value.trim();
+            if (newSubject) {
+                const newOption = document.createElement('div');
+                newOption.className = 'combobox-option'; // No 'selected' initially
+                newOption.setAttribute('data-value', newSubject);
+                newOption.textContent = newSubject;
+
+                // Add to dropdown before "Add new" option
+                subjectDropdown.insertBefore(newOption, addNewSubject);
+
+                // Add to original options list
+                originalOptions.push({
+                    element: newOption,
+                    value: newSubject
+                });
+
+                selectOption(newOption); // Select the newly added option
+            }
+        }
+    });
+
+    // Function to select an option
+    function selectOption(option) {
+        subjectDropdown.querySelectorAll('.combobox-option').forEach(opt => {
+            opt.classList.remove('selected');
+        });
+        option.classList.add('selected');
+
+        const value = option.getAttribute('data-value');
+        subjectInput.value = value;
+        subjectHidden.value = value;
+        subjectDropdown.classList.remove('show'); // Hide dropdown after selection
+    }
+
+    // Keyboard navigation
+    subjectInput.addEventListener('keydown', function (e) {
+        const visibleOptions = Array.from(subjectDropdown.querySelectorAll('.combobox-option')).filter(
+            option => option.style.display !== 'none'
+        );
+        const selectedOption = subjectDropdown.querySelector('.combobox-option.selected');
+        let nextIndex = -1;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (visibleOptions.length > 0) {
+                if (selectedOption) {
+                    const currentIndex = visibleOptions.indexOf(selectedOption);
+                    nextIndex = (currentIndex + 1) % visibleOptions.length;
+                } else {
+                    nextIndex = 0; // Select first if nothing selected
+                }
+                selectOption(visibleOptions[nextIndex]);
+            }
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (visibleOptions.length > 0) {
+                if (selectedOption) {
+                    const currentIndex = visibleOptions.indexOf(selectedOption);
+                    nextIndex = (currentIndex - 1 + visibleOptions.length) % visibleOptions.length;
+                } else {
+                    nextIndex = visibleOptions.length - 1; // Select last if nothing selected
+                }
+                selectOption(visibleOptions[nextIndex]);
+            }
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (addNewSubject.classList.contains('show')) {
+                addNewSubject.click(); // Simulate click on "Add new"
+            } else if (selectedOption) {
+                // If an option is already selected by arrow keys, confirm it
+                selectOption(selectedOption);
+            } else if (visibleOptions.length === 1) {
+                // If only one option is visible and no specific selection, select that one
+                selectOption(visibleOptions[0]);
+            } else {
+                // If nothing is explicitly selected and multiple options, don't do anything or
+                // you might want to pick the first one. For now, just prevent default enter.
+            }
+        } else if (e.key === 'Escape') {
+            subjectDropdown.classList.remove('show');
+        }
+    });
+}
 
 
 // Form submission functionality
@@ -292,11 +448,11 @@ function initializeForm(toastInstance) { // Accepts toastInstance
         const fullname = document.getElementById("fullname");
         const gender = document.getElementById("gender");
         const id = document.getElementById("id");
-       // const subject = document.getElementById("subject");
+        const subject = document.getElementById("subject");
 
         // Reset warna border & hapus notifikasi sebelumnya
         document.querySelectorAll(".error-message").forEach(el => el.remove());
-        [fullname, gender, id].forEach(el => el.style.borderColor = "");
+        [fullname, gender, id, subject].forEach(el => el.style.borderColor = "");
 
         let valid = true;
 
@@ -323,9 +479,9 @@ function initializeForm(toastInstance) { // Accepts toastInstance
             showError(id, "ID/NIP wajib diisi");
         }
 
-        // (subject.value.trim() === "") {
-        //    showError(subject, "Bidang tugas wajib diisi");
-        //}
+        if (subject.value.trim() === "") {
+            showError(subject, "Bidang tugas wajib diisi");
+        }
 
         // Jika tidak valid, cegah pengiriman form
         if (!valid) {
@@ -342,7 +498,7 @@ function initializeForm(toastInstance) { // Accepts toastInstance
         e.preventDefault();
 
         const formData = new FormData(profileForm);
-        //const selectedSubject = document.getElementById('subject').value; // Hidden input for subject
+        const selectedSubject = document.getElementById('subject').value; // Hidden input for subject
         const statusSelect = document.getElementById('status');
         const selectedStatus = statusSelect ? statusSelect.options[statusSelect.selectedIndex].text : '';
 
@@ -355,10 +511,10 @@ function initializeForm(toastInstance) { // Accepts toastInstance
         const nip = formData.get('id');
         const gender = formData.get('gender');
         const status = formData.get('status');
-       // const subject = formData.get('subject');
+        const subject = formData.get('subject');
 
         // Validasi field wajib
-        if (!fullname || !nip || !gender || !status) {
+        if (!fullname || !nip || !gender || !status || !subject) {
             if (toastInstance) {
                 toastInstance.show('warning', 'Perubahan Data Gagal!', 'Semua field wajib diisi sebelum menyimpan.');
             } else {
@@ -382,7 +538,7 @@ function initializeForm(toastInstance) { // Accepts toastInstance
             .then(result => {
                 console.log('Server response:', result);
                 if (result.includes('Berhasil')) {
-                    updateProfileDisplay(formData.get('fullname'), selectedStatus);
+                    updateProfileDisplay(formData.get('fullname'), selectedSubject, selectedStatus);
                     if (toastInstance) {
                         toastInstance.show('success', 'Berhasil!', 'Profil berhasil diperbarui!');
                     } else {
@@ -448,7 +604,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // 2. Pass the toast instance to functions that need it
     initializeSidebar();
-    //initializeCombobox();
+    initializeCombobox();
     initializeForm(appToast);
     initializePhotoUpload(appToast);
 

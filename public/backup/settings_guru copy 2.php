@@ -12,11 +12,13 @@ if (empty($_SESSION['guru_id']) || empty($_SESSION['nama_guru'])) {
 $id_guru = $_SESSION['guru_id'];
 
 $query_guru = mysqli_query($conn, "SELECT * FROM guru WHERE id_guru = '$id_guru'");
+$bidang_tugas_guru = mysqli_query($conn, "SELECT * FROM guru_bidang_tugas bidang INNER JOIN bidang_tugas tugas ON bidang.id_bidang = tugas.id_bidang WHERE bidang.id_guru = '$id_guru'");
 $profil_guru = mysqli_fetch_assoc($query_guru);
-$gender = $profil_guru['jenis_kelamin'];
+$bidang_guru = mysqli_fetch_assoc($bidang_tugas_guru);
+$gender = $profil_guru['gender'];
 $nip = $profil_guru['ID'];
 $status = $profil_guru['status'];
-$bidang_tugas = $profil_guru['mata_pelajaran'];
+$bidang_tugas = $bidang_guru['nama_bidang'];
 
 
 include "layout/header.php";
@@ -73,8 +75,8 @@ include "layout/header.php";
                                 Kelamin</label>
                             <select id="gender" name="gender"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="Perempuan" <?= $gender === 'female' ? 'selected' : '' ?>>Perempuan</option>
-                                <option value="Laki-laki" <?= $gender === 'male' ? 'selected' : '' ?>>Laki-laki</option>
+                                <option value="female" <?= $gender === 'female' ? 'selected' : '' ?>>Perempuan</option>
+                                <option value="male" <?= $gender === 'male' ? 'selected' : '' ?>>Laki-laki</option>
                             </select>
                         </div>
 
@@ -92,8 +94,9 @@ include "layout/header.php";
                                 class="block text-sm font-medium text-gray-700 mb-1">Status</label>
                             <select id="status" name="status"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="Aktif" <?= $status === 'active' ? 'selected' : '' ?>>Aktif</option>
-                                <option value="Tidak Aktif" <?= $status === 'inactive' ? 'selected' : '' ?>>Non Aktif</option>
+                                <option value="active" <?= $status === 'active' ? 'selected' : '' ?>>Aktif</option>
+                                <option value="inactive" <?= $status === 'inactive' ? 'selected' : '' ?>>Non Aktif</option>
+                                <option value="leave" <?= $status === 'leave' ? 'selected' : '' ?>>Cuti</option>
                             </select>
                         </div>
                     </div>
@@ -102,13 +105,42 @@ include "layout/header.php";
                     <div class="mb-4">
                         <label for="subject-input" class="block text-sm font-medium text-gray-700 mb-1">Bidang Tugas</label>
                         <div class="combobox-container">
-                            <input type="text" id="bidang_tugas_display" name="bidang_tugas_display"
-                                value="<?= htmlspecialchars($bidang_tugas) ?>"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed"
-                                disabled>
-                            
+                            <input type="text" id="subject-input" class="combobox-input"
+                                placeholder="Pilih atau ketik mata pelajaran" autocomplete="off"
+                                value="<?= $bidang_tugas ?>">
+                            <input type="hidden" id="subject" name="subject" value="<?= $bidang_tugas ?>">
+                            <div id="subject-dropdown" class="combobox-dropdown">
+                                <div class="combobox-option <?= $bidang_tugas === 'Wali Kelas 7' ? 'selected' : '' ?>" data-value="Wali Kelas 7">Wali Kelas 7</div>
+                                <div class="combobox-option <?= $bidang_tugas === 'Wali Kelas 8' ? 'selected' : '' ?>" data-value="Wali Kelas 8">Wali Kelas 8</div>
+                                <div class="combobox-option <?= $bidang_tugas === 'Wali Kelas 9' ? 'selected' : '' ?>" data-value="Wali Kelas 9">Wali Kelas 9</div>
+                                <div class="combobox-option <?= $bidang_tugas === 'Wali Kelas 10' ? 'selected' : '' ?>" data-value="Wali Kelas 10">Wali Kelas 10</div>
+                                <div class="combobox-option <?= $bidang_tugas === 'Wali Kelas 11' ? 'selected' : '' ?>" data-value="Wali Kelas 11">Wali Kelas 11</div>
+                                <div class="combobox-option <?= $bidang_tugas === 'Wali Kelas 12' ? 'selected' : '' ?>" data-value="Wali Kelas 12">Wali Kelas 12</div>
+                                <div class="combobox-option <?= $bidang_tugas === 'Matematika' ? 'selected' : '' ?>" data-value="Matematika">Matematika</div>
+                                <div class="combobox-option <?= $bidang_tugas === 'Matematika Peminatan' ? 'selected' : '' ?>" data-value="Matematika Peminatan">Matematika Peminatan</div>
+                                <div class="combobox-option <?= $bidang_tugas === 'Statistika' ? 'selected' : '' ?>" data-value="Statistika">Statistika</div>
+                                <div class="combobox-option <?= $bidang_tugas === 'Fisika' ? 'selected' : '' ?>" data-value="Fisika">Fisika</div>
+                                <div class="combobox-option <?= $bidang_tugas === 'Kimia' ? 'selected' : '' ?>" data-value="Kimia">Kimia</div>
+                                <div class="combobox-option <?= $bidang_tugas === 'Biologi' ? 'selected' : '' ?>" data-value="Biologi">Biologi</div>
+                                <div class="combobox-option <?= $bidang_tugas === 'Bahasa Indonesia' ? 'selected' : '' ?>" data-value="Bahasa Indonesia">Bahasa Indonesia
+                                </div>
+                                <div class="combobox-option" data-value="Bahasa Inggris">Bahasa Inggris</div>
+                                <div class="combobox-option" data-value="Sejarah">Sejarah</div>
+                                <div class="combobox-option" data-value="Geografi">Geografi</div>
+                                <div class="combobox-option" data-value="Ekonomi">Ekonomi</div>
+                                <div class="combobox-option" data-value="Sosiologi">Sosiologi</div>
+                                <div class="combobox-option" data-value="Pendidikan Agama">Pendidikan Agama
+                                </div>
+                                <div class="combobox-option" data-value="PPKN">PPKN</div>
+                                <div class="combobox-option" data-value="Seni Budaya">Seni Budaya</div>
+                                <div class="combobox-option" data-value="Pendidikan Jasmani">Pendidikan Jasmani
+                                </div>
+                                <div id="add-new-subject" class="combobox-add-option">
+                                    Tambahkan "<span id="new-subject-text"></span>"
+                                </div>
+                            </div>
                         </div>
-                        <p class="form-hint">Bidang Tugas hanya dapat diubah oleh admin TU</p>
+                        <p class="form-hint">Pilih atau ketik baru bidang tugas yang diampu</p>
                     </div>
 
                     <!-- Peringatan: Username & Password tidak bisa diubah langsung -->

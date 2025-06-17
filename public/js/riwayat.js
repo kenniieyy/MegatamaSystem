@@ -17,7 +17,7 @@ let attendanceData = {
 
 function loadAttendanceFromServer() {
     // RETURN the promise chain here
-    return fetch('proses/get_riwayat_guru.php')
+    return fetch('../src/API/get_riwayat_guru.php')
         .then(response => {
             if (!response.ok) {
                 // Handle HTTP errors
@@ -165,9 +165,9 @@ function renderDashboardAttendanceGabungan(limit = 6) {
     slicedData.forEach(item => {
         let fotoPresensi;
         if (item.type === "Datang") {
-            fotoPresensi = item.foto_datang ? `img/upload/${item.foto_datang}` : 'img/guru/1.png';
+            fotoPresensi = item.foto_datang ? `../src/img/upload/${item.foto_datang}` : '../src/img/guru/1.png';
         } else {
-            fotoPresensi = item.foto_pulang ? `img/upload/${item.foto_pulang}` : 'img/guru/1.png';
+            fotoPresensi = item.foto_pulang ? `../src/img/upload/${item.foto_pulang}` : '../src/img/guru/1.png';
         }
 
         const row = document.createElement('tr');

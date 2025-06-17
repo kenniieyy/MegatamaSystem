@@ -3,7 +3,7 @@ let classData = {}; // Kosongkan, akan diisi dari fetch
 
 // Fungsi untuk mengambil data siswa dari server
 function fetchClassData() {
-    fetch('../src/API/get_siswa.php')
+    fetch('proses/get_siswa.php')
         .then(response => {
             if (!response.ok) throw new Error('Gagal mengambil data dari server.');
             return response.json();
@@ -512,7 +512,7 @@ function initializeNavigation() {
             const checkedRadio = document.querySelector(`input[name="${radioName}"]:checked`);
             if (checkedRadio) {
                 attendanceData.students.push({
-                    nis: student.id, // Changed to id_siswa to match backend expectation
+                    id_siswa: student.id, // Changed to id_siswa to match backend expectation
                     name: student.name,
                     gender: student.gender,
                     status: checkedRadio.value
@@ -521,7 +521,7 @@ function initializeNavigation() {
         });
 
         try {
-            const response = await fetch("../src/API/presensi_siswa.php", {
+            const response = await fetch("proses/presensi_siswa.php", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -590,13 +590,15 @@ function initializeNavigation() {
 function loadStudentList(kelas) {
     const siswaKelas = classData[kelas];
     const studentList = document.getElementById('student-list');
+
     if (!studentList) {
         console.error("Element with ID 'student-list' not found.");
         return;
     }
+
     studentList.innerHTML = '';
 
-    if (!siswaKelas || siswaKelas.length === 0) {
+    if (!Array.isArray(siswaKelas) || siswaKelas.length === 0) {
         studentList.innerHTML = '<tr><td colspan="4" class="text-center text-gray-500">Tidak ada data siswa</td></tr>';
         console.error('Kelas belum dipilih atau data kelas tidak ditemukan:', kelas);
         return;
@@ -721,7 +723,7 @@ function saveAttendanceData() {
 // Fungsi untuk memuat data riwayat presensi dari server, localStorage, atau dummy
 async function loadAttendanceHistory() {
     try {
-        const response = await fetch('../src/API/get_riwayat_siswa.php'); // Ganti sesuai endpoint PHP Anda
+        const response = await fetch('proses/get_riwayat_siswa.php'); // Ganti sesuai endpoint PHP Anda
 
         if (!response.ok) {
             throw new Error(`Gagal mengambil data dari server. Status: ${response.status}`);
@@ -752,7 +754,7 @@ async function loadAttendanceHistory() {
 // Fungsi untuk menghasilkan data dummy riwayat presensi
 async function generateDummyHistoryFromDatabase() {
     try {
-        const response = await fetch('../src/API/get_absen_siswa.php');
+        const response = await fetch('proses/get_absen_siswa.php');
         if (!response.ok) {
             throw new Error(`Failed to fetch student absence data. Status: ${response.status}`);
         }
@@ -1244,7 +1246,7 @@ function saveEditedAttendance(id) {
     });
 
     // Kirim ke server pakai fetch POST
-    fetch('../src/API/update_absen_siswa.php', {
+    fetch('proses/update_absen_siswa.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

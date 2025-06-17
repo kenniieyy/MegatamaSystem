@@ -1,9 +1,9 @@
 <?php
-include "config/config.php";
+include "../src/config/config.php";
 session_start();
 
 // Cek apakah user sudah login sebagai guru
-if (empty($_SESSION['guru_id']) || empty($_SESSION['nama_guru']) || empty($_SESSION['nip'])) {
+if (empty($_SESSION['guru_id']) || empty($_SESSION['nama_guru']) || empty($_SESSION['ID'])) {
     // Redirect ke halaman login jika belum login
     header("Location: login.html");
     exit();
@@ -12,10 +12,10 @@ if (empty($_SESSION['guru_id']) || empty($_SESSION['nama_guru']) || empty($_SESS
 
 $nama = $_SESSION['nama_guru'];
 $id_guru = $_SESSION['guru_id'];
-$nip = $_SESSION['nip'];
+$nip = $_SESSION['ID'];
 $tanggal = date('Y-m-d');
 
-include "proses/chart_guru.php";
+include "../src/api/chart_guru.php";
 
 $query = mysqli_query($conn, "SELECT * FROM absen_guru WHERE id_guru = '$id_guru' AND tanggal = '$tanggal'");
 $query1 = "SELECT * FROM aktivitas WHERE id_guru = '$id_guru' ORDER BY waktu DESC LIMIT 5";
@@ -186,7 +186,7 @@ include "layout/header.php";
                 </div>
                 <div class="p-3">
                     <div class="space-y-2">
-                        <?php include "proses/aktivitas.php" ?>
+                        <?php include "../src/api/aktivitas.php" ?>
                     </div>
                 </div>
             </div>
@@ -222,7 +222,12 @@ include "layout/header.php";
 <script src="js/riwayat.js"></script>
 </body>
 <script>
-    fetch('proses/kehadiran_guru.php')
+    const datangDataFromPHP = <?= json_encode($datangDataFromPHP); ?>;
+    const pulangDataFromPHP = <?= json_encode($pulangDataFromPHP); ?>;
+</script>
+
+<script>
+    fetch('../src/api/kehadiran_guru.php')
         .then(response => response.json())
         .then(data => {
             document.getElementById('attendance-count').innerHTML =
