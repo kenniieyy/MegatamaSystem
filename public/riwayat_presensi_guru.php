@@ -1,5 +1,5 @@
 <?php
-include "config/config.php";
+include "../src/config/config.php";
 
 session_start();
 

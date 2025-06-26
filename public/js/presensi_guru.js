@@ -69,7 +69,7 @@ let stream = null;
 
 let teacherData = [];
 
-fetch('proses/get_guru.php')
+fetch('../src/API//get_guru.php')
     .then(response => response.json())
     .then(data => {
         teacherData = data;
@@ -393,7 +393,7 @@ captureBtn.addEventListener('click', () => {
     statusText.className = 'text-sm text-primary font-medium';
 
     // kirim ke server
-    fetch("proses/presensi_guru.php", {
+    fetch("../src/API//presensi_guru.php", {
         method: "POST",
         body: formData
     })

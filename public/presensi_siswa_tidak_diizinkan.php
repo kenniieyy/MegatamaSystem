@@ -1,6 +1,6 @@
 <?php
 
-include "config/config.php";
+include "../src/config/config.php";
 
 session_start();
 
@@ -21,7 +21,7 @@ $nama = $_SESSION['nama_guru'];
 $foto = "1.png";
 
 if (!empty($profil_guru) && !empty($profil_guru['foto_profil'])) {
-    $file_path = 'img/guru/' . $profil_guru['foto_profil'];
+    $file_path = '../src/img/guru/' . $profil_guru['foto_profil'];
     if (file_exists($file_path)) {
         $foto = htmlspecialchars($profil_guru['foto_profil']);
     }
@@ -153,7 +153,7 @@ if (!empty($profil_guru) && !empty($profil_guru['foto_profil'])) {
                     <div class="flex items-center">
                         <div class="avatar-ring">
                             <img class="h-8 w-8 rounded-full object-cover"
-                                src="img/guru/<?= $foto ?>" alt="User avatar">
+                                src="../src/img/guru/<?= $foto ?>" alt="User avatar">
                         </div>
                         <span class="ml-2 text-sm font-medium text-gray-700"><?= $nama ?></span>
                     </div>

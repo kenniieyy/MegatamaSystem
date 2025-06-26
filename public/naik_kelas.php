@@ -1,6 +1,6 @@
 <?php
 
-include "config/config.php";
+include "../src/config/config.php";
 
 session_start();
 
@@ -12,75 +12,33 @@ if (!isset($_SESSION['guru_id'])) {
 
 $id_guru = $_SESSION['guru_id'];
 $is_wali_kelas = false; // Flag to determine if the teacher is a homeroom teacher
+$assigned_class = null; // Will store the actual class string like "XI IPA 1" or "XII IPS 3"
 
-// 1. Get id_bidang from guru_bidang_tugas based on id_guru
-$id_bidang_query = mysqli_query($conn, "SELECT id_bidang FROM guru_bidang_tugas WHERE id_guru = '$id_guru'");
+$stmt = $conn->prepare("SELECT wali_kelas FROM guru WHERE id_guru = ?");
+$stmt->bind_param("s", $id_guru);
+$stmt->execute();
+$result = $stmt->get_result();
 
-if ($id_bidang_query && mysqli_num_rows($id_bidang_query) > 0) {
-    $id_bidang_row = mysqli_fetch_assoc($id_bidang_query);
-    $id_bidang_wali = $id_bidang_row['id_bidang'];
+if ($result->num_rows > 0) {
+    $guru_data = $result->fetch_assoc();
+    $wali_kelas_value = $guru_data['wali_kelas'];
 
-    // 2. Use id_bidang to get nama_bidang from bidang_tugas table
-    $nama_bidang_query = mysqli_query($conn, "SELECT nama_bidang FROM bidang_tugas WHERE id_bidang = '$id_bidang_wali'");
-    if ($nama_bidang_query && mysqli_num_rows($nama_bidang_query) > 0) {
-        $nama_bidang_row = mysqli_fetch_assoc($nama_bidang_query);
-        $nama_bidang = $nama_bidang_row['nama_bidang'];
-
-        // 3. Check if the nama_bidang indicates a homeroom teacher
-        if (strpos($nama_bidang, 'Wali Kelas') !== false) {
-            $is_wali_kelas = true; // Set flag to true if it's a homeroom teacher
-        }
+    // Check if the wali_kelas column has a value (i.e., not NULL or empty)
+    if ($wali_kelas_value !== NULL && $wali_kelas_value !== '') {
+        $is_wali_kelas = true; // Set flag to true if a wali_kelas is assigned
+        $assigned_class = $wali_kelas_value; // Store the assigned class string
     }
 }
+$stmt->close(); // Close the statement
 
-// If the teacher is NOT a homeroom teacher, redirect to the "not allowed" page
+
 if (!$is_wali_kelas) {
     header("Location: naik_kelas_tidak_diizinkan.php");
     exit();
 }
 
-// === LOGIKA BARU UNTUK MENDAPATKAN KELAS WALI KELAS ===
-$assigned_class_number = null;
+$_SESSION['assigned_wali_kelas'] = $assigned_class;
 
-// Query untuk mendapatkan id_bidang dari guru yang login
-$bidang_query = mysqli_query($conn, "SELECT id_bidang FROM guru_bidang_tugas WHERE id_guru = '$id_guru'");
-if ($bidang_query && mysqli_num_rows($bidang_query) > 0) {
-    $bidang_row = mysqli_fetch_assoc($bidang_query);
-    $id_bidang_guru = $bidang_row['id_bidang'];
-
-    // Mapping id_bidang ke nomor kelas
-    // Ini harus disesuaikan dengan bagaimana 'id_bidang' di database Anda memetakan ke 'Kelas X'
-    // Berdasarkan `image_b10a6f.png`, id_bidang untuk Wali Kelas adalah:
-    // 1 -> Wali Kelas 7
-    // 2 -> Wali Kelas 8
-    // 3 -> Wali Kelas 9
-    // 4 -> Wali Kelas 10
-    // 5 -> Wali Kelas 11
-    // 6 -> Wali Kelas 12
-    switch ($id_bidang_guru) {
-        case 1:
-            $assigned_class_number = 7;
-            break;
-        case 2:
-            $assigned_class_number = 8;
-            break;
-        case 3:
-            $assigned_class_number = 9;
-            break;
-        case 4:
-            $assigned_class_number = 10;
-            break;
-        case 5:
-            $assigned_class_number = 11;
-            break;
-        case 6:
-            $assigned_class_number = 12;
-            break;
-        default:
-            $assigned_class_number = null; // Bukan wali kelas atau id_bidang tidak valid
-    }
-}
-// === AKHIR LOGIKA BARU ===
 
 include "layout/header.php";
 

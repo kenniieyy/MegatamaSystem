@@ -1,18 +1,22 @@
-// Data siswa (simulasi)
-let siswaData = [
-    { id: 1, namaLengkap: "Rizky Pratama", jenisKelamin: "Laki - Laki", nis: "2301456781", kelas: "9", noHp: "081234567890", status: "Aktif" },
-    { id: 2, namaLengkap: "Salsabila Azzahra", jenisKelamin: "Perempuan", nis: "2301456782", kelas: "12", noHp: "082156781234", status: "Lulus" },
-    { id: 3, namaLengkap: "Dimas Arya Nugroho", jenisKelamin: "Laki - Laki", nis: "2301456783", kelas: "9", noHp: "085723456789", status: "Lulus" },
-    { id: 4, namaLengkap: "Aulia Rahmawati", jenisKelamin: "Perempuan", nis: "2301456784", kelas: "7", noHp: "081398765432", status: "Non-Aktif" },
-    { id: 5, namaLengkap: "Fadlan Nur Ramadhan", jenisKelamin: "Laki - Laki", nis: "2301456785", kelas: "11", noHp: "082287654321", status: "Aktif" },
-    { id: 6, namaLengkap: "Nabila Khairunnisa", jenisKelamin: "Perempuan", nis: "2301456786", kelas: "10", noHp: "089012345678", status: "Non-Aktif" },
-    { id: 7, namaLengkap: "Alif Maulana", jenisKelamin: "Laki - Laki", nis: "2301456787", kelas: "10", noHp: "083122334455", status: "Aktif" },
-    { id: 8, namaLengkap: "Zahra Melani Putri", jenisKelamin: "Perempuan", nis: "2301456788", kelas: "7", noHp: "085377889900", status: "Non-Aktif" },
-    { id: 9, namaLengkap: "Yoga Pradiptа", jenisKelamin: "Laki - Laki", nis: "2301456789", kelas: "12", noHp: "087766554433", status: "Non-Aktif" },
-    { id: 10, namaLengkap: "Aisyah Nur Azizah", jenisKelamin: "Perempuan", nis: "2301456790", kelas: "8", noHp: "081299887766", status: "Aktif" },
-    { id: 11, namaLengkap: "Bayu Setiawan", jenisKelamin: "Laki - Laki", nis: "2301456791", kelas: "9", noHp: "082334455667", status: "Aktif" },
-    { id: 12, namaLengkap: "Citra Dewi", jenisKelamin: "Perempuan", nis: "2301456792", kelas: "11", noHp: "085566778899", status: "Lulus" }
-];
+let groupedSiswaData = {};
+let siswaData = []; // untuk data yang akan ditampilkan di tabel
+
+async function fetchSiswaData() {
+    try {
+        const response = await fetch('../src/API/get_siswa.php');
+        const data = await response.json();
+
+        groupedSiswaData = data.grouped;     // hasil pengelompokan per kelas
+        siswaData = data.all;                // semua data siswa (tanpa group)
+        filteredData = [...siswaData];       // bisa dipakai untuk search/filter
+        renderTable();
+    } catch (error) {
+        console.error('Gagal mengambil data siswa:', error);
+    }
+}
+
+fetchSiswaData();
+
 
 let currentPage = 1;
 const itemsPerPage = 9;
@@ -53,9 +57,9 @@ function renderTable() {
 
     tableBody.innerHTML = pageData.map(siswa => `
         <tr class="hover:bg-gray-50">
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${siswa.namaLengkap}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${siswa.jenisKelamin}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${siswa.nis}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${siswa.name}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${siswa.gender}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${siswa.id}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${siswa.kelas}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${siswa.noHp}</td>
             <td class="px-6 py-4 whitespace-nowrap">${getStatusBadge(siswa.status)}</td>
@@ -108,8 +112,8 @@ function applyFilters() {
     const selectedKelas = kelasFilter.value;
 
     filteredData = siswaData.filter(siswa => {
-        const matchesSearch = siswa.namaLengkap.toLowerCase().includes(searchTerm) ||
-            siswa.nis.includes(searchTerm);
+        const matchesSearch = siswa.name.toLowerCase().includes(searchTerm) ||
+            siswa.id.includes(searchTerm);
         const matchesKelas = !selectedKelas || siswa.kelas === selectedKelas;
 
         return matchesSearch && matchesKelas;
@@ -168,51 +172,76 @@ document.getElementById('cancelTambahSiswa').addEventListener('click', () => hid
 document.getElementById('tambahSiswaForm').addEventListener('submit', (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const siswaBaru = {
-        namaLengkap: formData.get('namaLengkap'),
-        jenisKelamin: formData.get('jenisKelamin'),
-        nis: formData.get('nis'),
-        kelas: formData.get('kelas'),
-        noHp: formData.get('noHp'),
-        status: formData.get('status')
-    };
 
     if (editId !== null) {
-        // Edit mode
-        const index = siswaData.findIndex(s => s.id === editId);
-        if (index !== -1) {
-            siswaData[index] = { ...siswaData[index], ...siswaBaru };
-        }
-        editId = null;
-        toast.show('success', 'Berhasil!', 'Data Siswa berhasil di edit!');
+        // Kirim data edit ke update_siswa.php
+        formData.append('nis_lama', editId); // tambahkan nis_lama untuk update
+
+        fetch('../src/API/update_siswa.php', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    toast.show('success', 'Berhasil!', 'Data siswa berhasil diubah!');
+                    e.target.reset();
+                    hideModal('tambahSiswaModal');
+                    editId = null;
+                    fetchSiswaData(); // ambil ulang dari database
+                } else {
+                    toast.show('error', 'Gagal!', data.message || 'Gagal mengubah data');
+                }
+            })
+            .catch(error => {
+                toast.show('error', 'Gagal!', 'Terjadi kesalahan saat mengirim data.');
+                console.error('Error:', error);
+            });
     } else {
         // Tambah baru
-        siswaData.push({ id: siswaData.length + 1, ...siswaBaru });
-        toast.show('success', 'Berhasil!', 'Siswa berhasil ditambahkan!');
+        fetch('../src/API/add_siswa.php', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    toast.show('success', 'Berhasil!', 'Siswa berhasil ditambahkan!');
+                    e.target.reset();
+                    hideModal('tambahSiswaModal');
+                    fetchSiswaData(); // Refresh data dari database
+                } else {
+                    toast.show('error', 'Gagal!', data.message || 'Gagal menyimpan');
+                }
+            })
+            .catch(error => {
+                toast.show('error', 'Gagal!', 'Terjadi kesalahan saat mengirim data.');
+                console.error('Error:', error);
+            });
     }
-
-    e.target.reset();
-    hideModal('tambahSiswaModal');
-    applyFilters();
 });
+
 
 // CRUD functions
 function editSiswa(id) {
-    const siswa = siswaData.find(s => s.id === id);
+    const siswa = siswaData.find(s => s.id == id);
     if (!siswa) return;
 
     editId = id;
 
     const form = document.getElementById('tambahSiswaForm');
-    form.namaLengkap.value = siswa.namaLengkap;
-    form.jenisKelamin.value = siswa.jenisKelamin;
-    form.nis.value = siswa.nis;
+    form.namaLengkap.value = siswa.name;
+    form.jenisKelamin.value = siswa.gender;
     form.kelas.value = siswa.kelas;
     form.noHp.value = siswa.noHp;
     form.status.value = siswa.status;
+    form.nis.value = siswa.id; // yang tampil di input
+    form.nis_lama.value = siswa.id; // hidden input untuk backend
+
 
     showModal('tambahSiswaModal');
 }
+
 
 let deleteId = null; // Variable untuk menyimpan ID yang akan dihapus
 
@@ -223,14 +252,30 @@ function deleteSiswa(id) {
 
 function confirmDelete() {
     if (deleteId !== null) {
-        siswaData = siswaData.filter(s => s.id !== deleteId);
-        applyFilters();
-        toast.show('success', 'Berhasil!', `Data Siswa berhasil dihapus!`);
-
-        // Tutup modal dan reset ID
-        closeDeleteModal();
+        fetch('../src/API/delete_siswa.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `nis=${encodeURIComponent(deleteId)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                toast.show('success', 'Berhasil!', 'Data Siswa berhasil dihapus!');
+                fetchSiswaData(); // Refresh dari database
+                closeDeleteModal();
+            } else {
+                toast.show('error', 'Gagal!', data.message || 'Gagal menghapus data.');
+            }
+        })
+        .catch(error => {
+            toast.show('error', 'Error!', 'Terjadi kesalahan koneksi.');
+            console.error('Delete error:', error);
+        });
     }
 }
+
 
 function closeDeleteModal() {
     document.getElementById('deleteSiswa').classList.add('hidden');

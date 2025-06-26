@@ -90,7 +90,7 @@ let attendanceData = {
 
 function loadAttendanceFromServer() {
     // FIX: Return the fetch promise chain
-    return fetch('proses/get_riwayat_guru.php')
+    return fetch('../src/API/get_riwayat_guru.php')
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -250,9 +250,9 @@ function renderAttendanceData() {
         // Tentukan foto presensi (datang/pulang)
         let fotoPresensi;
         if (item.type === "Datang") {
-            fotoPresensi = item.foto_datang ? `img/upload/${item.foto_datang}` : 'img/guru/1.png';
+            fotoPresensi = item.foto_datang ? `../src/img/upload/${item.foto_datang}` : '../src/img/guru/1.png';
         } else {
-            fotoPresensi = item.foto_pulang ? `img/upload/${item.foto_pulang}` : 'img/guru/1.png';
+            fotoPresensi = item.foto_pulang ? `../src/img/upload/${item.foto_pulang}` : '../src/img/guru/1.png';
         }
 
         const row = document.createElement("tr")
@@ -495,7 +495,7 @@ function initializeExportPDF() {
     const exportPdfBtn = document.getElementById("btn-export-pdf");
 
     if (!exportPdfBtn) {
-        console.error("Tombol 'Export Data' dengan ID 'btn-export-pdf' tidak ditemukan.");
+        console.error("Tombol 'Export PDF' dengan ID 'btn-export-pdf' tidak ditemukan.");
         return;
     }
 
@@ -508,22 +508,29 @@ function initializeExportPDF() {
             return;
         }
 
+        // Pengecekan data kosong sebelum melakukan ekspor
+        // Gunakan filteredByMonth karena ini adalah data yang saat ini ditampilkan dan difilter
+        if (filteredByMonth.length === 0) {
+            toast.show("warning", "Tidak Ada Data!", "Tidak ada data riwayat presensi yang bisa diekspor.");
+            return; // Hentikan proses ekspor jika tidak ada data
+        }
+
         exportPdfBtn.innerText = "Memproses...";
         exportPdfBtn.disabled = true;
 
-        const scale = 2;
-        // Ensure html2canvas and jsPDF libraries are loaded in your HTML
+        const scale = 2; // Tingkatkan skala untuk kualitas yang lebih baik
+        // Pastikan html2canvas dan jsPDF sudah dimuat di HTML Anda
         if (typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') {
-            console.error("html2canvas or jsPDF library not loaded.");
+            console.error("html2canvas atau library jsPDF tidak dimuat.");
             toast.show("error", "Gagal!", "Library export PDF tidak ditemukan.");
-            exportPdfBtn.innerText = "Export Data";
+            exportPdfBtn.innerText = "Export PDF";
             exportPdfBtn.disabled = false;
             return;
         }
 
-        html2canvas(table, { scale }).then((canvas) => {
+        html2canvas(table, { scale: scale }).then((canvas) => {
             const imgData = canvas.toDataURL("image/png");
-            const { jsPDF } = window.jspdf;
+            const { jsPDF } = window.jspdf; // Akses jspdf dari window
             const pdf = new jsPDF("p", "mm", "a4");
 
             const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -544,24 +551,25 @@ function initializeExportPDF() {
                 }
             }
 
-            // Convert PDF to Blob and auto download
+            // Konversi PDF ke Blob dan unduh otomatis
             const blob = pdf.output("blob");
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = "kenaikan-kelas.pdf"; // This filename seems incorrect for attendance data
+            // Ubah nama file agar lebih relevan dengan data presensi
+            a.download = `riwayat-presensi-${currentAttendanceType}-${currentMonth}.pdf`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
             toast.show("success", "Berhasil!", "Data berhasil diekspor ke PDF!");
-            exportPdfBtn.innerText = "Export Data";
+            exportPdfBtn.innerText = "Export PDF";
             exportPdfBtn.disabled = false;
         }).catch((error) => {
             console.error("Gagal membuat PDF:", error);
             toast.show("error", "Gagal!", "Terjadi kesalahan saat membuat PDF.");
-            exportPdfBtn.innerText = "Export Data";
+            exportPdfBtn.innerText = "Export PDF";
             exportPdfBtn.disabled = false;
         });
     });

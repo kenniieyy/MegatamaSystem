@@ -165,9 +165,11 @@ function debugSidebar() {
 }
 
 // Fungsi untuk mengatur tab
+// Fungsi untuk mengatur tab
 function initializeTabs() {
   const tabButtons = document.querySelectorAll('.tab-button');
   const tabContents = document.querySelectorAll('.tab-content');
+  const chartFilter = document.getElementById('chart-filter'); // Dapatkan elemen select filter
 
   tabButtons.forEach(button => {
     button.addEventListener('click', () => {
@@ -183,7 +185,15 @@ function initializeTabs() {
       document.getElementById(contentId).classList.add('active');
     });
   });
+
+  // Tambahkan event listener untuk filter bulan
+  if (chartFilter) {
+    chartFilter.addEventListener('change', function() {
+      filterByMonth(this.value); // Panggil fungsi filterByMonth dengan nilai yang dipilih
+    });
+  }
 }
+
 
 // Fungsi untuk membuat grafik
 function initializeCharts() {

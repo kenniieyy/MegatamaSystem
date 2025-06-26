@@ -111,20 +111,19 @@ class ToastNotification {
 }
 
 // Teacher Data
-let teachersData = [
-    { id: 1, name: "Siti Nurhaliza, S.Pd", gender: "Perempuan", nip: "19800412 200903 2 001", subject: "Agama Islam", waliKelas: "Wali Kelas 7", status: "Aktif", photo: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=150&h=150&fit=crop&crop=face" },
-    { id: 2, name: "Ahmad Fauzan, M.Pd", gender: "Laki - Laki", nip: "19791105 200701 1 002", subject: "Fisika", waliKelas: "Wali Kelas 9", status: "Non-Aktif", photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" },
-    { id: 3, name: "Rina Kartikasari, S.Pd", gender: "Perempuan", nip: "19870217 201001 2 003", subject: "IPS", waliKelas: "Wali Kelas 8", status: "Aktif", photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face" },
-    { id: 4, name: "Dedi Hartono, S.Pd", gender: "Laki - Laki", nip: "19750503 199903 1 004", subject: "Biologi", waliKelas: "Wali Kelas 12", status: "Non-Aktif", photo: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" },
-    { id: 5, name: "Yuliana Maharani, M.Pd", gender: "Perempuan", nip: "19860526 201102 2 005", subject: "Bahasa Inggris", waliKelas: "", status: "Aktif", photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face" },
-    { id: 6, name: "Lestari Widyaningrum, S.Pd", gender: "Perempuan", nip: "19820115 200503 1 006", subject: "Bahasa Indonesia", waliKelas: "Wali Kelas 11", status: "Non-Aktif", photo: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&h=150&fit=crop&crop=face" },
-    { id: 7, name: "Olivia Putri, S.Pd", gender: "Perempuan", nip: "19881122 201203 2 007", subject: "Matematika", waliKelas: "Wali Kelas 10", status: "Aktif", photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face" },
-    { id: 8, name: "Andi Seputra, S.Sn", gender: "Laki - Laki", nip: "19891201 201104 1 008", subject: "Sejarah", waliKelas: "", status: "Non-Aktif", photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face" },
-    { id: 9, name: "Teguh Prasetyo, S.Pd", gender: "Laki - Laki", nip: "19760808 200001 2 009", subject: "Agama Islam", waliKelas: "", status: "Non-Aktif", photo: "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?w=150&h=150&fit=crop&crop=face" },
-    { id: 10, name: "Dewi Lestari, S.Pd", gender: "Perempuan", nip: "19830614 201001 2 003", subject: "Bahasa Indonesia", waliKelas: "", status: "Aktif", photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face" },
-    { id: 11, name: "Budi Santoso, M.T", gender: "Laki-laki", nip: "19810203 200702 1 004", subject: "Matematika", waliKelas: "", status: "Non-Aktif", photo: "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=150&h=150&fit=crop&crop=face" },
-    { id: 12, name: "Rina Marlina, S.Kom", gender: "Perempuan", nip: "19890517 201203 2 005", subject: "IPS", waliKelas: "", status: "Aktif", photo: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=150&h=150&fit=crop&crop=face" }
-];
+let teachersData = [];
+
+fetch('../src/API/get_guru.php')
+    .then(res => res.json())
+    .then(data => {
+        teachersData = data;
+        filteredData = [...teachersData];
+
+        renderTable();        // Pindahkan ke sini
+        renderPagination();   // Pindahkan ke sini
+    })
+    .catch(err => console.error('Gagal mengambil data guru:', err));
+
 
 let filteredData = [...teachersData];
 let currentPage = 1;
@@ -139,9 +138,7 @@ let toast;
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize toast notification
     toast = new ToastNotification();
-    
-    renderTable();
-    renderPagination();
+
     setupSearch();
     setupForm();
 });
@@ -156,7 +153,7 @@ function renderTable() {
     tbody.innerHTML = currentData.map(teacher => `
                 <tr class="hover:bg-gray-50 transition-colors">
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <img src="${teacher.photo}" alt="${teacher.name}" class="w-10 h-10 rounded-full object-cover">
+                        <img src="../src/${teacher.photo}" alt="${teacher.name}" class="w-10 h-10 rounded-full object-cover">
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${teacher.name}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${teacher.gender}</td>
@@ -262,18 +259,34 @@ function openAddModal() {
 }
 
 function editTeacher(id) {
+    console.log("Editing teacher with ID:", id, " (Type:", typeof id, ")"); // Cek tipe data ID dari tombol
     editingId = id;
-    const teacher = teachersData.find(t => t.id === id);
+    // Temukan guru di teachersData
+    const teacher = teachersData.find(t => {
+        console.log("Comparing:", t.id, "(Type:", typeof t.id, ") with", id, "(Type:", typeof id, ")"); // Debugging perbandingan
+        return t.id == id; // Gunakan '==' (loose equality) untuk sementara
+    });
 
-    document.getElementById('modalTitle').textContent = 'Edit Data Guru';
-    document.getElementById('teacherName').value = teacher.name;
-    document.getElementById('teacherGender').value = teacher.gender;
-    document.getElementById('teacherNIP').value = teacher.nip;
-    document.getElementById('teacherSubject').value = teacher.subject;
-    document.getElementById('teacherWaliKelas').value = teacher.waliKelas || "";
-    document.getElementById('teacherStatus').value = teacher.status;
+    console.log("Found teacher:", teacher); // Ini masih akan undefined jika tidak ketemu
 
-    document.getElementById('teacherModal').classList.remove('hidden');
+    // Lanjutkan kode Anda jika teacher ditemukan
+    if (teacher) { // Tambahkan pengecekan ini!
+        document.getElementById('modalTitle').textContent = 'Edit Data Guru';
+        document.getElementById('teacherName').value = teacher.name;
+        document.getElementById('teacherGender').value = teacher.gender;
+        document.getElementById('teacherNIP').value = teacher.nip;
+        document.getElementById('teacherSubject').value = teacher.subject;
+        document.getElementById('teacherWaliKelas').value = teacher.waliKelas || "";
+        document.getElementById('teacherStatus').value = teacher.status;
+        document.getElementById('teacherUsername').value = teacher.username;
+        document.getElementById('teacherPassword').value = teacher.password;
+
+        document.getElementById('teacherModal').classList.remove('hidden');
+    } else {
+        console.error("Guru dengan ID", id, "tidak ditemukan di teachersData.");
+        // Opsional: Tampilkan toast error atau notifikasi ke pengguna
+        toast.show('error', 'Data Tidak Ditemukan', `Guru dengan ID ${id} tidak ditemukan.`);
+    }
 }
 
 function closeModal() {
@@ -283,10 +296,10 @@ function closeModal() {
 function deleteTeacher(id) {
     deleteId = id;
     const teacher = teachersData.find(t => t.id === id);
-    
+
     // Show warning toast before showing delete modal
     //toast.show('warning', 'Konfirmasi Hapus', `Apakah Anda yakin ingin menghapus data guru ${teacher.name}?`);
-    
+
     document.getElementById('deleteModal').classList.remove('hidden');
 }
 
@@ -294,67 +307,123 @@ function closeDeleteModal() {
     document.getElementById('deleteModal').classList.add('hidden');
 }
 
-function confirmDelete() {
-    const teacherToDelete = teachersData.find(t => t.id === deleteId);
-    const teacherName = teacherToDelete ? teacherToDelete.name : 'Guru';
-    
+async function confirmDelete() {
+     console.log("ID yang akan dihapus:", deleteId); // Tambahkan log ini
+    if (deleteId === null) {
+        toast.show('error', 'Error!', 'Tidak ada guru yang dipilih untuk dihapus.');
+        return;
+    }
+
     try {
-        teachersData = teachersData.filter(t => t.id !== deleteId);
-        filteredData = filteredData.filter(t => t.id !== deleteId);
-        renderTable();
-        renderPagination();
-        closeDeleteModal();
-        
-        // Show success notification
-        toast.show('success', 'Berhasil Dihapus!', `Data guru berhasil dihapus dari sistem`);
+        const response = await fetch('../src/API/delete.php', { // PHP untuk DELETE
+            method: 'POST', // Gunakan POST untuk kirim ID yang akan dihapus
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: deleteId }) // Kirim ID sebagai JSON
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            toast.show('success', 'Berhasil Dihapus!', `Data guru berhasil dihapus dari sistem.`);
+            // Setelah berhasil di database, ambil ulang semua data
+            const updatedDataResponse = await fetch('../src/API/get_guru.php');
+            teachersData = await updatedDataResponse.json();
+            filteredData = [...teachersData];
+
+            closeDeleteModal();
+            currentPage = 1; // Kembali ke halaman pertama setelah perubahan
+            renderTable();
+            renderPagination();
+
+        } else {
+            toast.show('error', 'Error!', `Gagal menghapus data: ${result.message || 'Terjadi kesalahan tidak diketahui'}`);
+            console.error('Error Hapus:', result.message || 'Tidak ada pesan dari server');
+        }
     } catch (error) {
-        // Show error notification if deletion fails
-        toast.show('error', 'Error!', 'Terjadi kesalahan saat menghapus data guru');
+        toast.show('error', 'Error Koneksi!', `Gagal menghubungi server untuk menghapus data.`);
+        console.error("Error saat menghapus data:", error);
+    } finally {
+        deleteId = null; // Reset deleteId
     }
 }
 
-// Form submission
+
+let currentTeacherPhoto;
+
 function setupForm() {
     const form = document.getElementById('teacherForm');
 
     if (form) {
-        form.addEventListener('submit', function (e) {
+        form.addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            const formData = {
-                name: document.getElementById('teacherName').value,
-                gender: document.getElementById('teacherGender').value,
-                nip: document.getElementById('teacherNIP').value,
-                subject: document.getElementById('teacherSubject').value,
-                waliKelas: document.getElementById('teacherWaliKelas').value,
-                status: document.getElementById('teacherStatus').value,
-                photo: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=150&h=150&fit=crop&crop=face"
-            };
+            const formData = new FormData();
+            formData.append('fullname', document.getElementById('teacherName').value); // SESUAIKAN DENGAN NAMA DI PHP: 'fullname'
+            formData.append('gender', document.getElementById('teacherGender').value);
+            formData.append('nip', document.getElementById('teacherNIP').value); // SESUAIKAN DENGAN NAMA DI PHP: 'nip'
+            formData.append('subject', document.getElementById('teacherSubject').value); // Tambahkan subject
+            formData.append('waliKelas', document.getElementById('teacherWaliKelas').value); // SESUAIKAN DENGAN NAMA DI PHP: 'waliKelas' (atau wali_kelas)
+            formData.append('status', document.getElementById('teacherStatus').value);
+            formData.append('username', document.getElementById('teacherUsername').value);
+            formData.append('password', document.getElementById('teacherPassword').value);
+
+            // === Tambahkan file foto ke FormData ===
+            const photoInput = document.getElementById('teacherPhoto');
+            if (photoInput.files.length > 0) {
+                formData.append('foto_profil', photoInput.files[0]); // Nama 'foto_profil' harus sama dengan $_FILES di PHP
+            } else if (editingId && currentTeacherPhoto) {
+                // Jika tidak ada file baru diupload saat edit, kirim URL foto lama
+                // Ini penting agar PHP tahu foto lama tidak dihapus jika tidak ada update
+                formData.append('current_photo_url', currentTeacherPhoto);
+            }
+            // =======================================
+
+            let endpoint = '';
+            let messageType = '';
+
+            if (editingId) {
+                // Jika sedang mengedit
+                endpoint = '../src/API/add_guru.php'; // PHP untuk UPDATE
+                formData.append('id_guru', editingId); // Kirim ID guru yang akan diedit. Nama ini harus sama dengan $_POST di PHP
+                messageType = 'diperbarui';
+            } else {
+                // Jika sedang menambah
+                endpoint = '../src/API/add_guru.php'; // PHP untuk ADD
+                messageType = 'ditambahkan';
+            }
 
             try {
-                if (editingId) {
-                    // Edit existing teacher
-                    const index = teachersData.findIndex(t => t.id === editingId);
-                    if (index !== -1) {
-                        teachersData[index] = { ...teachersData[index], ...formData };
-                        toast.show('success', 'Berhasil Diperbarui!', `Data guru berhasil diperbarui`);
-                    }
-                } else {
-                    // Add new teacher
-                    const newId = Math.max(...teachersData.map(t => t.id)) + 1;
-                    teachersData.push({ id: newId, ...formData });
-                    toast.show('success', 'Berhasil Ditambahkan!', `Data guru berhasil ditambahkan ke sistem`);
-                }
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    // Hapus 'Content-Type': 'application/json' ketika menggunakan FormData
+                    // Browser akan otomatis mengatur Content-Type: multipart/form-data
+                    body: formData
+                });
 
-                filteredData = [...teachersData];
-                renderTable();
-                renderPagination();
-                closeModal();
-                
+                const result = await response.json(); // PHP harus mengembalikan JSON
+
+                if (result.success) {
+                    toast.show('success', `Berhasil ${messageType}!`, result.message);
+
+                    // Refresh data setelah sukses (ini masih cara terbaik)
+                    const updatedDataResponse = await fetch('../src/API/get_guru.php');
+                    teachersData = await updatedDataResponse.json();
+                    filteredData = [...teachersData];
+
+                    closeModal();
+                    currentPage = 1;
+                    renderTable();
+                    renderPagination();
+
+                } else {
+                    toast.show('error', 'Error!', `Gagal ${messageType}: ${result.message || 'Terjadi kesalahan tidak diketahui'}`);
+                    console.error(`Error ${messageType}:`, result.message || 'Tidak ada pesan dari server');
+                }
             } catch (error) {
-                // Show error notification if operation fails
-                const action = editingId ? 'memperbarui' : 'menambahkan';
-                toast.show('error', 'Error!', `Terjadi kesalahan saat ${action} data guru`);
+                toast.show('error', 'Error Koneksi!', `Gagal menghubungi server untuk ${messageType} data.`);
+                console.error(`Error saat ${messageType} data:`, error);
             }
         });
     }

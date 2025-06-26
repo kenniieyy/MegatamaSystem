@@ -1,20 +1,37 @@
-// Data ruangan
-let ruanganData = [
-    { id: 1, namaRuangan: "Laboratorium Kimia", lokasi: "Lantai 2, dekat ruang kelas 12", keterangan: "Untuk praktikum kimia." },
-    { id: 2, namaRuangan: "Laboratorium Fisika", lokasi: "Lantai 2, sebelah Lab Kimia", keterangan: "Untuk praktikum fisika." },
-    { id: 3, namaRuangan: "Laboratorium Biologi", lokasi: "Lantai 2, sebelah Lab Fisika", keterangan: "Untuk praktikum biologi." },
-    { id: 4, namaRuangan: "Laboratorium Komputer", lokasi: "Lantai 2, sebelah kiri ruang guru", keterangan: "Untuk pelatihan dan ujian komputer." },
-    { id: 5, namaRuangan: "Ruang Kesenian", lokasi: "Lantai 1, di belakang perpustakaan", keterangan: "Untuk kegiatan seni." }
-];
-
-
-
+// Data ruangan (will be populated from database)
+let ruanganData = []; // Initialize as an empty array
 let currentPage = 1;
 const itemsPerPage = 9;
-let filteredData = [...ruanganData];
+let filteredData = []; // Will be populated after fetching data
 let editId = null;
 let deleteId = null;
 
+// Function to fetch data from the backend
+async function fetchRuanganData() {
+    try {
+        const response = await fetch('../src/API/get_data_ruang_tu.php'); // Replace with the actual path to your PHP script
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        
+        // Ensure IDs are numbers if they come as strings from the database
+        ruanganData = data.map(item => ({
+            ...item,
+            id: parseInt(item.id) // Convert ID to integer
+        }));
+        
+        filteredData = [...ruanganData]; // Initialize filteredData with fetched data
+        renderTable(); // Render the table after data is fetched
+    } catch (error) {
+        console.error("Error fetching ruangan data:", error);
+        // Optionally, display an error message to the user
+        window.toast.show('error', 'Gagal!', 'Gagal memuat data ruangan.');
+    }
+}
+
+
+// --- Your existing functions (no changes needed for these unless you want to update/delete via API) ---
 // DOM Elements
 function renderTable() {
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -82,6 +99,9 @@ function applyFilters() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+    // *** CALL THE FETCH FUNCTION HERE INSTEAD OF INITIAL renderTable() ***
+    fetchRuanganData(); // Fetch data when the DOM is loaded
+
     const searchInput = document.getElementById('searchInput');
     searchInput.addEventListener('input', applyFilters);
 
@@ -115,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('tambahRuanganForm').addEventListener('submit', handleFormSubmit);
 
-    renderTable();
+    // renderTable(); // REMOVE THIS LINE - it's called after data is fetched
 
     window.toast = new ToastNotification();
 });
@@ -146,17 +166,40 @@ function editRuangan(id) {
     showModal('tambahRuanganModal');
 }
 
+// *** IMPORTANT: For delete and add/edit, you will also need to send requests to your backend
+// *** to persist changes in the database, and then re-fetch or update the `ruanganData` array.
+
 function deleteRuangan(id) {
     deleteId = id;
     document.getElementById('deleteRuangan').classList.remove('hidden');
 }
 
-function confirmDelete() {
+async function confirmDelete() {
     if (deleteId !== null) {
-        ruanganData = ruanganData.filter(r => r.id !== deleteId);
-        applyFilters();
-        toast.show('success', 'Berhasil!', 'Data Ruangan berhasil dihapus!');
-        closeDeleteModal();
+        try {
+            // Send DELETE request to your backend
+            const response = await fetch(`../src/API/delete_data_ruang_tu.php?id=${deleteId}`, { // Create this PHP script
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            if (result.success) {
+                // If deletion successful in backend, update frontend data
+                ruanganData = ruanganData.filter(r => r.id !== deleteId);
+                applyFilters();
+                toast.show('success', 'Berhasil!', 'Data Ruangan berhasil dihapus!');
+                closeDeleteModal();
+            } else {
+                toast.show('error', 'Gagal!', result.message || 'Gagal menghapus data ruangan.');
+            }
+        } catch (error) {
+            console.error("Error deleting ruangan:", error);
+            toast.show('error', 'Gagal!', 'Terjadi kesalahan saat menghapus data.');
+        }
     }
 }
 
@@ -165,7 +208,7 @@ function closeDeleteModal() {
     deleteId = null;
 }
 
-function handleFormSubmit(e) {
+async function handleFormSubmit(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
     const ruangan = {
@@ -174,27 +217,65 @@ function handleFormSubmit(e) {
         keterangan: formData.get('keterangan')
     };
 
-    if (editId !== null) {
-        const index = ruanganData.findIndex(r => r.id === editId);
-        if (index !== -1) {
-            ruanganData[index] = { ...ruanganData[index], ...ruangan };
-        }
-        editId = null;
-        toast.show('success', 'Berhasil!', 'Data Ruangan berhasil di edit!');
-        document.getElementById('modalTitle').textContent = 'Tambah Ruangan Baru';
-    } else {
-        ruanganData.push({
-            id: ruanganData.length + 1,
-            ...ruangan
-        });
-        toast.show('success', 'Berhasil!', 'Ruangan berhasil ditambahkan!');
-    }
+    try {
+        let response;
+        let result;
 
-    e.target.reset();
-    hideModal('tambahRuanganModal');
-    applyFilters();
+        if (editId !== null) {
+            // Send PUT/PATCH request for editing
+            response = await fetch(`../src/API/update_data_ruang_tu.php`, { // Create this PHP script
+                method: 'PUT', // Or POST if your backend handles PUT via POST method override
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: editId, ...ruangan })
+            });
+            result = await response.json();
+
+            if (response.ok && result.success) {
+                const index = ruanganData.findIndex(r => r.id === editId);
+                if (index !== -1) {
+                    ruanganData[index] = { ...ruanganData[index], ...ruangan };
+                }
+                editId = null;
+                toast.show('success', 'Berhasil!', 'Data Ruangan berhasil di edit!');
+                document.getElementById('modalTitle').textContent = 'Tambah Ruangan Baru';
+            } else {
+                throw new Error(result.message || 'Gagal mengedit data ruangan.');
+            }
+        } else {
+            // Send POST request for adding new data
+            response = await fetch(`../src/API/add_data_ruang_tu.php`, { // Create this PHP script
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(ruangan)
+            });
+            result = await response.json();
+
+            if (response.ok && result.success) {
+                // If successful, add the new item with the ID returned from the backend
+                ruanganData.push({
+                    id: result.newId, // Backend should return the new ID
+                    ...ruangan
+                });
+                toast.show('success', 'Berhasil!', 'Ruangan berhasil ditambahkan!');
+            } else {
+                throw new Error(result.message || 'Gagal menambahkan ruangan baru.');
+            }
+        }
+
+        e.target.reset();
+        hideModal('tambahRuanganModal');
+        applyFilters(); // Re-render table with updated data
+    } catch (error) {
+        console.error("Error submitting form:", error);
+        toast.show('error', 'Gagal!', `Terjadi kesalahan: ${error.message}`);
+    }
 }
 
+// ... (Your ToastNotification class and other DOMContentLoaded event listener for delete modal)
 class ToastNotification {
     constructor() {
         this.toastElement = document.getElementById('toast-notification');
@@ -230,7 +311,7 @@ class ToastNotification {
         this.setContent(type, title, message);
         this.toastElement.classList.remove('toast-exit', 'toast-show');
         this.toastElement.classList.add('toast-enter');
-        this.toastElement.offsetHeight;
+        this.toastElement.offsetHeight; // Trigger reflow for animation
 
         setTimeout(() => {
             this.toastElement.classList.remove('toast-enter');
@@ -252,8 +333,8 @@ class ToastNotification {
 
         setTimeout(() => {
             this.toastElement.classList.remove('toast-exit');
-            this.toastElement.classList.add('toast-enter');
-        }, 300);
+            this.toastElement.classList.add('toast-enter'); // Or just 'hidden' if no re-entry animation
+        }, 300); // Duration of the exit animation
     }
 
     autoHide() {
@@ -263,7 +344,7 @@ class ToastNotification {
     }
 
     setContent(type, title, message) {
-        this.toastContainer.className = this.toastContainer.className.replace(/border-l-(green|red|yellow|blue)-500/g, '');
+        this.toastContainer.className = this.toastContainer.className.replace(/border-l-(green|red|yellow|blue|gray)-500/g, ''); // Ensure all types are covered
 
         switch (type) {
             case 'success':
@@ -294,6 +375,7 @@ class ToastNotification {
 
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('deleteRuangan').addEventListener('click', function (e) {
+        // Only close if clicking on the backdrop, not the modal content itself
         if (e.target === this) {
             closeDeleteModal();
         }

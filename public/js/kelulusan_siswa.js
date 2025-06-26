@@ -1,7 +1,7 @@
 // kelulusan_siswa.js
 let studentData = []; // Deklarasikan secara global
 
-fetch('proses/get_siswa.php')
+fetch('../src/API//get_siswa.php')
   .then(response => response.json())
   .then(data => {
     // Periksa apakah data adalah objek dengan kunci kelas, lalu ratakan
@@ -396,7 +396,8 @@ const toast = new ToastNotification();
 
 // Tampilkan modal konfirmasi
 function showConfirmationModal(studentId, action) {
-  const student = studentData.find((s) => s.id === studentId)
+  console.log(studentId)
+  const student = studentData.find((s) => s.id == studentId) // longgar, bisa number atau string
   const modal = document.getElementById("confirmation-modal")
   const message = document.getElementById("modal-message-naik-kelas")
   const confirmButton = document.getElementById("confirm-action")
@@ -489,22 +490,49 @@ function closeModal() {
 // Konfirmasi tindakan
 function confirmAction() {
   if (currentStudentId && currentAction) {
-    const studentIndex = studentData.findIndex((s) => s.id === currentStudentId)
+    const studentIndex = studentData.findIndex((s) => s.id == currentStudentId)
     if (studentIndex !== -1) {
       const student = studentData[studentIndex]
-      studentData[studentIndex].status = currentAction
-      renderStudentData()
 
-      // Tampilkan notifikasi toast berdasarkan aksi
-      if (currentAction === 'promote') {
-        toast.show('success', 'Berhasil!', `${student.name} berhasil dinyatakan lulus!`)
-      } else if (currentAction === 'not_promote') {
-        toast.show('info', 'Status Diperbarui!', `${student.name} dinyatakan tidak lulus.`)
-      }
+      // Kirim ke backend
+      fetch('../src/API/update_status_siswa.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentId: student.id,
+          action: currentAction,
+          class: student.class // tambahkan ini juga karena PHP butuh untuk kenaikan
+        })
+
+      })
+        .then(res => res.json())
+        .then(response => {
+          if (response.success) {
+            studentData[studentIndex].status = currentAction
+            renderStudentData()
+
+            if (currentAction === 'promote') {
+              toast.show('success', 'Berhasil!', `${student.name} berhasil dinyatakan lulus!`)
+            } else if (currentAction === 'not_promote') {
+              toast.show('info', 'Status Diperbarui!', `${student.name} dinyatakan tidak lulus.`)
+            }
+          } else {
+            toast.show('error', 'Gagal!', response.message || 'Terjadi kesalahan saat menyimpan.')
+          }
+        })
+        .catch(err => {
+          console.error(err)
+          toast.show('error', 'Gagal!', 'Gagal menghubungi server.')
+        })
+        .finally(() => {
+          closeModal()
+        })
     }
+  } else {
+    closeModal()
   }
-  closeModal()
 }
+
 
 // Konfirmasi tindakan massal
 function confirmBulkAction() {

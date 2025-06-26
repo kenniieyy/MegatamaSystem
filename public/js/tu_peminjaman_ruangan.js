@@ -501,21 +501,55 @@ function saveReservationData() {
 }
 
 // Fungsi untuk memuat data riwayat peminjaman
-function loadReservationHistory() {
-  // Ambil data dari localStorage
-  const savedHistory = localStorage.getItem("reservationHistory")
+// Fungsi untuk memuat data riwayat peminjaman
+async function loadReservationHistory() { // Tambahkan async di sini
+  try {
+    const response = await fetch("../src/API/get_peminjaman_ruang_tu.php"); // Panggil API Anda
+    const result = await response.json();
 
-  if (savedHistory) {
-    reservationHistory = JSON.parse(savedHistory)
-    // Update status semua peminjaman berdasarkan waktu saat ini
-    updateAllReservationStatuses()
-  } else if (reservationHistory.length === 0) {
-    // Jika tidak ada data di localStorage dan array kosong, gunakan data dummy
-    reservationHistory = generateDummyHistory()
+    if (result.success) {
+      // Mengisi roomName berdasarkan roomType dari roomData yang sudah ada
+      const formattedData = result.data.map(item => ({
+        ...item,
+        roomName: roomData[item.roomType] || item.roomType // Gunakan roomData, fallback ke roomType jika tidak ditemukan
+      }));
+      reservationHistory = formattedData;
+      updateAllReservationStatuses(); // Perbarui status berdasarkan waktu saat ini
+      // Hapus baris ini karena data sudah dari DB:
+      // localStorage.setItem("reservationHistory", JSON.stringify(reservationHistory));
+      toast.show("success", "Riwayat Dimuat", result.message);
+    } else {
+      console.error("Failed to load reservation history from DB:", result.message);
+      toast.show("error", "Gagal Memuat Riwayat", result.message);
+      // Opsional: Sebagai fallback, jika gagal dari DB, Anda bisa tetap menggunakan localStorage/dummy
+      // Namun, disarankan untuk mengatasi masalah koneksi DB daripada mengandalkan data lama.
+      const savedHistory = localStorage.getItem("reservationHistory");
+      if (savedHistory) {
+        reservationHistory = JSON.parse(savedHistory);
+        updateAllReservationStatuses();
+        toast.show("info", "Memuat dari Lokal", "Data dimuat dari penyimpanan lokal karena gagal dari server.");
+      } else {
+        reservationHistory = generateDummyHistory(); // Gunakan dummy jika keduanya gagal
+        toast.show("info", "Memuat Data Dummy", "Data dummy dimuat.");
+      }
+    }
+  } catch (error) {
+    console.error("Error fetching reservation history:", error);
+    toast.show("error", "Error Jaringan", "Tidak dapat terhubung ke server untuk memuat riwayat.");
+    // Fallback ke localStorage atau dummy jika terjadi kesalahan jaringan
+    const savedHistory = localStorage.getItem("reservationHistory");
+    if (savedHistory) {
+      reservationHistory = JSON.parse(savedHistory);
+      updateAllReservationStatuses();
+      toast.show("info", "Memuat dari Lokal", "Data dimuat dari penyimpanan lokal karena kesalahan jaringan.");
+    } else {
+      reservationHistory = generateDummyHistory();
+      toast.show("info", "Memuat Data Dummy", "Data dummy dimuat.");
+    }
   }
 
-  // Filter data berdasarkan filter yang dipilih
-  filterReservationHistory()
+  // Filter data yang sudah dimuat (baik dari DB, localStorage, atau dummy)
+  filterReservationHistory();
 }
 
 // Fungsi untuk mengupdate status semua peminjaman
@@ -944,48 +978,54 @@ function openEditModal(id) {
 }
 
 // Fungsi untuk menyimpan edit peminjaman
-function saveEditReservation(id) {
-  // Validasi form
-  const form = document.getElementById("edit-form")
+async function saveEditReservation(id) {
+  const form = document.getElementById("edit-form");
   if (!form.checkValidity()) {
-    form.reportValidity()
-    return
+    form.reportValidity();
+    return;
   }
 
-  // Update data peminjaman
-  const index = reservationHistory.findIndex((item) => item.id.toString() === id)
+  const roomType = document.getElementById("edit-room-type").value;
+  const reservationDate = document.getElementById("edit-reservation-date").value;
+  const startTime = document.getElementById("edit-start-time").value;
+  const endTime = document.getElementById("edit-end-time").value;
+  const newStatus = determineReservationStatus(reservationDate, startTime, endTime);
 
-  if (index !== -1) {
-    const roomType = document.getElementById("edit-room-type").value
-    const reservationDate = document.getElementById("edit-reservation-date").value
-    const startTime = document.getElementById("edit-start-time").value
-    const endTime = document.getElementById("edit-end-time").value
+  const dataToUpdate = {
+    id: id, // Kirim ID untuk identifikasi
+    jenis_ruangan: roomType,
+    tanggal_peminjaman: reservationDate,
+    deskripsi_kegiatan: document.getElementById("edit-activity-description").value,
+    jam_mulai: startTime,
+    jam_selesai: endTime,
+    penanggung_jawab: document.getElementById("edit-responsible-teacher").value,
+    status: newStatus,
+  };
 
-    // Update status berdasarkan waktu baru
-    const newStatus = determineReservationStatus(reservationDate, startTime, endTime)
+  try {
+    const response = await fetch("../src/API/update_peminjaman_ruang_tu.php", { // Buat file PHP ini
+      method: "POST", // Atau PUT jika API Anda mendukung
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dataToUpdate),
+    });
 
-    reservationHistory[index].roomType = roomType
-    reservationHistory[index].roomName = roomData[roomType]
-    reservationHistory[index].date = reservationDate
-    reservationHistory[index].activityDescription = document.getElementById("edit-activity-description").value
-    reservationHistory[index].startTime = startTime
-    reservationHistory[index].endTime = endTime
-    reservationHistory[index].responsibleTeacher = document.getElementById("edit-responsible-teacher").value
-    reservationHistory[index].status = newStatus
+    const result = await response.json();
 
-    // Simpan ke localStorage
-    localStorage.setItem("reservationHistory", JSON.stringify(reservationHistory))
-
-    // Refresh tampilan
-    filterReservationHistory()
-
-    // Tutup modal
-    document.getElementById("edit-modal").style.display = "none"
-
-    // Tampilkan toast notification untuk edit
-    toast.show("success", "Berhasil!", "Data peminjaman berhasil diperbarui!")
+    if (result.success) {
+      toast.show("success", "Berhasil!", result.message);
+      document.getElementById("edit-modal").style.display = "none";
+      await loadReservationHistory(); // Load ulang data setelah update
+    } else {
+      toast.show("error", "Gagal!", result.message);
+    }
+  } catch (error) {
+    console.error("Error updating reservation:", error);
+    toast.show("error", "Error Jaringan", "Terjadi kesalahan saat memperbarui data.");
   }
 }
+
 
 // Fungsi untuk membuka modal hapus peminjaman
 function openDeleteModal(id) {
@@ -1008,27 +1048,31 @@ function openDeleteModal(id) {
 }
 
 // Fungsi untuk menghapus peminjaman
-function deleteReservation(id) {
-  // Cari data peminjaman berdasarkan ID
-  const index = reservationHistory.findIndex((item) => item.id.toString() === id)
+async function deleteReservation(id) {
+  try {
+    const response = await fetch("../src/API/delete_peminjaman_ruang_tu.php", { // Buat file PHP ini
+      method: "POST", // Atau DELETE jika API Anda mendukung
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id: id }), // Kirim ID yang akan dihapus
+    });
 
-  if (index !== -1) {
-    // Hapus data dari array
-    reservationHistory.splice(index, 1)
+    const result = await response.json();
 
-    // Simpan ke localStorage
-    localStorage.setItem("reservationHistory", JSON.stringify(reservationHistory))
-
-    // Refresh tampilan
-    filterReservationHistory()
-
-    // Tutup modal
-    document.getElementById("delete-modal").style.display = "none"
-
-    // Tampilkan toast notification untuk hapus
-    toast.show("success", "Berhasil!", "Data peminjaman berhasil dihapus!")
+    if (result.success) {
+      toast.show("success", "Berhasil!", result.message);
+      document.getElementById("delete-modal").style.display = "none";
+      await loadReservationHistory(); // Load ulang data setelah hapus
+    } else {
+      toast.show("error", "Gagal!", result.message);
+    }
+  } catch (error) {
+    console.error("Error deleting reservation:", error);
+    toast.show("error", "Error Jaringan", "Terjadi kesalahan saat menghapus data.");
   }
 }
+
 
 // Fungsi untuk setup modal close handlers
 function setupModalCloseHandlers(modalId) {
@@ -1099,17 +1143,20 @@ function initializeRoomAvailabilityCheck() {
 
 // Fungsi untuk memperbarui status secara berkala
 function startStatusUpdateInterval() {
-  // Update status setiap 1 menit
-  setInterval(() => {
-    if (reservationHistory.length > 0) {
-      updateAllReservationStatuses()
-      // Refresh tampilan jika sedang di tab history
-      const historyTab = document.getElementById("tab-history")
-      if (historyTab && historyTab.classList.contains("active")) {
-        filterReservationHistory()
+  setInterval(async () => { // Tambahkan async
+    // Cukup panggil loadReservationHistory untuk memperbarui status dan tampilan
+    // loadReservationHistory akan secara otomatis memanggil updateAllReservationStatuses
+    // dan filterReservationHistory/renderReservationHistory.
+    const historyTab = document.getElementById("tab-history")
+    if (historyTab && historyTab.classList.contains("active")) {
+      await loadReservationHistory(); // Pastikan data terbaru ditarik
+    } else {
+      // Jika tidak di tab history, tetap update status di background
+      if (reservationHistory.length > 0) {
+        updateAllReservationStatuses();
       }
     }
-  }, 60000) // 60000ms = 1 menit
+  }, 60000); // 60000ms = 1 menit
 }
 
 // Jalankan saat halaman dimuat
@@ -1144,6 +1191,78 @@ document.addEventListener("DOMContentLoaded", () => {
   const monthFilter = document.getElementById("month-filter")
   if (monthFilter) {
     monthFilter.value = currentMonth
+  }
+
+  // Handle form submission
+  // Handle form submission
+  const reservationForm = document.getElementById("reservation-form");
+  if (reservationForm) {
+    reservationForm.addEventListener("submit", async (event) => {
+      event.preventDefault(); // Mencegah submit form secara default
+
+      const identityForm = document.getElementById("identity-form");
+      const reservationForm = document.getElementById("reservation-form");
+
+      // Buat objek FormData terpisah
+      const identityFormData = new FormData(identityForm);
+      const reservationFormData = new FormData(reservationForm);
+
+      // Gabungkan kedua FormData menjadi satu objek data JSON
+      const data = {};
+
+      // Ambil data dari identityForm
+      for (let [key, value] of identityFormData.entries()) {
+        // Anda perlu menyesuaikan ini dengan nama field yang benar di identityForm
+        // Misalnya: student-name, student-nis, student-class, student-phone
+        if (key === "student-name") data.nama_lengkap = value;
+        else if (key === "student-nis") data.nis = value;
+        else if (key === "student-class") data.kelas = value;
+        else if (key === "student-phone") data.no_telepon = value;
+      }
+
+      // Ambil data dari reservationForm
+      for (let [key, value] of reservationFormData.entries()) {
+        // Ini harus sesuai dengan yang sudah ada di kode Anda
+        if (key === "room-type") data.jenis_ruangan = value;
+        else if (key === "reservation-date") data.tanggal_peminjaman = value;
+        else if (key === "activity-description") data.deskripsi_kegiatan = value;
+        else if (key === "start-time") data.jam_mulai = value;
+        else if (key === "end-time") data.jam_selesai = value;
+        else if (key === "responsible-teacher") data.penanggung_jawab = value;
+      }
+
+      // --- Debugging: Pastikan data sudah lengkap sebelum dikirim ---
+      console.log("Data yang akan dikirim:", data);
+      // -----------------------------------------------------------
+
+      try {
+        const response = await fetch("../src/API/add_peminjaman_ruang_tu.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          toast.show("success", "Sukses!", result.message);
+          // Reset kedua form setelah sukses
+          identityForm.reset();
+          reservationForm.reset();
+          // Sembunyikan pesan status ruangan jika ada
+          document.getElementById("room-status-message").classList.add("hidden");
+          // Refresh data jika ada di tab history
+          filterReservationHistory(); // Pastikan fungsi ini ada dan mengambil data terbaru
+        } else {
+          toast.show("error", "Gagal!", result.message);
+        }
+      } catch (error) {
+        console.error("Error submitting reservation:", error);
+        toast.show("error", "Error Jaringan", "Terjadi kesalahan saat mengirim data.");
+      }
+    });
   }
 
   // Load data awal

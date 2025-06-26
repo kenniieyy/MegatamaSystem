@@ -2,7 +2,7 @@
 
 let teacherData = [];
 
-fetch('proses/get_guru.php')
+fetch('../src/API/get_guru.php')
     .then(res => res.json())
     .then(data => {
         teacherData = data;
@@ -51,21 +51,31 @@ function setupFormValidation() {
             checkFormValidity('form-guru', 'btn-login-guru');
         });
     });
+
+
 }
 
 function validateAdminTU() {
     const username = document.getElementById('username-tu').value.trim();
     const password = document.getElementById('password-tu').value;
 
-    if (
-        username === defaultCredentials.adminTU.username &&
-        password === defaultCredentials.adminTU.password
-    ) {
-        // Langsung masuk ke dashboard TU
-        window.location.href = 'tu_dashboard.html';
-    } else {
-        showModal('error', 'Login Gagal', 'Username atau password Admin TU tidak valid');
-    }
+    fetch('../src/API/login_operator.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = `tu_dashboard.php?name=${encodeURIComponent(data.name)}&role=${encodeURIComponent(data.role)}`;
+            } else {
+                showModal('error', 'Login Gagal', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Login error:', error);
+            showModal('error', 'Login Gagal', 'Terjadi kesalahan koneksi ke server');
+        });
 }
 
 function validateTeacher() {
@@ -73,7 +83,7 @@ function validateTeacher() {
     const password = document.getElementById('password-guru').value;
     const id = identityInput.split(' - ')[0];
 
-    fetch('proses/login_guru.php', {
+    fetch('../src/API/login_guru.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: `id=${encodeURIComponent(id)}&password=${encodeURIComponent(password)}`
@@ -82,6 +92,29 @@ function validateTeacher() {
         .then(data => {
             if (data.success) {
                 window.location.href = `dashboard_guru.php?name=${encodeURIComponent(data.name)}`;
+            } else {
+                showModal('error', 'Login Gagal', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Login error:', error);
+            showModal('error', 'Login Gagal', 'Terjadi kesalahan koneksi ke server');
+        });
+}
+
+function validateOperator() {
+    const username = document.getElementById('username-tu').value.trim();
+    const password = document.getElementById('password-tu').value;
+
+    fetch('../src/API/login_operator.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = `dashboard_operator.php?name=${encodeURIComponent(data.name)}&role=${encodeURIComponent(data.role)}`;
             } else {
                 showModal('error', 'Login Gagal', data.message);
             }
@@ -102,7 +135,7 @@ if (identityInput && autocompleteDropdown) {
 
         if (inputValue.length >= 3) {
             const filteredTeachers = teacherData.filter(teacher =>
-                teacher.id.toLowerCase().includes(inputValue) ||
+                teacher.nip.toLowerCase().includes(inputValue) ||
                 teacher.name.toLowerCase().includes(inputValue)
             );
 
@@ -111,9 +144,9 @@ if (identityInput && autocompleteDropdown) {
                 filteredTeachers.forEach(teacher => {
                     const item = document.createElement('div');
                     item.className = 'autocomplete-item';
-                    item.textContent = `${teacher.id} - ${teacher.name}`;
+                    item.textContent = `${teacher.nip} - ${teacher.name}`;
                     item.addEventListener('click', function () {
-                        identityInput.value = `${teacher.id} - ${teacher.name}`;
+                        identityInput.value = `${teacher.nip} - ${teacher.name}`;
                         autocompleteDropdown.classList.add('hidden');
                         checkFormValidity('form-guru', 'btn-login-guru');
                     });

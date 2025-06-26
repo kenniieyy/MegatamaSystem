@@ -1,17 +1,17 @@
 let studentData = []; // Deklarasikan secara global
 
-fetch('proses/get_siswa.php')
+fetch('../src/API/get_siswa_copy.php')
   .then(response => response.json())
   .then(data => {
     // Periksa apakah data adalah objek dengan kunci kelas, lalu ratakan
     if (typeof data === 'object' && !Array.isArray(data)) {
-        studentData = Object.values(data).flat();
+      studentData = Object.values(data).flat();
     } else if (Array.isArray(data)) {
-        studentData = data; // Jika data sudah berupa array datar
+      studentData = data; // Jika data sudah berupa array datar
     } else {
-        console.error('Format data tidak terduga:', data);
-        toast.show('error', 'Gagal Memuat Data', 'Format data siswa tidak sesuai.');
-        return;
+      console.error('Format data tidak terduga:', data);
+      toast.show('error', 'Gagal Memuat Data', 'Format data siswa tidak sesuai.');
+      return;
     }
     console.log("Semua Siswa:", studentData);
 
@@ -93,7 +93,7 @@ function renderStudentData() {
             <td class="px-4 py-3 whitespace-nowrap text-gray-500">${startIndex + index + 1}</td>
             <td class="px-4 py-3 whitespace-nowrap text-gray-500">${student.name}</td>
             <td class="px-4 py-3 whitespace-nowrap text-gray-500">${student.gender}</td>
-            <td class="px-4 py-3 whitespace-nowrap text-gray-500">${student.nis}</td>
+            <td class="px-4 py-3 whitespace-nowrap text-gray-500">${student.id}</td>
             <td class="px-4 py-3 whitespace-nowrap text-gray-500">${student.class}</td>
             <td class="px-4 py-3 whitespace-nowrap text-gray-500">${student.phone}</td>
             <td class="px-4 py-3 whitespace-nowrap">
@@ -265,8 +265,8 @@ class ToastNotification {
     this.toastElement = document.getElementById('toast-notification');
     // Pastikan toastElement ditemukan sebelum mencoba mengkueri anak-anaknya
     if (!this.toastElement) {
-        console.error("Elemen HTML dengan ID 'toast-notification' tidak ditemukan. ToastNotification tidak dapat diinisialisasi.");
-        return; // Keluar dari konstruktor jika elemen null
+      console.error("Elemen HTML dengan ID 'toast-notification' tidak ditemukan. ToastNotification tidak dapat diinisialisasi.");
+      return; // Keluar dari konstruktor jika elemen null
     }
     this.toastIcon = document.getElementById('toast-icon');
     this.toastTitle = document.getElementById('toast-title');
@@ -303,8 +303,8 @@ class ToastNotification {
 
   show(type, title, message) {
     if (!this.toastElement) { // Cegah menampilkan jika elemen toast tidak diinisialisasi
-        console.error("Elemen notifikasi toast tidak tersedia.");
-        return;
+      console.error("Elemen notifikasi toast tidak tersedia.");
+      return;
     }
     // Hapus timeout sebelumnya jika ada
     if (this.hideTimeout) {
@@ -357,8 +357,8 @@ class ToastNotification {
 
   setContent(type, title, message) {
     if (!this.toastContainer || !this.toastIcon || !this.toastTitle || !this.toastMessage) {
-        console.error("Elemen konten toast tidak tersedia.");
-        return;
+      console.error("Elemen konten toast tidak tersedia.");
+      return;
     }
     // Atur ulang warna batas
     this.toastContainer.className = this.toastContainer.className.replace(/border-l-(green|red|yellow|blue)-500/g, '');
@@ -402,13 +402,13 @@ function showConfirmationModal(studentId, action) {
   const confirmButton = document.getElementById("confirm-action")
 
   if (!student) {
-      console.error("Siswa tidak ditemukan untuk ID:", studentId);
-      toast.show('error', 'Kesalahan', 'Data siswa tidak ditemukan.');
-      return;
+    console.error("Siswa tidak ditemukan untuk ID:", studentId);
+    toast.show('error', 'Kesalahan', 'Data siswa tidak ditemukan.');
+    return;
   }
   if (!modal || !message || !confirmButton) {
-      console.error("Elemen modal tidak ditemukan untuk modal konfirmasi.");
-      return;
+    console.error("Elemen modal tidak ditemukan untuk modal konfirmasi.");
+    return;
   }
 
   currentStudentId = studentId
@@ -435,7 +435,7 @@ function showBulkPromotionModal() {
   }
 
   // Hitung hanya siswa yang masih tertunda
-  const pendingStudents = studentData.filter((student) => student.status === "pending")
+  const pendingStudents = studentData.filter((student) => student.status === "Aktif")
 
   // Jika tidak ada siswa yang tertunda, tampilkan pesan khusus
   if (pendingStudents.length === 0) {
@@ -486,44 +486,103 @@ function closeModal() {
   }
 }
 
-// Konfirmasi tindakan
 function confirmAction() {
   if (currentStudentId && currentAction) {
-    const studentIndex = studentData.findIndex((s) => s.id === currentStudentId)
+    const studentIndex = studentData.findIndex((s) => s.id == currentStudentId)
     if (studentIndex !== -1) {
       const student = studentData[studentIndex]
-      studentData[studentIndex].status = currentAction
-      renderStudentData()
 
-      // Tampilkan notifikasi toast berdasarkan aksi
-      if (currentAction === 'promote') {
-        toast.show('success', 'Berhasil!', `${student.name} berhasil dinaikkan kelas!`)
-      } else if (currentAction === 'not_promote') {
-        toast.show('info', 'Status Diperbarui!', `${student.name} ditetapkan tidak naik kelas.`)
-      }
+      // Kirim ke backend
+      fetch('../src/API/update_status_siswa.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentId: student.id,
+          action: currentAction,
+          class: student.class // tambahkan ini juga karena PHP butuh untuk kenaikan
+        })
+
+      })
+        .then(res => res.json())
+        .then(response => {
+          if (response.success) {
+            studentData[studentIndex].status = currentAction
+            renderStudentData()
+
+            if (currentAction === 'promote') {
+              toast.show('success', 'Berhasil!', `${student.name} berhasil dinyatakan lulus!`)
+            } else if (currentAction === 'not_promote') {
+              toast.show('info', 'Status Diperbarui!', `${student.name} dinyatakan tidak lulus.`)
+            }
+          } else {
+            toast.show('error', 'Gagal!', response.message || 'Terjadi kesalahan saat menyimpan.')
+          }
+        })
+        .catch(err => {
+          console.error(err)
+          toast.show('error', 'Gagal!', 'Gagal menghubungi server.')
+        })
+        .finally(() => {
+          closeModal()
+        })
     }
+  } else {
+    closeModal()
   }
-  closeModal()
 }
+
 
 // Konfirmasi tindakan massal
 function confirmBulkAction() {
   if (isBulkPromotion && currentAction === "promote") {
-    const pendingStudents = studentData.filter((student) => student.status === "pending")
-    const promotedCount = pendingStudents.length
+    const studentsToPromote = studentData.filter((student) => student.status === "Aktif");
 
-    studentData.forEach((student) => {
-      if (student.status === "pending") {
-        student.status = "promote"
+    if (studentsToPromote.length === 0) {
+      toast.show('info', 'Tidak Ada Siswa', 'Tidak ada siswa yang bisa dinaikkan.');
+      closeModal();
+      return;
+    }
+
+    // Kirim data ke backend untuk diproses massal
+    fetch('../src/API/update_status_siswa.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: "promote",
+        isBulk: true, // <== Tandai bahwa ini mode massal
+        students: studentsToPromote.map(student => ({
+          id: student.id,
+          name: student.name,
+          class: student.class
+        }))
+      })
+    })
+    .then(res => res.json())
+    .then(response => {
+      if (response.success) {
+        // Update status lokal hanya kalau sukses
+        studentsToPromote.forEach((student) => {
+          student.status = "promote";
+        });
+        renderStudentData();
+
+        toast.show('success', 'Berhasil!', response.message);
+      } else {
+        toast.show('error', 'Gagal!', response.message || 'Gagal memperbarui data.');
       }
     })
-    renderStudentData()
-
-    // Tampilkan notifikasi toast untuk promosi massal
-    toast.show('success', 'Berhasil!', `${promotedCount} siswa berhasil Dinaikkan!`)
+    .catch(err => {
+      console.error(err);
+      toast.show('error', 'Gagal!', 'Gagal menghubungi server.');
+    })
+    .finally(() => {
+      closeModal();
+    });
+  } else {
+    closeModal();
   }
-  closeModal()
 }
+
 
 // Render kontrol paginasi
 function renderPagination() {
@@ -558,22 +617,22 @@ function renderPagination() {
 
   // Pasang kembali pendengar peristiwa setelah mengganti elemen
   if (prevButton) {
-      prevButton.replaceWith(prevButton.cloneNode(true));
-      document.getElementById("prev-page").addEventListener("click", () => {
-        if (currentPage > 1) {
-          currentPage--
-          renderStudentData()
-        }
-      });
+    prevButton.replaceWith(prevButton.cloneNode(true));
+    document.getElementById("prev-page").addEventListener("click", () => {
+      if (currentPage > 1) {
+        currentPage--
+        renderStudentData()
+      }
+    });
   }
   if (nextButton) {
-      nextButton.replaceWith(nextButton.cloneNode(true));
-      document.getElementById("next-page").addEventListener("click", () => {
-        if (currentPage < totalPages) {
-          currentPage++
-          renderStudentData()
-        }
-      });
+    nextButton.replaceWith(nextButton.cloneNode(true));
+    document.getElementById("next-page").addEventListener("click", () => {
+      if (currentPage < totalPages) {
+        currentPage++
+        renderStudentData()
+      }
+    });
   }
 }
 
@@ -600,71 +659,78 @@ function initializeButtons() {
 
 // Mengatur tombol ekspor PDF
 function initializeExportPDF() {
-    const exportPdfBtn = document.getElementById("btn-export-pdf");
+  const exportPdfBtn = document.getElementById("btn-export-pdf");
 
-    if (!exportPdfBtn) {
-        console.error("Tombol 'Export PDF' dengan ID 'btn-export-pdf' tidak ditemukan.");
-        return;
+  if (!exportPdfBtn) {
+    console.error("Tombol 'Export PDF' dengan ID 'btn-export-pdf' tidak ditemukan.");
+    return;
+  }
+
+  exportPdfBtn.addEventListener("click", () => {
+    const table = document.getElementById("attendance-table");
+    const tbody = document.getElementById("student-data");
+    const rows = tbody ? tbody.querySelectorAll("tr") : [];
+
+    // Validasi tabel dan data
+    if (!table) {
+      toast.show("error", "Gagal!", "Tabel tidak ditemukan.");
+      return;
     }
 
-    exportPdfBtn.addEventListener("click", () => {
-        const table = document.getElementById("attendance-table");
+    if (!tbody || rows.length === 0) {
+      toast.show("warning", "Data Kosong!", "Tidak ada data yang bisa diekspor ke PDF.");
+      return;
+    }
 
-        if (!table) {
-            console.error("Tabel dengan ID 'attendance-table' tidak ditemukan.");
-            toast.show("error", "Gagal!", "Tabel data tidak ditemukan untuk diekspor.");
-            return;
+    // Jika valid, lanjut ekspor
+    exportPdfBtn.innerText = "Memproses...";
+    exportPdfBtn.disabled = true;
+
+    const scale = 2;
+    html2canvas(table, { scale: scale }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF("p", "mm", "a4");
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+
+      const imgWidth = pdfWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      while (heightLeft > 0) {
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pdfHeight;
+        if (heightLeft > 0) {
+          pdf.addPage();
+          position = heightLeft - imgHeight;
         }
+      }
 
-        exportPdfBtn.innerText = "Memproses...";
-        exportPdfBtn.disabled = true;
+      const blob = pdf.output("blob");
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "kenaikan-kelas.pdf";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
 
-        const scale = 2; // Tingkatkan skala untuk kualitas yang lebih baik
-        html2canvas(table, { scale: scale }).then((canvas) => {
-            const imgData = canvas.toDataURL("image/png");
-            const { jsPDF } = window.jspdf; // Akses jspdf dari window
-            const pdf = new jsPDF("p", "mm", "a4");
-
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = pdf.internal.pageSize.getHeight();
-
-            const imgWidth = pdfWidth;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-            let heightLeft = imgHeight;
-            let position = 0;
-
-            while (heightLeft > 0) {
-                pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-                heightLeft -= pdfHeight;
-                if (heightLeft > 0) {
-                    pdf.addPage();
-                    position = heightLeft - imgHeight;
-                }
-            }
-
-            // Konversi PDF ke Blob dan unduh otomatis
-            const blob = pdf.output("blob");
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "kenaikan-kelas.pdf";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            toast.show("success", "Berhasil!", "Data berhasil diekspor ke PDF!");
-            exportPdfBtn.innerText = "Export PDF";
-            exportPdfBtn.disabled = false;
-        }).catch((error) => {
-            console.error("Gagal membuat PDF:", error);
-            toast.show("error", "Gagal!", "Terjadi kesalahan saat membuat PDF.");
-            exportPdfBtn.innerText = "Export PDF";
-            exportPdfBtn.disabled = false;
-        });
+      toast.show("success", "Berhasil!", "Data berhasil diekspor ke PDF!");
+    }).catch((error) => {
+      console.error("Gagal membuat PDF:", error);
+      toast.show("error", "Gagal!", "Terjadi kesalahan saat membuat PDF.");
+    }).finally(() => {
+      exportPdfBtn.innerText = "Export PDF";
+      exportPdfBtn.disabled = false;
     });
+  });
 }
+
 
 
 // Jalankan saat halaman dimuat
