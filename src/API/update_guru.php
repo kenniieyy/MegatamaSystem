@@ -19,6 +19,7 @@ if (isset($_FILES['foto_profil']) && $_FILES['foto_profil']['error'] === UPLOAD_
     $file_ext = pathinfo($original_foto_name, PATHINFO_EXTENSION);
     $new_foto_name = $nip . '.' . $file_ext;
     $foto_path = '../img/guru/' . $new_foto_name;
+    $foto_url_to_save = 'img/guru/' . $new_foto_name;
 
     $sql_get_old_photo = "SELECT foto_url FROM guru WHERE id_guru = ?";
     $stmt_old_photo = $conn->prepare($sql_get_old_photo);
@@ -65,8 +66,8 @@ if ($wali_kelas_value !== null && $wali_kelas_value !== '') {
 }
 
 if ($new_foto_name !== null) {
-    $param_types .= "s"; // Tambah tipe string untuk foto_profil
-    $params[] = &$new_foto_name;
+    $param_types .= "s";
+    $params[] = &$foto_url_to_save; // <-- Ini yang akan disimpan di database
 }
 
 $param_types .= "i"; // id_guru (integer) selalu terakhir
@@ -91,4 +92,3 @@ if ($stmt->execute()) {
 
 $stmt->close();
 $conn->close();
-?>

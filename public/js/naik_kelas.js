@@ -1,6 +1,6 @@
 let studentData = []; // Deklarasikan secara global
 
-fetch('../src/API/get_siswa.php')
+fetch('../src/API/get_siswa_copy.php')
   .then(response => response.json())
   .then(data => {
     // Periksa apakah data adalah objek dengan kunci kelas, lalu ratakan
@@ -93,7 +93,7 @@ function renderStudentData() {
             <td class="px-4 py-3 whitespace-nowrap text-gray-500">${startIndex + index + 1}</td>
             <td class="px-4 py-3 whitespace-nowrap text-gray-500">${student.name}</td>
             <td class="px-4 py-3 whitespace-nowrap text-gray-500">${student.gender}</td>
-            <td class="px-4 py-3 whitespace-nowrap text-gray-500">${student.nis}</td>
+            <td class="px-4 py-3 whitespace-nowrap text-gray-500">${student.id}</td>
             <td class="px-4 py-3 whitespace-nowrap text-gray-500">${student.class}</td>
             <td class="px-4 py-3 whitespace-nowrap text-gray-500">${student.phone}</td>
             <td class="px-4 py-3 whitespace-nowrap">
@@ -435,7 +435,7 @@ function showBulkPromotionModal() {
   }
 
   // Hitung hanya siswa yang masih tertunda
-  const pendingStudents = studentData.filter((student) => student.status === "pending")
+  const pendingStudents = studentData.filter((student) => student.status === "Aktif")
 
   // Jika tidak ada siswa yang tertunda, tampilkan pesan khusus
   if (pendingStudents.length === 0) {
@@ -535,21 +535,54 @@ function confirmAction() {
 // Konfirmasi tindakan massal
 function confirmBulkAction() {
   if (isBulkPromotion && currentAction === "promote") {
-    const pendingStudents = studentData.filter((student) => student.status === "pending")
-    const promotedCount = pendingStudents.length
+    const studentsToPromote = studentData.filter((student) => student.status === "Aktif");
 
-    studentData.forEach((student) => {
-      if (student.status === "pending") {
-        student.status = "promote"
+    if (studentsToPromote.length === 0) {
+      toast.show('info', 'Tidak Ada Siswa', 'Tidak ada siswa yang bisa dinaikkan.');
+      closeModal();
+      return;
+    }
+
+    // Kirim data ke backend untuk diproses massal
+    fetch('../src/API/update_status_siswa.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: "promote",
+        isBulk: true, // <== Tandai bahwa ini mode massal
+        students: studentsToPromote.map(student => ({
+          id: student.id,
+          name: student.name,
+          class: student.class
+        }))
+      })
+    })
+    .then(res => res.json())
+    .then(response => {
+      if (response.success) {
+        // Update status lokal hanya kalau sukses
+        studentsToPromote.forEach((student) => {
+          student.status = "promote";
+        });
+        renderStudentData();
+
+        toast.show('success', 'Berhasil!', response.message);
+      } else {
+        toast.show('error', 'Gagal!', response.message || 'Gagal memperbarui data.');
       }
     })
-    renderStudentData()
-
-    // Tampilkan notifikasi toast untuk promosi massal
-    toast.show('success', 'Berhasil!', `${promotedCount} siswa berhasil Dinaikkan!`)
+    .catch(err => {
+      console.error(err);
+      toast.show('error', 'Gagal!', 'Gagal menghubungi server.');
+    })
+    .finally(() => {
+      closeModal();
+    });
+  } else {
+    closeModal();
   }
-  closeModal()
 }
+
 
 // Render kontrol paginasi
 function renderPagination() {

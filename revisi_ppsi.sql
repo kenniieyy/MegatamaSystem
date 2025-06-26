@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 16 Jun 2025 pada 15.26
--- Versi server: 10.11.11-MariaDB
--- Versi PHP: 8.2.12
+-- Generation Time: Jun 24, 2025 at 02:41 PM
+-- Server version: 10.11.11-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `absen`
+-- Table structure for table `absen`
 --
 
 CREATE TABLE `absen` (
@@ -38,19 +38,20 @@ CREATE TABLE `absen` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `absen`
+-- Dumping data for table `absen`
 --
 
 INSERT INTO `absen` (`id_absen`, `id_guru`, `kelas`, `tanggal`, `jam_mulai`, `jam_selesai`, `dibuat_pada`) VALUES
 (40, 411, '8', '2025-05-21', '12:00:00', '13:00:00', '2025-05-21 15:28:43'),
 (41, 411, '9', '2025-06-15', '12:00:00', '13:00:00', '2025-06-15 16:06:45'),
 (42, 411, '9', '2025-06-15', '12:00:00', '13:00:00', '2025-06-15 16:15:50'),
-(43, 411, '9', '2025-06-15', '12:00:00', '13:00:00', '2025-06-15 16:20:39');
+(43, 411, '9', '2025-06-15', '12:00:00', '13:00:00', '2025-06-15 16:20:39'),
+(44, 1024, '8', '2025-06-17', '12:00:00', '13:00:00', '2025-06-17 08:48:10');
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `absen_guru`
+-- Table structure for table `absen_guru`
 --
 
 CREATE TABLE `absen_guru` (
@@ -64,7 +65,7 @@ CREATE TABLE `absen_guru` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `absen_guru`
+-- Dumping data for table `absen_guru`
 --
 
 INSERT INTO `absen_guru` (`id_absen_guru`, `id_guru`, `tanggal`, `jam_datang`, `jam_pulang`, `foto_datang`, `foto_pulang`) VALUES
@@ -88,12 +89,14 @@ INSERT INTO `absen_guru` (`id_absen_guru`, `id_guru`, `tanggal`, `jam_datang`, `
 (74, 411, '2025-06-09', '07:02:00', '15:26:00', 'foto_datang_17.jpg', 'foto_pulang_17.jpg'),
 (75, 411, '2025-06-09', '07:28:00', '15:04:00', 'foto_datang_18.jpg', 'foto_pulang_18.jpg'),
 (76, 411, '2025-06-10', '07:13:00', '14:45:00', 'foto_datang_19.jpg', 'foto_pulang_19.jpg'),
-(77, 411, '2025-06-10', '07:06:00', '15:11:00', 'foto_datang_20.jpg', 'foto_pulang_20.jpg');
+(77, 411, '2025-06-10', '07:06:00', '15:11:00', 'foto_datang_20.jpg', 'foto_pulang_20.jpg'),
+(78, 411, '2025-06-16', '21:15:19', NULL, 'presensi__1750079719.png', NULL),
+(79, 1029, '2025-06-17', '12:24:37', NULL, 'presensi__1750134277.png', NULL);
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `absen_siswa`
+-- Table structure for table `absen_siswa`
 --
 
 CREATE TABLE `absen_siswa` (
@@ -104,7 +107,7 @@ CREATE TABLE `absen_siswa` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `absen_siswa`
+-- Dumping data for table `absen_siswa`
 --
 
 INSERT INTO `absen_siswa` (`id_absen_siswa`, `id_absen`, `nis`, `status`) VALUES
@@ -113,7 +116,7 @@ INSERT INTO `absen_siswa` (`id_absen_siswa`, `id_absen`, `nis`, `status`) VALUES
 (294, 43, '7003', 'hadir'),
 (295, 43, '8001', 'hadir'),
 (296, 43, '8002', 'hadir'),
-(297, 43, '8003', 'hadir'),
+(297, 43, '8003', 'sakit'),
 (298, 43, '8004', 'hadir'),
 (299, 43, '8005', 'hadir'),
 (300, 43, '8006', 'hadir'),
@@ -130,12 +133,18 @@ INSERT INTO `absen_siswa` (`id_absen_siswa`, `id_absen`, `nis`, `status`) VALUES
 (311, 43, '9007', 'hadir'),
 (312, 43, '9008', 'hadir'),
 (313, 43, '9009', 'hadir'),
-(314, 43, '9010', 'hadir');
+(314, 43, '9010', 'hadir'),
+(315, 44, '7005', 'hadir'),
+(316, 44, '7006', 'hadir'),
+(317, 44, '7007', 'hadir'),
+(318, 44, '7008', 'hadir'),
+(319, 44, '7009', 'hadir'),
+(320, 44, '7010', 'hadir');
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `aktivitas`
+-- Table structure for table `aktivitas`
 --
 
 CREATE TABLE `aktivitas` (
@@ -147,7 +156,7 @@ CREATE TABLE `aktivitas` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `aktivitas`
+-- Dumping data for table `aktivitas`
 --
 
 INSERT INTO `aktivitas` (`id`, `id_guru`, `judul`, `tipe`, `waktu`) VALUES
@@ -155,136 +164,52 @@ INSERT INTO `aktivitas` (`id`, `id_guru`, `judul`, `tipe`, `waktu`) VALUES
 (2, 411, 'Presensi pulang berhasil', 'pulang', '2025-06-13 14:42:28'),
 (3, 411, 'edit profil', 'edit', '2025-06-13 14:46:05'),
 (4, 411, 'Melakukan absensi kelas 8', 'absensi', '2025-06-13 15:59:40'),
-(64, 411, 'Input Absensi Kelas 9', 'absensi', '2025-06-15 16:20:39');
+(64, 411, 'Input Absensi Kelas 9', 'absensi', '2025-06-15 16:20:39'),
+(65, 411, 'Presensi Datang Berhasil', 'datang', '2025-06-16 21:15:19'),
+(66, 1024, 'Input Absensi Kelas 8', 'absensi', '2025-06-17 08:48:10'),
+(67, 1029, 'Presensi Datang Berhasil', 'datang', '2025-06-17 12:24:37');
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `bidang_tugas`
---
-
-CREATE TABLE `bidang_tugas` (
-  `id_bidang` int(11) NOT NULL,
-  `nama_bidang` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data untuk tabel `bidang_tugas`
---
-
-INSERT INTO `bidang_tugas` (`id_bidang`, `nama_bidang`) VALUES
-(13, 'Bahasa Indonesia'),
-(14, 'Bahasa Inggris'),
-(12, 'Biologi'),
-(17, 'Ekonomi'),
-(10, 'Fisika'),
-(16, 'Geografi'),
-(11, 'Kimia'),
-(7, 'Matematika'),
-(8, 'Matematika Peminatan'),
-(19, 'Pendidikan Agama'),
-(22, 'Pendidikan Jasmani'),
-(20, 'PPKN'),
-(15, 'Sejarah'),
-(21, 'Seni Budaya'),
-(18, 'Sosiologi'),
-(9, 'Statistika'),
-(4, 'Wali Kelas 10'),
-(5, 'Wali Kelas 11'),
-(6, 'Wali Kelas 12'),
-(1, 'Wali Kelas 7'),
-(2, 'Wali Kelas 8'),
-(3, 'Wali Kelas 9');
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `guru`
+-- Table structure for table `guru`
 --
 
 CREATE TABLE `guru` (
   `id_guru` int(11) NOT NULL,
-  `ID` varchar(20) NOT NULL,
   `nama_guru` varchar(100) NOT NULL,
-  `gender` enum('male','female','','') NOT NULL,
-  `status` enum('active','inactive','leave') NOT NULL,
+  `jenis_kelamin` enum('Laki-laki','Perempuan') NOT NULL,
+  `ID` varchar(20) NOT NULL,
+  `mata_pelajaran` varchar(100) DEFAULT NULL,
+  `wali_kelas` enum('Wali Kelas 7','Wali Kelas 8','Wali Kelas 9','Wali Kelas 10','Wali Kelas 11','Wali Kelas 12') DEFAULT NULL,
+  `status` enum('Aktif','Tidak Aktif') DEFAULT 'Aktif',
+  `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `foto_profil` varchar(255) NOT NULL
+  `foto_url` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `guru`
+-- Dumping data for table `guru`
 --
 
-INSERT INTO `guru` (`id_guru`, `ID`, `nama_guru`, `gender`, `status`, `password`, `foto_profil`) VALUES
-(1, '197201231995011002', 'Efrizal, S.P., M.Si.', 'female', 'active', 'admin123', ''),
-(2, '197605212009121002', 'Syamsul Rizal, S.H., M.H.', '', '', 'admin123', ''),
-(3, '198511212009121009', 'Ahmed Riza Fahlevi, S.H.', 'male', 'active', 'admin123', '198511212009121009.JPG'),
-(4, '195907271987011002', 'Prof. Dr. Afrizal, S.E.,M.Si.,Ak.', '', '', 'admin123', ''),
-(411, '221220640', 'Muh Arsyad Ramsi, S.Kom., M.Kom. M.Sc.', 'female', 'inactive', 'anca', '221220640.jpg');
+INSERT INTO `guru` (`id_guru`, `nama_guru`, `jenis_kelamin`, `ID`, `mata_pelajaran`, `wali_kelas`, `status`, `username`, `password`, `foto_url`) VALUES
+(1023, 'Budi Santoso', 'Laki-laki', '1002', 'Matematika', NULL, 'Aktif', 'budis', 'admin', 'img/guru/default.png'),
+(1024, 'Citra Lestari', 'Perempuan', '1003', 'Matematika', 'Wali Kelas 8', 'Aktif', 'citral', 'admin', 'img/guru/default.png'),
+(1025, 'Dian Permata', 'Perempuan', '1004', 'IPA', NULL, 'Aktif', 'dianp', 'zxcvbnmasdfghjklqwertyuiop123456', 'img/guru/default.png'),
+(1026, 'Eka Wijaya', 'Laki-laki', '1005', 'IPS', 'Wali Kelas 7', 'Aktif', 'ekaw', 'admin', 'img/guru/default.png'),
+(1027, 'Faisal Rahman', 'Laki-laki', '1006', 'Penjaskes', NULL, 'Tidak Aktif', 'faisr', 'lkjhgfdsaqwertyuiop0987654321fedc', 'img/guru/default.png'),
+(1028, 'Gita Sari', 'Perempuan', '1007', 'Seni Budaya', 'Wali Kelas 8', 'Aktif', 'gitas', 'poiuytrewqasdfghjklmnbvcxz123456', 'img/guru/default.png'),
+(1029, 'Hadi Putra', 'Perempuan', '1008', 'Kimia', 'Wali Kelas 12', 'Aktif', 'hadip', 'admin', 'img/guru/default.png'),
+(1030, 'Indah Cahaya', 'Perempuan', '1009', 'Fisika', NULL, 'Aktif', 'indahc', '1qaz2wsx3edc4rfv5tgb6yhn7ujm8ik9', 'img/guru/default.png'),
+(1031, 'Joko Susilo', 'Laki-laki', '1010', 'Bahasa Indonesia', 'Wali Kelas 9', 'Aktif', 'jokos', '0okm9ijn8uhb7ygv6tfcdx5esz4aw3q2', 'img/guru/default.png'),
+(1032, 'Kartika Putri', 'Perempuan', '1011', 'Sejarah', NULL, 'Aktif', 'kartikap', 'loremipsumdolorsitametconsectetur', 'img/guru/default.png'),
+(1035, 'Muh Arsyad Ramsi', 'Laki-laki', '221220640', 'Matematika', 'Wali Kelas 7', 'Aktif', 'anca', 'anca', 'img/guru/221220640.JPG'),
+(1038, 'ivatul maula rizka angeliana, S.Kom., M.Kom., M.Sc., Phd', 'Perempuan', '221220639', 'Agama Islam', 'Wali Kelas 12', 'Tidak Aktif', 'aca', 'aca123', 'img/guru/221220639.jpg');
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `guru_bidang_tugas`
---
-
-CREATE TABLE `guru_bidang_tugas` (
-  `id` int(11) NOT NULL,
-  `id_guru` int(11) NOT NULL,
-  `id_bidang` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data untuk tabel `guru_bidang_tugas`
---
-
-INSERT INTO `guru_bidang_tugas` (`id`, `id_guru`, `id_bidang`) VALUES
-(19, 1, 3),
-(46, 3, 1),
-(180, 411, 3);
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `guru_mapel`
---
-
-CREATE TABLE `guru_mapel` (
-  `id` int(11) NOT NULL,
-  `id_guru` int(11) DEFAULT NULL,
-  `id_mapel` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `mapel`
---
-
-CREATE TABLE `mapel` (
-  `id_mapel` int(11) NOT NULL,
-  `nama_mapel` varchar(100) NOT NULL,
-  `jenjang` enum('SMP','SMA') NOT NULL,
-  `kelas` varchar(10) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data untuk tabel `mapel`
---
-
-INSERT INTO `mapel` (`id_mapel`, `nama_mapel`, `jenjang`, `kelas`) VALUES
-(1, 'Agama Islam', 'SMA', '10'),
-(2, 'Agama Islam', 'SMA', '11'),
-(3, 'Agama Islam', 'SMA', '12'),
-(4, 'Matematika', 'SMP', '7'),
-(5, 'Matematika', 'SMP', '8'),
-(6, 'Matematika', 'SMP', '9');
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `operator`
+-- Table structure for table `operator`
 --
 
 CREATE TABLE `operator` (
@@ -296,18 +221,19 @@ CREATE TABLE `operator` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `operator`
+-- Dumping data for table `operator`
 --
 
 INSERT INTO `operator` (`id_operator`, `nama_operator`, `username`, `password`, `role`) VALUES
 (1, 'OPRATOR.1', 'ADMIN.1', 'ADMIN123', 'SMA'),
 (2, 'OPERATOR.2', 'ADMIN.2', 'ADMIN234', 'SMP'),
-(3, 'OPERATOR.3', 'ADMIN.3', 'ADMIN345', 'SMA');
+(3, 'OPERATOR.3', 'ADMIN.3', 'ADMIN345', 'SMA'),
+(4, 'admin', 'admin', 'admin', 'SMP');
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `peminjaman_ruangan`
+-- Table structure for table `peminjaman_ruangan`
 --
 
 CREATE TABLE `peminjaman_ruangan` (
@@ -326,10 +252,41 @@ CREATE TABLE `peminjaman_ruangan` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `peminjaman_ruangan`
+--
+
+INSERT INTO `peminjaman_ruangan` (`id`, `nama_lengkap`, `nis`, `kelas`, `no_telepon`, `jenis_ruangan`, `tanggal_peminjaman`, `deskripsi_kegiatan`, `jam_mulai`, `jam_selesai`, `penanggung_jawab`, `status`, `created_at`) VALUES
+(0, 'anca', '22122', '8', '22122', 'kesenian', '2025-06-23', 'akuu', '19:45:00', '20:45:00', 'agus', 'upcoming', '2025-06-23 08:45:35');
+
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `siswa`
+-- Table structure for table `ruangan`
+--
+
+CREATE TABLE `ruangan` (
+  `id` int(11) NOT NULL,
+  `namaRuangan` varchar(100) NOT NULL,
+  `lokasi` varchar(100) NOT NULL,
+  `keterangan` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `ruangan`
+--
+
+INSERT INTO `ruangan` (`id`, `namaRuangan`, `lokasi`, `keterangan`) VALUES
+(5, 'Laboratorium Komputer', 'lokasi_lab_komputer', 'Keterangan untuk Laboratorium Komputer'),
+(6, 'Laboratorium Fisika', 'lokasi_lab_fisika', 'Keterangan untuk Laboratorium Fisika'),
+(7, 'Laboratorium Kimia', 'lokasi_lab_kimia', 'Keterangan untuk Laboratorium Kimia'),
+(8, 'Laboratorium Biologi', 'lokasi_lab_biologi', 'Keterangan untuk Laboratorium Biologi'),
+(9, 'Kesenian', 'lokasi_kesenian', 'Keterangan untuk Kesenian');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `siswa`
 --
 
 CREATE TABLE `siswa` (
@@ -338,95 +295,95 @@ CREATE TABLE `siswa` (
   `jenis_kelamin` enum('L','P','','') NOT NULL,
   `kelas` varchar(10) NOT NULL,
   `no_hp` varchar(25) NOT NULL,
-  `status_siswa` varchar(20) DEFAULT 'pending'
+  `status_siswa` enum('Aktif','Lulus','Non-Aktif','') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `siswa`
+-- Dumping data for table `siswa`
 --
 
 INSERT INTO `siswa` (`nis`, `nama_siswa`, `jenis_kelamin`, `kelas`, `no_hp`, `status_siswa`) VALUES
-('10001', 'Dimas Anggara', 'L', '10', '0', 'pending'),
-('10002', 'Erni Wijayanti', 'P', '10', '0', 'pending'),
-('10003', 'Faisal Rahman', 'L', '10', '0', 'pending'),
-('10004', 'Gina Salsabila', 'P', '10', '0', 'pending'),
-('10005', 'Hendra Gunawan', 'L', '10', '0', 'pending'),
-('10006', 'Intan Permatasari', 'P', '10', '0', 'pending'),
-('10007', 'Joni Iskandar', 'L', '10', '0', 'pending'),
-('10008', 'Kirana Dewi', 'P', '10', '0', 'pending'),
-('10009', 'Lutfi Halimawan', 'L', '10', '0', 'pending'),
-('10010', 'Mawar Melati', 'P', '10', '0', 'pending'),
-('11001', 'Naufal Hidayat', 'L', '12', '0', 'naik_kelas'),
-('11002', 'Oktavia Ramadhani', 'P', '11', '0', 'pending'),
-('11003', 'Pandu Wibowo', 'L', '11', '0', 'pending'),
-('11004', 'Qonita Alya', 'P', '11', '0', 'pending'),
-('11005', 'Rizki Ramadhan', 'L', '11', '0', 'pending'),
-('11006', 'Sari Indah', 'P', '11', '0', 'pending'),
-('11007', 'Tegar Perkasa', 'L', '11', '0', 'pending'),
-('11008', 'Umi Fadilah', 'P', '11', '0', 'pending'),
-('11009', 'Vino Bastian', 'L', '11', '0', 'pending'),
-('11010', 'Wulan Guritno', 'P', '11', '0', 'pending'),
-('12001', 'Xaverius Andi', 'L', '12', '0', 'pending'),
-('12002', 'Yuliana Sari', 'P', '12', '0', 'pending'),
-('12003', 'Zaki Ahmad', 'L', '12', '0', 'pending'),
-('12004', 'Anita Permata', 'P', '12', '0', 'pending'),
-('12005', 'Bima Sakti', 'L', '12', '0', 'pending'),
-('12006', 'Citra Kirana', 'P', '12', '0', 'pending'),
-('12007', 'Dodi Sudrajat', 'L', '12', '0', 'pending'),
-('12008', 'Eka Putri', 'P', '12', '0', 'pending'),
-('12009', 'Farhan Syahputra', 'L', '12', '0', 'pending'),
-('12010', 'Gita Gutawa', 'P', '12', '0', 'pending'),
-('7001', 'Ahmad Fauzi', 'L', '9', '0822917090778', 'naik_kelas'),
-('7002', 'Anisa Putri', 'P', '9', '0822917090778', 'naik_kelas'),
-('7003', 'Budi Santoso', 'L', '9', '0822917090778', 'naik_kelas'),
-('7004', 'Citra Dewi', 'P', '11', '0822917090778', 'naik_kelas'),
-('7005', 'Deni Kurniawan', 'L', '8', '0822917090778', 'naik_kelas'),
-('7006', 'Eka Fitriani', 'P', '8', '0822917090778', 'naik_kelas'),
-('7007', 'Fajar Ramadhan', 'L', '8', '0822917090778', 'naik_kelas'),
-('7008', 'Gita Nuraini', 'P', '8', '00822917090778', 'naik_kelas'),
-('7009', 'Hadi Prasetyo', 'L', '8', '0822917090778', 'naik_kelas'),
-('7010', 'Indah Permata', 'P', '8', '0822917090778', 'naik_kelas'),
-('8001', 'Joko Widodo', 'L', '9', '0822917090778', 'naik_kelas'),
-('8002', 'Kartika Sari', 'P', '9', '0822917090778', 'naik_kelas'),
-('8003', 'Lukman Hakim', 'L', '9', '0822917090778', 'naik_kelas'),
-('8004', 'Mira Lestari', 'P', '9', '0822917090778', 'naik_kelas'),
-('8005', 'Nanda Pratama', 'L', '9', '0822917090778', 'naik_kelas'),
-('8006', 'Olivia Putri', 'P', '9', '0822917090778', 'naik_kelas'),
-('8007', 'Putra Wijaya', 'L', '9', '0822917090778', 'naik_kelas'),
-('8008', 'Qori Amalia', 'P', '9', '0822917090778', 'naik_kelas'),
-('8009', 'Rendi Saputra', 'L', '9', '0822917090778', 'naik_kelas'),
-('8010', 'Sinta Dewi', 'P', '9', '0822917090778', 'naik_kelas'),
-('9001', 'Tono Sucipto', 'L', '9', '0822917090778', 'pending'),
-('9002', 'Umi Kalsum', 'P', '9', '0822917090778', 'pending'),
-('9003', 'Vino Bastian', 'L', '9', '0822917090778', 'pending'),
-('9004', 'Wati Susilawati', 'P', '9', '0822917090778', 'pending'),
-('9005', 'Xaverius Andi', 'L', '9', '0', 'pending'),
-('9006', 'Yanti Komalasari', 'P', '9', '0', 'pending'),
-('9007', 'Zaki Firmansyah', 'L', '9', '0', 'pending'),
-('9008', 'Amelia Zahra', 'P', '9', '0', 'pending'),
-('9009', 'Bayu Segara', 'L', '9', '0', 'pending'),
-('9010', 'Cinta Laura', 'P', '9', '0', 'pending');
+('10002', 'Erni Wijayanti', 'P', '10', '0', 'Aktif'),
+('10003', 'Faisal Rahman', 'L', '10', '0', 'Aktif'),
+('10004', 'Gina Salsabila', 'P', '10', '0', 'Aktif'),
+('10005', 'Hendra Gunawan', 'L', '10', '0', 'Aktif'),
+('10006', 'Intan Permatasari', 'P', '10', '0', 'Aktif'),
+('10007', 'Joni Iskandar', 'L', '10', '0', 'Aktif'),
+('10008', 'Kirana Dewi', 'P', '10', '0', 'Aktif'),
+('10009', 'Lutfi Halimawan', 'L', '10', '0', 'Aktif'),
+('10010', 'Mawar Melati', 'P', '10', '0', 'Aktif'),
+('11001', 'Naufal Hidayat', 'L', '12', '0', 'Lulus'),
+('11002', 'Oktavia Ramadhani', 'P', '11', '0', 'Aktif'),
+('11003', 'Pandu Wibowo', 'L', '11', '0', 'Aktif'),
+('11004', 'Qonita Alya', 'P', '11', '0', 'Aktif'),
+('11005', 'Rizki Ramadhan', 'L', '11', '0', 'Aktif'),
+('11006', 'Sari Indah', 'P', '11', '0', 'Aktif'),
+('11007', 'Tegar Perkasa', 'L', '11', '0', 'Aktif'),
+('11008', 'Umi Fadilah', 'P', '11', '0', 'Aktif'),
+('11009', 'Vino Bastian', 'L', '11', '0', 'Aktif'),
+('11010', 'Wulan Guritno', 'P', '11', '0', 'Aktif'),
+('12001', 'Xaverius Andi', 'L', '12', '0', 'Aktif'),
+('12002', 'Yuliana Sari', 'P', '12', '0', 'Aktif'),
+('12003', 'Zaki Ahmad', 'L', '12', '0', 'Aktif'),
+('12004', 'Anita Permata', 'P', '8', '0', 'Aktif'),
+('12005', 'Bima Sakti', 'L', '12', '0', 'Aktif'),
+('12006', 'Citra Kirana', 'P', '12', '0', 'Aktif'),
+('12007', 'Dodi Sudrajat', 'L', '12', '0', 'Aktif'),
+('12008', 'Eka Putri', 'P', '12', '0', 'Aktif'),
+('12009', 'Farhan Syahputra', 'L', '12', '0', 'Aktif'),
+('12010', 'Gita Gutawa', 'P', '12', '0', 'Aktif'),
+('221220640', 'Muh Arsyad Ramsi', 'L', '8', '082291700778', 'Aktif'),
+('7001', 'Ahmad Fauzi', 'L', '8', '0822917090778', 'Aktif'),
+('7002', 'Anisa Putri', 'P', '8', '0822917090778', 'Aktif'),
+('7003', 'Budi Santoso', 'L', '9', '0822917090778', 'Aktif'),
+('7004', 'Citra Dewi', 'P', '11', '0822917090778', 'Aktif'),
+('7005', 'Deni Kurniawan', 'L', '9', '0822917090778', 'Aktif'),
+('7006', 'Eka Fitriani', 'P', '8', '0822917090778', 'Aktif'),
+('7007', 'Fajar Ramadhan', 'L', '8', '0822917090778', 'Aktif'),
+('7008', 'Gita Nuraini', 'P', '8', '00822917090778', 'Aktif'),
+('7009', 'Hadi Prasetyo', 'L', '8', '0822917090778', 'Aktif'),
+('7010', 'Indah Permata', 'P', '8', '0822917090778', 'Aktif'),
+('8001', 'Joko Widodo', 'L', '9', '0822917090778', 'Aktif'),
+('8002', 'Kartika Sari', 'P', '9', '0822917090778', 'Aktif'),
+('8003', 'Lukman Hakim', 'L', '9', '0822917090778', 'Aktif'),
+('8004', 'Mira Lestari', 'P', '9', '0822917090778', 'Aktif'),
+('8005', 'Nanda Pratama', 'L', '9', '0822917090778', 'Aktif'),
+('8006', 'Olivia Putri', 'P', '9', '0822917090778', 'Aktif'),
+('8007', 'Putra Wijaya', 'L', '9', '0822917090778', 'Aktif'),
+('8008', 'Qori Amalia', 'P', '9', '0822917090778', 'Aktif'),
+('8009', 'Rendi Saputra', 'L', '9', '0822917090778', 'Aktif'),
+('8010', 'Sinta Dewi', 'P', '9', '0822917090778', 'Aktif'),
+('9001', 'Tono Sucipto', 'L', '9', '0822917090778', 'Aktif'),
+('9002', 'Umi Kalsum', 'P', '9', '0822917090778', 'Aktif'),
+('9003', 'Vino Bastian', 'L', '9', '0822917090778', 'Aktif'),
+('9004', 'Wati Susilawati', 'P', '9', '0822917090778', 'Aktif'),
+('9005', 'Xaverius Andi', 'L', '9', '0', 'Aktif'),
+('9006', 'Yanti Komalasari', 'P', '9', '0', 'Aktif'),
+('9007', 'Zaki Firmansyah', 'L', '9', '0', 'Aktif'),
+('9008', 'Amelia Zahra', 'P', '8', '0', 'Aktif'),
+('9009', 'Bayu Segara', 'L', '8', '0', 'Aktif'),
+('9010', 'Cinta Laura', 'P', '9', '0', 'Aktif');
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indeks untuk tabel `absen`
+-- Indexes for table `absen`
 --
 ALTER TABLE `absen`
   ADD PRIMARY KEY (`id_absen`),
   ADD KEY `id_guru` (`id_guru`);
 
 --
--- Indeks untuk tabel `absen_guru`
+-- Indexes for table `absen_guru`
 --
 ALTER TABLE `absen_guru`
   ADD PRIMARY KEY (`id_absen_guru`),
   ADD KEY `id_guru` (`id_guru`);
 
 --
--- Indeks untuk tabel `absen_siswa`
+-- Indexes for table `absen_siswa`
 --
 ALTER TABLE `absen_siswa`
   ADD PRIMARY KEY (`id_absen_siswa`),
@@ -434,180 +391,100 @@ ALTER TABLE `absen_siswa`
   ADD KEY `id_absen` (`id_absen`);
 
 --
--- Indeks untuk tabel `aktivitas`
+-- Indexes for table `aktivitas`
 --
 ALTER TABLE `aktivitas`
   ADD PRIMARY KEY (`id`),
   ADD KEY `id_guru` (`id_guru`);
 
 --
--- Indeks untuk tabel `bidang_tugas`
---
-ALTER TABLE `bidang_tugas`
-  ADD PRIMARY KEY (`id_bidang`),
-  ADD UNIQUE KEY `nama_bidang` (`nama_bidang`);
-
---
--- Indeks untuk tabel `guru`
+-- Indexes for table `guru`
 --
 ALTER TABLE `guru`
-  ADD PRIMARY KEY (`id_guru`),
-  ADD UNIQUE KEY `nip` (`ID`);
+  ADD PRIMARY KEY (`id_guru`);
 
 --
--- Indeks untuk tabel `guru_bidang_tugas`
---
-ALTER TABLE `guru_bidang_tugas`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_guru` (`id_guru`),
-  ADD KEY `id_bidang` (`id_bidang`);
-
---
--- Indeks untuk tabel `guru_mapel`
---
-ALTER TABLE `guru_mapel`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_guru` (`id_guru`),
-  ADD KEY `id_mapel` (`id_mapel`);
-
---
--- Indeks untuk tabel `mapel`
---
-ALTER TABLE `mapel`
-  ADD PRIMARY KEY (`id_mapel`);
-
---
--- Indeks untuk tabel `operator`
+-- Indexes for table `operator`
 --
 ALTER TABLE `operator`
   ADD PRIMARY KEY (`id_operator`),
   ADD UNIQUE KEY `username` (`username`);
 
 --
--- Indeks untuk tabel `peminjaman_ruangan`
+-- Indexes for table `peminjaman_ruangan`
 --
 ALTER TABLE `peminjaman_ruangan`
   ADD PRIMARY KEY (`id`),
   ADD KEY `nis` (`nis`);
 
 --
--- Indeks untuk tabel `siswa`
+-- Indexes for table `ruangan`
+--
+ALTER TABLE `ruangan`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `siswa`
 --
 ALTER TABLE `siswa`
   ADD PRIMARY KEY (`nis`) USING BTREE;
 
 --
--- AUTO_INCREMENT untuk tabel yang dibuang
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT untuk tabel `absen`
+-- AUTO_INCREMENT for table `absen`
 --
 ALTER TABLE `absen`
-  MODIFY `id_absen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+  MODIFY `id_absen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
--- AUTO_INCREMENT untuk tabel `absen_guru`
+-- AUTO_INCREMENT for table `absen_guru`
 --
 ALTER TABLE `absen_guru`
-  MODIFY `id_absen_guru` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
+  MODIFY `id_absen_guru` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80;
 
 --
--- AUTO_INCREMENT untuk tabel `absen_siswa`
+-- AUTO_INCREMENT for table `absen_siswa`
 --
 ALTER TABLE `absen_siswa`
-  MODIFY `id_absen_siswa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=315;
+  MODIFY `id_absen_siswa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=321;
 
 --
--- AUTO_INCREMENT untuk tabel `aktivitas`
+-- AUTO_INCREMENT for table `aktivitas`
 --
 ALTER TABLE `aktivitas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
 
 --
--- AUTO_INCREMENT untuk tabel `bidang_tugas`
---
-ALTER TABLE `bidang_tugas`
-  MODIFY `id_bidang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
-
---
--- AUTO_INCREMENT untuk tabel `guru`
+-- AUTO_INCREMENT for table `guru`
 --
 ALTER TABLE `guru`
-  MODIFY `id_guru` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=412;
+  MODIFY `id_guru` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1039;
 
 --
--- AUTO_INCREMENT untuk tabel `guru_bidang_tugas`
---
-ALTER TABLE `guru_bidang_tugas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=181;
-
---
--- AUTO_INCREMENT untuk tabel `guru_mapel`
---
-ALTER TABLE `guru_mapel`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT untuk tabel `mapel`
---
-ALTER TABLE `mapel`
-  MODIFY `id_mapel` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT untuk tabel `operator`
+-- AUTO_INCREMENT for table `operator`
 --
 ALTER TABLE `operator`
-  MODIFY `id_operator` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_operator` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
+-- AUTO_INCREMENT for table `ruangan`
+--
+ALTER TABLE `ruangan`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- Constraints for dumped tables
 --
 
 --
--- Ketidakleluasaan untuk tabel `absen`
---
-ALTER TABLE `absen`
-  ADD CONSTRAINT `absen_ibfk_1` FOREIGN KEY (`id_guru`) REFERENCES `guru` (`id_guru`);
-
---
--- Ketidakleluasaan untuk tabel `absen_guru`
---
-ALTER TABLE `absen_guru`
-  ADD CONSTRAINT `absen_guru_ibfk_1` FOREIGN KEY (`id_guru`) REFERENCES `guru` (`id_guru`);
-
---
--- Ketidakleluasaan untuk tabel `absen_siswa`
+-- Constraints for table `absen_siswa`
 --
 ALTER TABLE `absen_siswa`
   ADD CONSTRAINT `absen_siswa_ibfk_3` FOREIGN KEY (`id_absen`) REFERENCES `absen` (`id_absen`),
   ADD CONSTRAINT `absen_siswa_ibfk_4` FOREIGN KEY (`nis`) REFERENCES `siswa` (`nis`);
-
---
--- Ketidakleluasaan untuk tabel `aktivitas`
---
-ALTER TABLE `aktivitas`
-  ADD CONSTRAINT `aktivitas_ibfk_1` FOREIGN KEY (`id_guru`) REFERENCES `guru` (`id_guru`);
-
---
--- Ketidakleluasaan untuk tabel `guru_bidang_tugas`
---
-ALTER TABLE `guru_bidang_tugas`
-  ADD CONSTRAINT `guru_bidang_tugas_ibfk_1` FOREIGN KEY (`id_guru`) REFERENCES `guru` (`id_guru`),
-  ADD CONSTRAINT `guru_bidang_tugas_ibfk_2` FOREIGN KEY (`id_bidang`) REFERENCES `bidang_tugas` (`id_bidang`);
-
---
--- Ketidakleluasaan untuk tabel `guru_mapel`
---
-ALTER TABLE `guru_mapel`
-  ADD CONSTRAINT `guru_mapel_ibfk_1` FOREIGN KEY (`id_guru`) REFERENCES `guru` (`id_guru`),
-  ADD CONSTRAINT `guru_mapel_ibfk_2` FOREIGN KEY (`id_mapel`) REFERENCES `mapel` (`id_mapel`);
-
---
--- Ketidakleluasaan untuk tabel `peminjaman_ruangan`
---
-ALTER TABLE `peminjaman_ruangan`
-  ADD CONSTRAINT `peminjaman_ruangan_ibfk_1` FOREIGN KEY (`nis`) REFERENCES `siswa` (`nis`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

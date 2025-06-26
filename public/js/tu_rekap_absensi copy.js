@@ -531,12 +531,11 @@ const dummySiswa = [
 ]
 
 // Variabel untuk paginasi dan state
-let currentPage = 1;
-const itemsPerPage = 9;
-let currentAttendanceType = "datang";
-let currentMonth = "april";
-let currentYear = new Date().getFullYear(); // Tambahkan ini
-let filteredData = [];
+let currentPage = 1
+const itemsPerPage = 9
+let currentAttendanceType = "datang"
+let currentMonth = "april"
+let filteredData = []
 
 // Get status badge class - untuk siswa
 function getStatusBadge(status) {
@@ -603,7 +602,7 @@ function convertDateInputToInternal(dateInput) {
 // Generator data guru untuk bulan dan tahun tertentu
 async function generateGuruData() {
   const tanggalInput = document.getElementById("tanggal")
-  let year = currentYear; // Gunakan currentYear yang sudah didefinisikan
+  let year = new Date().getFullYear()
   let month = getMonthIndex(currentMonth) + 1
 
   if (tanggalInput && tanggalInput.value) {
@@ -612,46 +611,20 @@ async function generateGuruData() {
     month = parseInt(m)
   }
 
-  try {
-    // Pastikan URL memanggil nama file PHP yang benar (get_data_absensi_tu.php)
-    const response = await fetch(`../src/API/get_data_absensi_tu.php?tipe=guru&bulan=${month}&tahun=${year}`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
+  const response = await fetch(`get_data_absensi_tu.php?tipe=guru&bulan=${month}&tahun=${year}`)
+  const data = await response.json()
 
-    if (data.error) {
-      console.error("API Error:", data.error);
-      return [];
-    }
-
-    return data.map((item) => {
-      let photoToShow = '';
-      if (currentAttendanceType === "datang") {
-        photoToShow = item.foto_datang;
-      } else { // currentAttendanceType === "pulang"
-        photoToShow = item.foto_pulang;
-      }
-
-      // Fallback ke default.png jika foto_datang atau foto_pulang kosong
-      const avatarPath = photoToShow ? '../src/img/upload/' + photoToShow : '../src/img/upload/default.png';
-
-      return {
-        name: item.nama ?? 'Tidak Diketahui',
-        avatar: avatarPath, // Menggunakan foto yang sesuai
-        date: item.tanggal,
-        time: currentAttendanceType === "datang" ? item.jam_datang : item.jam_pulang,
-        status: "Hadir", // Ini mungkin perlu disesuaikan dengan status dari absen guru
-        note: getKeterangan(currentAttendanceType === "datang" ? item.jam_datang : item.jam_pulang, currentAttendanceType), // Sesuaikan keterangan berdasarkan jam datang/pulang
-        day: new Date(item.tanggal).getDate(),
-        month: currentMonth,
-        year: year,
-      };
-    });
-  } catch (error) {
-    console.error("Error fetching guru data:", error);
-    return [];
-  }
+  return data.map((item) => ({
+    name: item.nama ?? 'Tidak Diketahui',
+    avatar: 'uploads/' + item.foto_datang, // sesuaikan folder
+    date: item.tanggal,
+    time: currentAttendanceType === "datang" ? item.jam_datang : item.jam_pulang,
+    status: "Hadir",
+    note: getKeterangan(item.jam_datang, currentAttendanceType),
+    day: new Date(item.tanggal).getDate(),
+    month: currentMonth,
+    year: year,
+  }))
 }
 
 // Hitung tepat waktu / terlambat
@@ -675,7 +648,7 @@ async function generateSiswaData() {
     month = parseInt(m)
   }
 
-  const response = await fetch(`../src/API/get_data_absensi_tu.php?tipe=siswa&bulan=${month}&tahun=${year}`)
+  const response = await fetch(`get_data_abseni_tu.php?tipe=siswa&bulan=${month}&tahun=${year}`)
   const data = await response.json()
 
   return data.map((item) => ({
@@ -783,8 +756,7 @@ function updateFilterVisibility() {
 }
 
 // Render table - mengikuti model data siswa
-// Render table - mengikuti model data siswa
-async function renderTable() { // Tambahkan async di sini
+function renderTable() {
   const tbody = document.getElementById("attendance-data")
   const tipe = document.getElementById("tipe").value
   const statusFilter = document.getElementById("status").value
@@ -801,16 +773,10 @@ async function renderTable() { // Tambahkan async di sini
     currentMonth = monthFilter.value
   }
 
-  // Menggunakan await untuk mendapatkan data yang sebenarnya
-  let data = []
-  if (tipe === "guru") {
-    data = await generateGuruData()
-  } else {
-    data = await generateSiswaData()
-  }
+  let data = tipe === "guru" ? generateGuruData() : generateSiswaData()
 
   // Apply search filter first
-  data = performSearch(data, searchTerm) // Baris ini (795) sekarang akan bekerja karena 'data' adalah array
+  data = performSearch(data, searchTerm)
 
   // Filter berdasarkan status
   if (statusFilter !== "semua") {
@@ -827,12 +793,7 @@ async function renderTable() { // Tambahkan async di sini
     const dateInfo = convertDateInputToInternal(tanggalFilter)
     if (dateInfo) {
       data = data.filter((item) => {
-        // Perbaiki logika filter tanggal jika 'item.tanggal' juga perlu diurai
-        // Asumsi item.tanggal sudah dalam format 'YYYY-MM-DD' atau sejenisnya dari PHP
-        const itemDate = new Date(item.tanggal)
-        return itemDate.getDate() === dateInfo.day &&
-          (itemDate.getMonth() + 1) === (getMonthIndex(dateInfo.month) + 1) && // Perhatikan bulan 0-indeks
-          itemDate.getFullYear() === dateInfo.year
+        return item.day === dateInfo.day && item.month === dateInfo.month && item.year === dateInfo.year
       })
 
       // Update month filter untuk konsistensi UI
@@ -863,17 +824,13 @@ async function renderTable() { // Tambahkan async di sini
 
     if (tipe === "guru") {
       row.innerHTML = `
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <img class="h-8 w-8 rounded-full object-cover" 
-                         src="${item.avatar}" 
-                         alt="${item.name}">
-                </td>
+                <td class="px-6 py-4 whitespace-nowrap"><img class="h-8 w-8 rounded-full object-cover" src="${item.avatar}" alt="${item.name}"></td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.name}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.date}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.time}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.status}</td>
                 <td class="px-6 py-4 whitespace-nowrap">${getKeteranganBadge(item.note)}</td>
-            `;
+            `
     } else {
       row.innerHTML = `
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.name}</td>
@@ -990,8 +947,8 @@ function createPageButton(pageNum, container) {
   const button = document.createElement("button")
   button.textContent = pageNum
   button.className = `px-3 py-2 text-sm rounded transition-colors duration-200 ${pageNum === currentPage
-    ? "bg-blue-600 text-white font-medium"
-    : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+      ? "bg-blue-600 text-white font-medium"
+      : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
     }`
   button.addEventListener("click", () => {
     currentPage = pageNum
@@ -1036,7 +993,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const now = new Date()
   const monthIndex = now.getMonth()
   currentMonth = months[monthIndex].value
-  currentYear = now.getFullYear(); // Pastikan currentYear juga diupdate saat DOMContentLoaded
 
   const monthSelect = document.getElementById("month-filter")
   if (monthSelect) {
@@ -1044,33 +1000,21 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Event listeners untuk tombol absen
-  // Event listeners untuk tombol absen
-  const btnAbsenDatang = document.getElementById("btn-absen-datang");
-  const btnAbsenPulang = document.getElementById("btn-absen-pulang");
+  document.getElementById("btn-absen-datang").addEventListener("click", () => {
+    document.getElementById("btn-absen-datang").classList.add("active")
+    document.getElementById("btn-absen-pulang").classList.remove("active")
+    currentAttendanceType = "datang"
+    currentPage = 1
+    renderTable()
+  })
 
-  if (btnAbsenDatang) { // Pastikan elemen ada sebelum menambahkan event listener
-    btnAbsenDatang.addEventListener("click", () => {
-      btnAbsenDatang.classList.add("active");
-      if (btnAbsenPulang) { // Pastikan btnAbsenPulang juga ada
-        btnAbsenPulang.classList.remove("active");
-      }
-      currentAttendanceType = "datang";
-      currentPage = 1;
-      renderTable();
-    });
-  }
-
-  if (btnAbsenPulang) { // Pastikan elemen ada sebelum menambahkan event listener
-    btnAbsenPulang.addEventListener("click", () => {
-      btnAbsenPulang.classList.add("active");
-      if (btnAbsenDatang) { // Pastikan btnAbsenDatang juga ada
-        btnAbsenDatang.classList.remove("active");
-      }
-      currentAttendanceType = "pulang";
-      currentPage = 1;
-      renderTable();
-    });
-  }
+  document.getElementById("btn-absen-pulang").addEventListener("click", () => {
+    document.getElementById("btn-absen-pulang").classList.add("active")
+    document.getElementById("btn-absen-datang").classList.remove("active")
+    currentAttendanceType = "pulang"
+    currentPage = 1
+    renderTable()
+  })
 
   // Event listeners untuk filter
   document.getElementById("tipe").addEventListener("change", () => {
@@ -1121,128 +1065,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Event listener untuk export PDF dengan toast notification
   document.getElementById("btn-export-pdf").addEventListener("click", () => {
-    exportRekapPDF()
+    // Tampilkan toast notification saat mengekspor
+    toast.show("success", "Berhasil!", "Data berhasil diekspor!")
   })
-
-  async function exportRekapPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF("landscape");
-
-    const siswaData = await generateSiswaData();
-    const bulanList = ["Januari", "Februari", "Maret", "April", "Mei", "Juni"];
-
-    // Struktur kolom
-    const topHeaders = [
-      { content: "No", rowSpan: 2 },
-      { content: "Nama Siswa", rowSpan: 2 },
-      { content: "Ketidakhadiran/ Bulan / Alasan", colSpan: bulanList.length * 3 },
-      { content: "Jumlah", colSpan: 3 },
-    ];
-
-    const bulanHeaders = bulanList.map((b) => ({
-      content: b,
-      colSpan: 3,
-      styles: { halign: 'center' },
-    }));
-
-    const alasanHeaders = bulanList.flatMap(() => [
-      { content: "S" },
-      { content: "I" },
-      { content: "A" },
-    ]);
-
-
-    const subHeaders = [
-      ...bulanList.flatMap(() => [
-        { content: "S" },
-        { content: "I" },
-        { content: "A" },
-      ]),
-      { content: "S" },
-      { content: "I" },
-      { content: "A" },
-    ];
-
-    // Siapkan data
-    const groupedData = siswaData.reduce((acc, siswa) => {
-      const nama = siswa.name;
-      const bulan = new Date(siswa.tanggal).getMonth(); // 0 = Jan
-      if (!acc[nama]) {
-        acc[nama] = {
-          nama,
-          no: 0,
-          values: Array(6).fill().map(() => ({ s: 0, i: 0, a: 0 })),
-          total: { s: 0, i: 0, a: 0 },
-        };
-      }
-
-      if (bulan < 6) {
-        const val = acc[nama].values[bulan];
-        if (siswa.status.toLowerCase() === "sakit") {
-          val.s++; acc[nama].total.s++;
-        } else if (siswa.status.toLowerCase() === "izin") {
-          val.i++; acc[nama].total.i++;
-        } else if (siswa.status.toLowerCase() === "alpa") {
-          val.a++; acc[nama].total.a++;
-        }
-      }
-
-      return acc;
-    }, {});
-
-    const rows = Object.values(groupedData).map((item, idx) => {
-      const bulanData = item.values.flatMap((b) => [b.s, b.i, b.a]);
-      return [idx + 1, item.nama, ...bulanData, item.total.s, item.total.i, item.total.a];
-    });
-
-    // Render tabel
-    doc.text("Rekapitulasi Absensi Siswa", 14, 10);
-    doc.autoTable({
-      head: [
-        [
-          { content: "No", rowSpan: 3 },
-          { content: "Nama Siswa", rowSpan: 3 },
-          { content: "Ketidakhadiran", colSpan: bulanList.length * 3 },
-          { content: "Jumlah", colSpan: 3 }
-        ],
-        [
-          ...bulanHeaders,
-          { content: "", colSpan: 3 } // kosong di atas total
-        ],
-        [
-          ...alasanHeaders,
-          { content: "S" },
-          { content: "I" },
-          { content: "A" }
-        ]
-      ],
-      body: rows,
-      startY: 20,
-      styles: {
-        fontSize: 7,
-        halign: "center",
-        valign: "middle",
-        lineWidth: 0.1, // ketebalan garis
-        lineColor: [0, 0, 0], // warna garis: hitam
-      },
-      headStyles: {
-        fillColor: [41, 128, 185],
-        textColor: 255,
-        lineWidth: 0.2, // ketebalan garis header
-        lineColor: [0, 0, 0],
-      },
-      columnStyles: {
-        1: { halign: "left" },
-      },
-      tableLineWidth: 0.1,
-      tableLineColor: [0, 0, 0],
-    });
-
-
-    doc.save("rekap-absensi-terstruktur.pdf");
-  }
-
-
 
   // Initialize header and render initial data
   updateHeader()

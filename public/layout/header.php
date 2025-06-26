@@ -55,13 +55,12 @@ $profil_guru = $result_profil_guru->fetch_assoc();
 $stmt_profil_guru->close();
 
 $nama = ''; // Initialize nama
-$foto = '1.png'; // Default photo if not found or empty
 
 if (!empty($profil_guru)) {
     $nama = htmlspecialchars($profil_guru['nama_guru']); // Sanitize output
 
     if (!empty($profil_guru['foto_url'])) { // Using 'foto_url' as seen in the first image
-        $file_path = '../src/img/guru/' . $profil_guru['foto_url'];
+        $file_path = '../src/' . $profil_guru['foto_url'];
         if (file_exists($file_path)) {
             $foto = htmlspecialchars($profil_guru['foto_url']); // Use the actual photo if file exists
         }
@@ -233,7 +232,7 @@ $is_wali_kelas_9_or_12 = $_SESSION['is_wali_kelas_9_or_12'];
                     <div class="flex items-center">
                         <div class="avatar-ring">
                             <img class="h-8 w-8 rounded-full object-cover"
-                                src="../src/img/guru/<?= $foto ?>" alt="User avatar">
+                                src="../src/<?= $foto ?>" alt="User avatar">
                         </div>
                         <span class="ml-2 text-sm font-medium text-gray-700"><?= $nama ?></span>
                     </div>

@@ -37,7 +37,7 @@ include "layout/header.php";
                     <!-- Foto Profil -->
                     <div class="flex flex-col items-center mb-6">
                         <div class="profile-photo-container">
-                            <img src="../src/img/guru/<?= $foto ?>" alt="Profile photo"
+                            <img src="../src/<?= $foto ?>" alt="Profile photo"
                                 class="profile-photo">
                             <label for="photo-upload" class="photo-upload-btn">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none"
@@ -73,8 +73,8 @@ include "layout/header.php";
                                 Kelamin</label>
                             <select id="gender" name="gender"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="Perempuan" <?= $gender === 'female' ? 'selected' : '' ?>>Perempuan</option>
-                                <option value="Laki-laki" <?= $gender === 'male' ? 'selected' : '' ?>>Laki-laki</option>
+                                <option value="Perempuan" <?= $gender === 'Perempuan' ? 'selected' : '' ?>>Perempuan</option>
+                                <option value="Laki-laki" <?= $gender === 'Laki-laki' ? 'selected' : '' ?>>Laki-laki</option>
                             </select>
                         </div>
 
@@ -92,8 +92,8 @@ include "layout/header.php";
                                 class="block text-sm font-medium text-gray-700 mb-1">Status</label>
                             <select id="status" name="status"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="Aktif" <?= $status === 'active' ? 'selected' : '' ?>>Aktif</option>
-                                <option value="Tidak Aktif" <?= $status === 'inactive' ? 'selected' : '' ?>>Non Aktif</option>
+                                <option value="Aktif" <?= $status === 'Aktif' ? 'selected' : '' ?>>Aktif</option>
+                                <option value="Tidak Aktif" <?= $status === 'Tidak Aktif' ? 'selected' : '' ?>>Non Aktif</option>
                             </select>
                         </div>
                     </div>

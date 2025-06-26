@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (!isset($_SESSION['operator_id'])) {
+    header('Location: login.html'); // Redirect to login if not logged in
+    exit();
+}
 include "../src/api/get_dashboard_tu.php";
 
 $query1 = "SELECT * FROM aktivitas ORDER BY waktu DESC LIMIT 5";
@@ -40,7 +45,7 @@ $result = $conn->query($query1);
         <div class="p-3">
             <p class="text-xs text-blue-300 mb-2 logo-text">Menu</p>
             <nav class="space-y-1">
-                <a href="tu_dashboard.html"
+                <a href="tu_dashboard.php"
                     class="menu-item active px-3 py-2 text-sm font-medium bg-blue-800 text-white rounded-md">
                     <div class="menu-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none"
@@ -51,7 +56,7 @@ $result = $conn->query($query1);
                     </div>
                     <span class="menu-text">Dashboard</span>
                 </a>
-                <a href="tu_data_guru.html" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
+                <a href="tu_data_guru.php" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
                     <div class="menu-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
@@ -63,7 +68,7 @@ $result = $conn->query($query1);
                     </div>
                     <span class="menu-text">Data Guru</span>
                 </a>
-                <a href="tu_data_siswa.html" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
+                <a href="tu_data_siswa.php" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
                     <div class="menu-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
@@ -73,7 +78,7 @@ $result = $conn->query($query1);
                     </div>
                     <span class="menu-text">Data Siswa</span>
                 </a>
-                <a href="tu_data_ruangan.html" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
+                <a href="tu_data_ruangan.php" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
                     <div class="menu-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
@@ -83,7 +88,7 @@ $result = $conn->query($query1);
                     </div>
                     <span class="menu-text">Data Ruangan</span>
                 </a>
-                <a href="tu_peminjaman_ruangan.html"
+                <a href="tu_peminjaman_ruangan.php"
                     class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
                     <div class="menu-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
@@ -94,7 +99,7 @@ $result = $conn->query($query1);
                     </div>
                     <span class="menu-text">Peminjaman Ruangan</span>
                 </a>
-                <a href="tu_rekap_absensi.html"
+                <a href="tu_rekap_absensi.php"
                     class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
                     <div class="menu-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
@@ -105,7 +110,7 @@ $result = $conn->query($query1);
                     </div>
                     <span class="menu-text">Rekap Absensi</span>
                 </a>
-                <a href="tu_settings.html" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
+                <a href="tu_settings.php" class="menu-item px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
                     <div class="menu-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
@@ -122,7 +127,7 @@ $result = $conn->query($query1);
 
         <!-- Logout at bottom -->
         <div class="mt-auto p-3 border-t border-blue-800">
-            <a href="index.html" class="menu-item-admin-tu px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
+            <a href="../src/API/logout.php" class="menu-item-admin-tu px-3 py-2 text-sm font-medium text-blue-200 rounded-md">
                 <div class="menu-icon-admin-tu">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
                         viewBox="0 0 24 24" stroke="currentColor">
@@ -157,7 +162,7 @@ $result = $conn->query($query1);
                             <img class="h-8 w-8 rounded-full object-cover"
                                 src="https://randomuser.me/api/portraits/men/32.jpg" alt="Admin avatar">
                         </div>
-                        <span class="ml-2 text-sm font-medium text-gray-700">Admin TU 1</span>
+                        <span class="ml-2 text-sm font-medium text-gray-700"><?php echo htmlspecialchars($_SESSION['nama_operator']); ?></span>
                     </div>
                 </div>
             </div>
@@ -167,7 +172,7 @@ $result = $conn->query($query1);
         <main class="p-4 bg-pattern">
             <!-- Welcome Message -->
             <div class="welcome-card-admin-tu">
-                <h2>Welcome Back, Admin TU 1 👋</h2>
+                <h2>Welcome Back, <?php echo htmlspecialchars($_SESSION['nama_operator']); ?> 👋 (Role: <?php echo htmlspecialchars($_SESSION['role_operator']); ?>)</h2>
             </div>
 
             <!-- Status Cards -->
